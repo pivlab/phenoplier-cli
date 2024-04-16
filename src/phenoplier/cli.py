@@ -1,9 +1,33 @@
+"""This module provides the command line interface for Phenoplier."""
+
+from typing import Optional
 import typer
-from cli import CLI
-app = typer.Typer()
 
+from phenoplier.constants.metadata import APP_NAME, APP_VERSION
 
-def main(name: str):
+app = typer.Typer(
+    context_settings={"help_option_names": ["-h", "--help"]},
+    add_completion=True
+)
+
+def _version_callback(value: bool) -> None:
+    if value:
+        typer.echo(f"{APP_NAME} v{APP_VERSION}")
+        raise typer.Exit()
+
+@app.callback()
+def main(
+    version: Optional[bool] = typer.Option(
+        None,
+        "--version",
+        "-v",
+        help="Show the application's version and exit.",
+        callback=_version_callback,
+        is_eager=True,
+    ),
+    verbose: bool = False,
+    debug: bool = False
+) -> None:
     """
     Phenopliler CLI
 
@@ -27,9 +51,4 @@ def main(name: str):
     \n
     Interested in using PhenoPLIER? Any questions? Check out our Discussions section (https://github.com/greenelab/phenoplier/discussions) and start a discussion by asking a question or sharing your thoughts. We are happy to help!
     """
-    interface = CLI(name)
-    interface.run()
-    
-
-if __name__ == '__main__':
-    typer.run(main)
+    return

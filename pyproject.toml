@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "phenoplier-cli"
+name = "phenoplier"
 version = "0.1.0"
 description = ""
 authors = ["Haoyu Zhang"]
@@ -7,9 +7,10 @@ license = "BSD-2-Clause Plus Patent License"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "3.12.*"
 typer = "0.12.*"
 rich = "13.7.*"
+pytest = "8.1.*"
 
 [build-system]
 requires = ["poetry-core"]

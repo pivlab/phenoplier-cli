@@ -1,4 +1,4 @@
-name: phenoplier-cli
+name: phenoplier
 channels:
   - conda-forge
 dependencies:
