@@ -1,0 +1,7 @@
+name: phenoplier-cli
+channels:
+  - conda-forge
+dependencies:
+  - poetry=1.8.*
+  - conda-lock=2.5.*
+
