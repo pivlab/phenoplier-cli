@@ -2,15 +2,20 @@
 
 from typing import Optional
 import typer
-
 from phenoplier.constants.metadata import APP_NAME, APP_VERSION
+import phenoplier.commands.run as cmd_run
 
+# Define the main CLI program/command
 app = typer.Typer(
     context_settings={"help_option_names": ["-h", "--help"]},
     add_completion=True
 )
+# Add subcommands
+app.add_typer(cmd_run.app, name="run")
 
+# Callbacks in Typer allows us to create "--" options for the main program/command
 def _version_callback(value: bool) -> None:
+    """Callback for the --version option."""
     if value:
         typer.echo(f"{APP_NAME} v{APP_VERSION}")
         raise typer.Exit()
@@ -52,3 +57,6 @@ def main(
     Interested in using PhenoPLIER? Any questions? Check out our Discussions section (https://github.com/greenelab/phenoplier/discussions) and start a discussion by asking a question or sharing your thoughts. We are happy to help!
     """
     return
+
+if __name__ == "__main__":
+    app()
