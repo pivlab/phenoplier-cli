@@ -23,21 +23,22 @@ def gls(
     Run the Generalized Least Squares (GLS) model
     """
 
+    # TODO: Put error messages in constants.messages as dict kv paris
     # Check if both "debug_use_ols" and "gene_corr_file" are None
     if debug_use_ols is False and gene_corr_file is None:
         # typer.echo("Error: either --debug-use-ols or --gene-corr-file <value> must be provided", err=True)
         raise typer.BadParameter("Either --debug-use-ols or --gene-corr-file <value> must be provided")
     # and they shold not be both provided
     if debug_use_ols is True and gene_corr_file is not None:
-        typer.echo("Error: only one of --debug-use-ols or --gene-corr-file <value> can be provided", err=True)
+        raise typer.BadParameter("Only one of --debug-use-ols or --gene-corr-file <value> can be provided", err=True)
         # raise typer.BadParameter("Only one of --debug-use-ols or --gene-corr-file <value> can be provided")
 
     # Validatae batch processing argument
     if (batch_id is None) != (batch_n_splits is None):
-        typer.echo("Error: both --batch-id and --batch-n-splits must be provided together", err=True)
+        raise typer.BadParameter("Error: both --batch-id and --batch-n-splits must be provided together", err=True)
         raise typer.Exit(code=1)
-
-    # Building command line arguments
+    
+    # Build command line arguments
     gene_corrs_args = f"--gene-corr-file {gene_corr_file}" if gene_corr_file else "--debug-use-ols"
     if debug_use_sub_corr:
         gene_corrs_args += " --debug-use-sub-gene-corr"
@@ -56,7 +57,11 @@ def gls(
         batch_args = f"--lv-list {','.join(lv_list)}"
 
     # Print command (dbg)
-    command = f"python some_script.py -i {input_file} -o {output_file} {gene_corrs_args} {covars_args} {cohort_args} {batch_args}"
+    PHENOPLIER_CODE_DIR = os.environ["PHENOPLIER_CODE_DIR"]
+    command = ( f"python {PHENOPLIER_CODE_DIR}/libs/gls_cli.py"
+                f"-i {input_file}"
+                f"--duplicated-genes-action keep-first"
+                f"-o {output_file} {gene_corrs_args} {covars_args} {cohort_args} {batch_args}")
     typer.echo(f"Running command: {command}")
 
     # Call the GLS model
