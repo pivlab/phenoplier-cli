@@ -13,3 +13,8 @@ In the root directory of the project, run the following command:
 ```bash
 poetry run pytest
 ```
+
+## Roadmap
+- [ ] Build up CLI
+- [ ] Port core logic from the Jupyter notebook to the CLI
+- [ ] Add interactive mode to setup the environment
