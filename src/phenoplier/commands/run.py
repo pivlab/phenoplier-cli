@@ -1,6 +1,7 @@
 import typer
 import os
 from typing import Optional, Annotated, List
+from pathlib import Path
 
 app = typer.Typer()
 
@@ -10,13 +11,13 @@ def gls(
     output_file: Annotated[str, typer.Option("--output-file", "-o", help="Path to the output file")],
     phenoplier_root_dir: Annotated[str, typer.Option("--phenoplier-root-dir", envvar="PHENOPLIER_ROOT_DIR", help="Phenoplier root directory")],
     phenoplier_metaxcan_base_dir: Annotated[str, typer.Option("--phenoplier-metaxcan-base-dir", envvar="PHENOPLIER_METAXCAN_BASE_DIR", help="Phenoplier MetaXcan base directory")],
+    batch_id: Annotated[int, typer.Option("--batch-id", help="Batch ID")],
+    batch_n_splits: Annotated[int, typer.Option("--batch-n-splits", help="Number of splits in the batch")],
     debug_use_sub_corr: Annotated[bool, typer.Option("--debug-use-sub-gene-corr", help="Use sub gene correlation for debugging")] = False,
     debug_use_ols: Annotated[bool, typer.Option("--debug-use-ols", help="Use OLS instead of GLS for debugging")] = False,
     gene_corr_file: Annotated[str, typer.Option("--gene-corr-file", help="Path to the gene correlation file")] = None,
     use_covars: Annotated[str, typer.Option("--covars", help="Covariates to use")] = None,
     cohort_name: Annotated[str, typer.Option("--cohort-name", help="Cohort name")] = None,
-    batch_id: Annotated[int, typer.Option("--batch-id", help="Batch ID")] = None,
-    batch_n_splits: Annotated[int, typer.Option("--batch-n-splits", help="Number of splits in the batch")] = None,
     lv_list: Annotated[List[str], typer.Option("--lv-list", help="List of latent variables")] = None,
 ) -> None:
     """
@@ -30,13 +31,7 @@ def gls(
         raise typer.BadParameter("Either --debug-use-ols or --gene-corr-file <value> must be provided")
     # and they shold not be both provided
     if debug_use_ols is True and gene_corr_file is not None:
-        raise typer.BadParameter("Only one of --debug-use-ols or --gene-corr-file <value> can be provided", err=True)
-        # raise typer.BadParameter("Only one of --debug-use-ols or --gene-corr-file <value> can be provided")
-
-    # Validatae batch processing argument
-    if (batch_id is None) != (batch_n_splits is None):
-        raise typer.BadParameter("Error: both --batch-id and --batch-n-splits must be provided together", err=True)
-        raise typer.Exit(code=1)
+        raise typer.BadParameter("Only one of --debug-use-ols or --gene-corr-file <value> can be provided")
     
     # Build command line arguments
     gene_corrs_args = f"--gene-corr-file {gene_corr_file}" if gene_corr_file else "--debug-use-ols"
@@ -58,7 +53,8 @@ def gls(
 
     # Print command (dbg)
     PHENOPLIER_CODE_DIR = os.environ["PHENOPLIER_CODE_DIR"]
-    command = ( f"python {PHENOPLIER_CODE_DIR}/libs/gls_cli.py"
+    GLS_PATH = Path(PHENOPLIER_CODE_DIR + "/libs/gls_cli.py").resolve()
+    command = ( f"python {GLS_PATH}"
                 f"-i {input_file}"
                 f"--duplicated-genes-action keep-first"
                 f"-o {output_file} {gene_corrs_args} {covars_args} {cohort_args} {batch_args}")
