@@ -6,4 +6,7 @@
 export PHENOPLIER_JOBS_EXECUTOR="bash"
 
 # Set the root directory of PhenoPLIER source code
-export PHENOPLIER_CODE_DIR="../"
+export PHENOPLIER_CODE_DIR="./"
+
+# Append the PhenoPLIER code lib to the PYTHONPATH
+export PYTHONPATH="${PHENOPLIER_CODE_DIR}/libs:${PYTHONPATH}"
