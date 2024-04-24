@@ -10,3 +10,6 @@ export PHENOPLIER_CODE_DIR="./"
 
 # Append the PhenoPLIER code lib to the PYTHONPATH
 export PYTHONPATH="${PHENOPLIER_CODE_DIR}/libs:${PYTHONPATH}"
+
+# Load the PhenoPLIER configuration
+eval `python libs/conf.py`
