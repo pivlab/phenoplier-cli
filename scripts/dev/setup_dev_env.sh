@@ -1,12 +1,15 @@
-## Environment Variables
-# Python adds user site-packages to sys.path, which may cause lack of reproducibility if the user has installed Python packages outside Conda environments.
-# One solution is to set the PYTHONNOUSERSITE environment variable to True. (https://stackoverflow.com/questions/70851048/does-it-make-sense-to-use-conda-poetry)
-export PYTHONNOUSERSITE=True
+# This script is used to set up the development environment for PhenoPLIER CLI
+# Run this at the root of the repository:
+# source scripts/dev_setup.sh
 
-# Create a minimal Conda environment
-conda env create -f ./environment.yml
-conda activate phenoplier-cli
+# Set the executor of commands to "bash" (so commands are run in the terminal)
+export PHENOPLIER_JOBS_EXECUTOR="bash"
 
-# Poetry setup
-poetry init
-poetry install --no-root
+# Set the root directory of PhenoPLIER source code
+export PHENOPLIER_CODE_DIR="./"
+
+# Append the PhenoPLIER code lib to the PYTHONPATH
+export PYTHONPATH="${PHENOPLIER_CODE_DIR}/libs:${PYTHONPATH}"
+
+# Load the PhenoPLIER configuration
+eval `python libs/conf.py`
