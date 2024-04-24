@@ -11,9 +11,9 @@ def gls(
     output_file: Annotated[str, typer.Option("--output-file", "-o", help="Path to the output file")],
     phenoplier_root_dir: Annotated[str, typer.Option("--phenoplier-root-dir", envvar="PHENOPLIER_ROOT_DIR", help="Phenoplier root directory")],
     phenoplier_metaxcan_base_dir: Annotated[str, typer.Option("--phenoplier-metaxcan-base-dir", envvar="PHENOPLIER_METAXCAN_BASE_DIR", help="Phenoplier MetaXcan base directory")],
-    batch_id: Annotated[int, typer.Option("--batch-id", help="Batch ID")],
-    batch_n_splits: Annotated[int, typer.Option("--batch-n-splits", help="Number of splits in the batch")],
-    debug_use_sub_corr: Annotated[bool, typer.Option("--debug-use-sub-gene-corr", help="Use sub gene correlation for debugging")] = False,
+    batch_id: Annotated[int, typer.Option("--batch-id", help="Batch ID")] = None,
+    batch_n_splits: Annotated[int, typer.Option("--batch-n-splits", help="Number of splits in the batch")] = None,
+    debug_use_sub_corr: Annotated[int, typer.Option("--debug-use-sub-gene-corr", help="Use sub gene correlation for debugging")] = False,
     debug_use_ols: Annotated[bool, typer.Option("--debug-use-ols", help="Use OLS instead of GLS for debugging")] = False,
     gene_corr_file: Annotated[str, typer.Option("--gene-corr-file", help="Path to the gene correlation file")] = None,
     use_covars: Annotated[str, typer.Option("--covars", help="Covariates to use")] = None,
@@ -54,13 +54,13 @@ def gls(
     # Print command (dbg)
     PHENOPLIER_CODE_DIR = os.environ["PHENOPLIER_CODE_DIR"]
     GLS_PATH = Path(PHENOPLIER_CODE_DIR + "/libs/gls_cli.py").resolve()
-    command = ( f"python {GLS_PATH}"
-                f"-i {input_file}"
-                f"--duplicated-genes-action keep-first"
+    command = ( f"poetry run python {GLS_PATH} "
+                f"-i {input_file} "
+                f"--duplicated-genes-action keep-first "
                 f"-o {output_file} {gene_corrs_args} {covars_args} {cohort_args} {batch_args}")
     typer.echo(f"Running command: {command}")
-
-    # Call the GLS model
-
+    # Execute Command
+    os.system(command)
+    
 if __name__ == "__main__":
     app()
