@@ -766,7 +766,7 @@ def test_fit_with_phenotype_pandas_series_with_nan_extra_genes_not_in_lv_models(
     )
 
     # generate same phenotype plus three genes with missing data
-    phenotype_data = phenotype_data.append(
+    phenotype_data = phenotype_data._append(
         pd.Series(
             np.full(3, np.nan),
             index=["SIMGENE1", "SIMGENE2", "SIMGENE3"],
