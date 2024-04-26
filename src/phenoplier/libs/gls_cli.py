@@ -9,7 +9,7 @@ import logging
 import numpy as np
 import pandas as pd
 
-from gls import GLSPhenoplier
+from phenoplier.libs.gls import GLSPhenoplier
 
 LOG_FORMAT = "%(levelname)s: %(message)s"
 

@@ -7,7 +7,7 @@ import pandas as pd
 import pytest
 import os
 
-import libs.gls_cli as gls_cli
+import phenoplier.libs.gls_cli as gls_cli
 
 GLS_CLI_PATH = Path(gls_cli.__file__).resolve()
 assert GLS_CLI_PATH is not None
