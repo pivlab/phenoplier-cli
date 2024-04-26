@@ -4,9 +4,9 @@ from functools import lru_cache
 from pathlib import Path
 import pandas as pd
 
-from entity import Gene
-from data.cache import read_data
-import conf
+from phenoplier.libs.entity import Gene
+from phenoplier.libs.data.cache import read_data
+import phenoplier.libs.conf
 
 
 class ExperimentDataReader(object):

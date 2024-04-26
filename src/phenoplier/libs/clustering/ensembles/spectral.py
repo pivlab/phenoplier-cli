@@ -1,5 +1,5 @@
-from clustering.ensembles.utils import get_ensemble_distance_matrix
-from clustering.methods import DeltaSpectralClustering
+from phenoplier.libs.clustering.ensembles.utils import get_ensemble_distance_matrix
+from phenoplier.libs.clustering.methods import DeltaSpectralClustering
 
 
 def scc(

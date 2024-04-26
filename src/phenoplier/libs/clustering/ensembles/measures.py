@@ -5,7 +5,7 @@ from sklearn.metrics import (
     adjusted_rand_score as ari,
 )
 
-from clustering.utils import compare_arrays
+from phenoplier.libs.clustering.utils import compare_arrays
 
 
 def anmi(ensemble, partition):

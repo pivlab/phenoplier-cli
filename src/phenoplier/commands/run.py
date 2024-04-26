@@ -4,6 +4,7 @@ import typer
 import os
 from typing import Optional, Annotated, List
 from pathlib import Path
+import phenoplier.libs.gls_cli as gls_cli
 
 app = typer.Typer()
 
@@ -54,13 +55,13 @@ def gls(
 
     # Assemble and execute the final command
     PHENOPLIER_CODE_DIR = os.environ["PHENOPLIER_CODE_DIR"]
-    GLS_PATH = Path(PHENOPLIER_CODE_DIR + "/libs/gls_cli.py").resolve()
+    GLS_PATH = Path(gls_cli.__file__).resolve()
     command = ( f"poetry run python {GLS_PATH} "
                 f"-i {input_file} "
                 f"--duplicated-genes-action keep-first "
                 f"-o {output_file} {gene_corrs_args} {covars_args} {cohort_args} {batch_args}")
     # TODO: Add pretty print for command. Should have indentation and new lines
-    typer.echo(f"Running command: {command}")
+    # typer.echo(f"Running command: {command}")
     # Execute Command
     os.system(command)
     

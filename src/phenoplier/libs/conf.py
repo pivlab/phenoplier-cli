@@ -7,7 +7,7 @@ import os
 import tempfile
 from pathlib import Path
 
-import settings
+from phenoplier.libs import settings
 
 # IMPORTANT: for variables or dictionary keys pointing to a directory,
 # add the _DIR suffix to make sure the directory is created during setup.

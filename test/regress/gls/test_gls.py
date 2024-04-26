@@ -11,7 +11,7 @@ import pandas as pd
 import pytest
 import os
 
-from libs.gls import GLSPhenoplier
+from phenoplier.libs.gls import GLSPhenoplier
 
 
 TEST_DIR = Path(os.getenv("PHENOPLIER_TEST_DIR") or "./test/").resolve()

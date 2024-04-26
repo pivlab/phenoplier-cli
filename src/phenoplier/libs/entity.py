@@ -12,8 +12,8 @@ import numpy as np
 import pandas as pd
 from scipy.spatial.distance import squareform
 
-import conf
-from data.cache import read_data
+import phenoplier.libs.conf as conf
+from phenoplier.libs.data.cache import read_data
 
 
 class Study(Enum):

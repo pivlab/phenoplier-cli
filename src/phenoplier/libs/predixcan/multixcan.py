@@ -2,7 +2,7 @@
 This file contains functions to run MultiXcan (individual-level), taken
 and adapted from https://github.com/hakyimlab/MetaXcan
 """
-from patsy import dmatrices
+from patsy.highlevel import dmatrices
 import numpy as np
 import pandas as pd
 from numpy import dot as _dot
