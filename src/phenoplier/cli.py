@@ -13,7 +13,8 @@ app = typer.Typer(
 )
 # Add subcommands
 app.add_typer(cmd_run.app, name="run")
-app.add_typer(cmd_init.app, name="init")
+# Add commands
+app.command()(cmd_init.init)
 
 # Callbacks in Typer allows us to create "--" options for the main program/command
 def _version_callback(value: bool) -> None:
