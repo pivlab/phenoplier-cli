@@ -17,6 +17,7 @@ statsmodels = "^0.14"
 scikit-learn = "^1.4"
 ipython = "^8.24"
 fastparquet = "^2024"
+tomlkit = "^0.12"
 
 [build-system]
 requires = ["poetry-core"]

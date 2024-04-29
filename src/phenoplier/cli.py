@@ -4,6 +4,7 @@ from typing import Optional
 import typer
 from phenoplier.constants.metadata import APP_NAME, APP_VERSION
 import phenoplier.commands.run as cmd_run
+import phenoplier.commands.init as cmd_init
 
 # Define the main CLI program/command
 app = typer.Typer(
@@ -12,6 +13,7 @@ app = typer.Typer(
 )
 # Add subcommands
 app.add_typer(cmd_run.app, name="run")
+app.add_typer(cmd_init.app, name="init")
 
 # Callbacks in Typer allows us to create "--" options for the main program/command
 def _version_callback(value: bool) -> None:
