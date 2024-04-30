@@ -54,7 +54,6 @@ def gls(
         batch_args = f"--lv-list {','.join(lv_list)}"
 
     # Assemble and execute the final command
-    PHENOPLIER_CODE_DIR = os.environ["PHENOPLIER_CODE_DIR"]
     GLS_PATH = Path(gls_cli.__file__).resolve()
     command = ( f"poetry run python {GLS_PATH} "
                 f"-i {input_file} "
