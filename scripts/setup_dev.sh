@@ -15,3 +15,7 @@ poetry install --no-root
 
 # Exit the Conda environment
 conda deactivate
+
+echo ""
+echo "PhenoPLIER CLI environment is set up. Conda environment name: $CONDA_ENV_NAME."
+echo "To activate the environment, run: conda activate $CONDA_ENV_NAME"
