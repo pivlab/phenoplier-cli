@@ -9,7 +9,6 @@ import logging
 import numpy as np
 import pandas as pd
 
-from phenoplier.libs.gls import GLSPhenoplier
 
 LOG_FORMAT = "%(levelname)s: %(message)s"
 
@@ -43,6 +42,8 @@ SNPLEVEL_COVAR_OPTIONS_PREFIXES = [
 
 
 def run():
+    from phenoplier.libs.gls import GLSPhenoplier
+
     parser = argparse.ArgumentParser(
         description="""
     PhenoPLIER command line tool to compute gene module-trait associations 
