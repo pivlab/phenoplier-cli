@@ -48,7 +48,7 @@ This script will use Conda to create a new virtual environment named "phenoplier
 If no errors occur, you can activate the environment by running the following command:
 
 ```bash
-conda activate phenoplier-cli
+conda activate phenoplier-cli-dev
 ```
 
 Then check if the environment is set up correctly by running the following command:
