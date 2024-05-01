@@ -17,7 +17,7 @@ settings = {}
 
 def load_user_settings():
     if not USER_SETTINGS_FILE.exists():
-        raise FileNotFoundError(f"User settings file not found: {USER_SETTINGS_FILE}\nA user settings file is required to run this command. Please run 'phenoplier init' to create it.")
+        raise FileNotFoundError(f"\nUser settings file not found: {USER_SETTINGS_FILE}\nA user settings file is required to run this command. Please run 'python3 -m phenoplier init' to create it.")
     else:
         with open(USER_SETTINGS_FILE, "r") as f:
             global settings

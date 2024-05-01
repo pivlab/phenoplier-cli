@@ -9,7 +9,7 @@ conda create -n "phenoplier-cli" python=3.12.0
 # Activate the new conda environment
 conda activate phenoplier-cli
 # Install the package
-python3 -m pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple phenoplier
+pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple phenoplier
 ```
 
 If no errors occur, you can check if the package is installed correctly by running the following command:
