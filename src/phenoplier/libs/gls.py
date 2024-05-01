@@ -10,7 +10,6 @@ from scipy import stats
 from scipy import sparse
 import statsmodels.api as sm
 
-import phenoplier.libs.conf as conf
 from phenoplier.libs.entity import Gene
 
 
@@ -61,6 +60,8 @@ class GLSPhenoplier(object):
         use_own_implementation: bool = False,
         logger="warnings_only",
     ):
+        import phenoplier.libs.conf as conf
+
         self.smultixcan_result_set_filepath = conf.PHENOMEXCAN[
             "SMULTIXCAN_EFO_PARTIAL_MASHR_ZSCORES_FILE"
         ]
@@ -113,6 +114,7 @@ class GLSPhenoplier(object):
         case it will load it from there. Otherwise, it returns the default
         MultiPLIER Z matrix from the PhenoPLIER's configuration.
         """
+        import phenoplier.libs.conf as conf
         # load gene loadings
         if gene_loadings_file is None:
             gene_loadings_file = conf.MULTIPLIER["MODEL_Z_MATRIX_FILE"]
