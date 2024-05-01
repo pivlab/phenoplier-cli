@@ -17,15 +17,40 @@ If no errors occur, you can check if the package is installed correctly by runni
 python3 -m phenoplier -v
 ```
 
+Lastly, set up necessary data by running ... (TODO)
+
 ## Usage
 ### GLS
+> **Prerequisites**: Set up necessary data according to instructions in the installation section.
+
 This section shows how to use the GLS command. First, we can check the help message by running the following command:
 
 ```bash
 python3 -m phenoplier run gls -h
 ```
 
-That will give you brief information about the command and its arguments. More detailed documentation will be added to this repo's WiKi page in the future. Here is an example of how to run the GLS command:
+That will give you brief information about the command and its arguments. More detailed documentation will be added to this repo's WiKi page in the future.
+
+Note that, before running the GLS command, you need to set up the environment by running the following command:
+
+```bash
+python3 -m phenoplier init
+```
+
+This command will create a configuration file named "user_settings.toml" in the `~/.phenoplier` directory by default. You can modify this file to set up the environment for the GLS command:
+
+```bash
+vim ~/.phenoplier/user_settings.toml
+
+# Default user_settings.toml
+ROOT_DIR = "/tmp/phenoplier"
+MANUSCRIPT_DIR = "/ tmp/manuscript"
+GTEX_V8_DIR = ""
+```
+
+Modify the `ROOT_DIR` and `MANUSCRIPT_DIR` to the desired directory paths. The `GTEX_V8_DIR` is the directory path to the GTEx V8 data. If you don't have the GTEx V8 data, you can leave it empty.
+
+Lastly, here is an example of how to run the GLS command:
 
 ```bash
 python3 -m phenoplier run gls \
