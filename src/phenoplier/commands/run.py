@@ -12,18 +12,18 @@ app = typer.Typer()
 @app.command()
 # @load_and_update_config
 def gls(
-    input_file:                     Annotated[str, typer.Option("--input-file", "-i", help="Path to the input file")],
-    output_file:                    Annotated[str, typer.Option("--output-file", "-o", help="Path to the output file")],
+    input_file:                     Annotated[str, typer.Option("--input-file", "-i", help="File path to S-MultiXcan result file (tab-separated and with at least columns 'gene' and 'pvalue")],
+    output_file:                    Annotated[str, typer.Option("--output-file", "-o", help="File path where results will be written to")],
     # phenoplier_root_dir:            Annotated[str, typer.Option("--phenoplier-root-dir", envvar="PHENOPLIER_ROOT_DIR", help="Phenoplier root directory")],
     # phenoplier_metaxcan_base_dir:   Annotated[str, typer.Option("--phenoplier-metaxcan-base-dir", envvar="PHENOPLIER_METAXCAN_BASE_DIR", help="Phenoplier MetaXcan base directory")],
+    gene_corr_file:                 Annotated[Optional[str], typer.Option("--gene-corr-file", help="Path to a gene correlations file or folder. It's is mandatory if running a GLS model, and not necessary for OLS")] = None,
+    use_covars:                     Annotated[Optional[str], typer.Option("--covars", help="List of covariates to use")] = None,
+    cohort_name:                    Annotated[Optional[str], typer.Option("--cohort-name", help="Cohort name")] = None,
+    lv_list:                        Annotated[Optional[List[str]], typer.Option("--lv-list", help="List of LV (gene modules) identifiers on which an association will be computed. All the rest not in the list are ignored")] = None,
+    debug_use_sub_corr:             Annotated[bool, typer.Option("--debug-use-sub-gene-corr", help="Use an LV-specific submatrix of the gene correlation matrix")] = True,
+    debug_use_ols:                  Annotated[bool, typer.Option("--debug-use-ols", help="Use a standard OLS model instead of GLS for debugging purpose")] = False,
     batch_id:                       Annotated[Optional[int], typer.Option("--batch-id", help="Batch ID")] = None,
     batch_n_splits:                 Annotated[Optional[int], typer.Option("--batch-n-splits", help="Number of splits in the batch")] = None,
-    gene_corr_file:                 Annotated[Optional[str], typer.Option("--gene-corr-file", help="Path to the gene correlation file")] = None,
-    use_covars:                     Annotated[Optional[str], typer.Option("--covars", help="Covariates to use")] = None,
-    cohort_name:                    Annotated[Optional[str], typer.Option("--cohort-name", help="Cohort name")] = None,
-    lv_list:                        Annotated[Optional[List[str]], typer.Option("--lv-list", help="List of latent variables")] = None,
-    debug_use_sub_corr:             Annotated[bool, typer.Option("--debug-use-sub-gene-corr", help="Use sub gene correlation for debugging")] = True,
-    debug_use_ols:                  Annotated[bool, typer.Option("--debug-use-ols", help="Use OLS instead of GLS for debugging")] = False,
 ) -> None:
     """
     Run the Generalized Least Squares (GLS) model
