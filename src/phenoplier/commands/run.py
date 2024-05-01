@@ -26,7 +26,7 @@ def gls(
     batch_n_splits:                 Annotated[Optional[int], typer.Option("--batch-n-splits", help="Number of splits in the batch")] = None,
 ) -> None:
     """
-    Run the Generalized Least Squares (GLS) model
+    Run the Generalized Least Squares (GLS) model. Note that you need to run "phenoplier init" first to set up the environment.
     """
 
     # TODO: Put error messages in constants.messages as dict kv paris
