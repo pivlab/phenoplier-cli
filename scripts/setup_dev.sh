@@ -1,7 +1,7 @@
 # This script is used to set up the environment for PhenoPLIER CLI
 
 # User configurations, feel free to modify
-CONDA_ENV_NAME="phenoplier-cli"
+CONDA_ENV_NAME="phenoplier-cli-dev"
 # User configurations end
 
 # Create a minimal Conda environment
