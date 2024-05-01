@@ -5,15 +5,17 @@ import os
 from typing import Optional, Annotated, List
 from pathlib import Path
 import phenoplier.libs.gls_cli as gls_cli
+from phenoplier.utils.config_manager import load_and_update_config
 
 app = typer.Typer()
 
 @app.command()
+# @load_and_update_config
 def gls(
     input_file:                     Annotated[str, typer.Option("--input-file", "-i", help="Path to the input file")],
     output_file:                    Annotated[str, typer.Option("--output-file", "-o", help="Path to the output file")],
-    phenoplier_root_dir:            Annotated[str, typer.Option("--phenoplier-root-dir", envvar="PHENOPLIER_ROOT_DIR", help="Phenoplier root directory")],
-    phenoplier_metaxcan_base_dir:   Annotated[str, typer.Option("--phenoplier-metaxcan-base-dir", envvar="PHENOPLIER_METAXCAN_BASE_DIR", help="Phenoplier MetaXcan base directory")],
+    # phenoplier_root_dir:            Annotated[str, typer.Option("--phenoplier-root-dir", envvar="PHENOPLIER_ROOT_DIR", help="Phenoplier root directory")],
+    # phenoplier_metaxcan_base_dir:   Annotated[str, typer.Option("--phenoplier-metaxcan-base-dir", envvar="PHENOPLIER_METAXCAN_BASE_DIR", help="Phenoplier MetaXcan base directory")],
     batch_id:                       Annotated[Optional[int], typer.Option("--batch-id", help="Batch ID")] = None,
     batch_n_splits:                 Annotated[Optional[int], typer.Option("--batch-n-splits", help="Number of splits in the batch")] = None,
     gene_corr_file:                 Annotated[Optional[str], typer.Option("--gene-corr-file", help="Path to the gene correlation file")] = None,

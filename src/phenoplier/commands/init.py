@@ -14,15 +14,17 @@ from phenoplier.constants.metadata import CONFIG_FILE, USER_SETTINGS_FILE
 from phenoplier.constants.templates import USER_SETTINGS
 
 
+
 def create_user_settings():
     settings_file = USER_SETTINGS_FILE
     if not settings_file.exists():
         settings = USER_SETTINGS
         settings_file.parent.mkdir(parents=True, exist_ok=True)
         settings_file.write_text(tomlkit.dumps(settings))
-        typer.echo("Config file created at " + str(settings_file) + ".")
+        typer.echo("User settings file created at " + str(settings_file) + ".")
     else:
-        typer.echo("Config file already exists at " + str(settings_file) + ".")
+        typer.echo("User settings file already exists at " + str(settings_file) + ".")
+
 
 
 def init_required(function):
@@ -44,7 +46,7 @@ def init(
     output_file: Annotated[str, typer.Option("--output-file", "-o", help="Path to the output user settings file")] = str(USER_SETTINGS_FILE),
 ):
     """
-    Initialize the user settings file in the home directory in TOML format.
+    Initialize a user settings file in the home directory in TOML format.
     """
     create_user_settings()
 

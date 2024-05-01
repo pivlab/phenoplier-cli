@@ -7,18 +7,30 @@ import os
 import tempfile
 from pathlib import Path
 
-from phenoplier.libs import settings
+from phenoplier.constants.metadata import USER_SETTINGS_FILE
+import tomlkit
 
 # IMPORTANT: for variables or dictionary keys pointing to a directory,
 # add the _DIR suffix to make sure the directory is created during setup.
 
+settings = {}
+
+def load_user_settings():
+    if USER_SETTINGS_FILE.exists():
+        with open(USER_SETTINGS_FILE, "r") as f:
+            global settings
+            settings = tomlkit.loads(f.read())
+            
+load_user_settings()
 #
 # PhenoPLIER, general file structure
 #
+# Load from environment variable, if set
 ROOT_DIR = os.environ.get("PHENOPLIER_ROOT_DIR")
-if ROOT_DIR is None and hasattr(settings, "ROOT_DIR"):
-    ROOT_DIR = settings.ROOT_DIR
-
+# Load from settings.py, if no environment variable is set
+if ROOT_DIR is None:
+    ROOT_DIR = settings.get("ROOT_DIR", None)
+# Use a temporary directory if no environment variable or settings.py is set
 if ROOT_DIR is None:
     ROOT_DIR = str(Path(tempfile.gettempdir(), "phenoplier").resolve())
 
@@ -155,7 +167,7 @@ RESULTS["GLS_NULL_SIMS"] = Path(RESULTS["GLS"], "null_sims").resolve()
 #
 MANUSCRIPT = {}
 MANUSCRIPT["BASE_DIR"] = os.environ.get(
-    "PHENOPLIER_MANUSCRIPT_DIR", settings.MANUSCRIPT_DIR
+    "PHENOPLIER_MANUSCRIPT_DIR", settings.get("MANUSCRIPT_DIR")
 )
 if MANUSCRIPT["BASE_DIR"] is not None:
     MANUSCRIPT["CONTENT_DIR"] = Path(MANUSCRIPT["BASE_DIR"], "content").resolve()
@@ -414,7 +426,7 @@ EXTERNAL = {}
 # GTEx v8
 EXTERNAL["GTEX_V8_DIR"] = os.environ.get("PHENOPLIER_GTEX_V8_DIR")
 if EXTERNAL["GTEX_V8_DIR"] is None and hasattr(settings, "GTEX_V8_DIR"):
-    EXTERNAL["GTEX_V8_DIR"] = settings.GTEX_V8_DIR
+    EXTERNAL["GTEX_V8_DIR"] = settings.get("GTEX_V8_DIR")
 if EXTERNAL["GTEX_V8_DIR"] is not None:
     EXTERNAL["GTEX_V8_DIR"] = Path(EXTERNAL["GTEX_V8_DIR"]).resolve()
 
@@ -444,6 +456,7 @@ if __name__ == "__main__":
     # if this script is run, then it exports the configuration as environment
     # variables (for bash/R, etc)
     from pathlib import PurePath
+    load_user_settings()
 
     def print_conf(conf_dict):
         for var_name, var_value in conf_dict.items():

@@ -9,12 +9,6 @@ import tomlkit
 # Instead of changing this file, you can also use the environment variable name
 # specified for each entry (environment variables supersede these settings).
 
-file_config = {}
-if not USER_SETTINGS_FILE.exists():
-    raise FileNotFoundError("user_settings.toml not found in the user's home directory.")
-with open(USER_SETTINGS_FILE, "r") as f:
-    file_config = tomlkit.loads(f.read())
-
 #
 # Default paths
 #
@@ -26,19 +20,19 @@ with open(USER_SETTINGS_FILE, "r") as f:
 # operating system (i.e. '/tmp/phenoplier' in Unix systems).
 #
 # Environment variable: PHENOPLIER_ROOT_DIR
-ROOT_DIR = file_config.get("ROOT_DIR", None)
+ROOT_DIR = None
 
 # Specifies the directory where the manuscript git repository was
 # cloned/downloaded to. If None, manuscript figures and other related files will
 # not be generated.
 #
 # Environment variable: PHENOPLIER_MANUSCRIPT_DIR
-MANUSCRIPT_DIR = file_config.get("MANUSCRIPT_DIR", None)
+MANUSCRIPT_DIR = None
 
 # GTEx v8 data directory: it contains protected data files
 #
 # Environment variable: PHENOPLIER_GTEX_V8_DIR
-GTEX_V8_DIR = file_config.get("GTEX_V8_DIR", None)
+GTEX_V8_DIR = None
 
 
 #
@@ -53,3 +47,16 @@ N_JOBS = None
 # can be greater than N_JOBS.
 # Default: same as N_JOBS.
 N_JOBS_HIGH = None
+
+def update():
+    if not USER_SETTINGS_FILE.exists():
+        raise FileNotFoundError("user_settings.toml not found in the user's home directory.")
+    with open(USER_SETTINGS_FILE, "r") as f:
+        file_config = tomlkit.loads(f.read())
+        global ROOT_DIR, MANUSCRIPT_DIR, GTEX_V8_DIR
+        ROOT_DIR = file_config.get("ROOT_DIR")
+        MANUSCRIPT_DIR = file_config.get("MANUSCRIPT_DIR")
+        GTEX_V8_DIR = file_config.get("GTEX_V8_DIR")
+        print("ROOT_DIR: ", ROOT_DIR)
+        print("MANUSCRIPT_DIR: ", MANUSCRIPT_DIR)
+        print("GTEX_V8_DIR: ", GTEX_V8_DIR)
