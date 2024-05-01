@@ -57,6 +57,7 @@ def gls(
 
     # Assemble and execute the final command
     GLS_PATH = Path(gls_cli.__file__).resolve()
+    # TODO: remove gls_cli, call directly the function from the library, instead of use shell command. Otherwise, tests and exceptions handling tricky
     command = ( f"poetry run python {GLS_PATH} "
                 f"-i {input_file} "
                 f"--duplicated-genes-action keep-first "
