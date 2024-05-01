@@ -2,7 +2,7 @@
 This is a command-line interface (CLI) for the [PhenoPLIER](https://github.com/haoyu-zc/phenoplier?tab=readme-ov-file) project. PhenoPLIER is a flexible computational framework that combines gene-trait and gene-drug associations with gene modules expressed in specific contexts. This CLI program aims to provide a more user-friendly interface for users to interact with the PhenoPLIER project and integrate it into their own computational pipelines.
 
 ## Installation
-For now, we recommend using a new conda environment to install and test out the package as it's still under development. To do so, run the following command at the root directory of the project:
+For now, we recommend using a new conda environment to install and test out the package as it's still under development. To do so, run the following commands:
 ```bash
 # Create a new conda environment
 conda create -n "phenoplier-cli" python=3.12.0
@@ -48,7 +48,7 @@ MANUSCRIPT_DIR = "/ tmp/manuscript"
 GTEX_V8_DIR = ""
 ```
 
-Modify the `ROOT_DIR` and `MANUSCRIPT_DIR` to the desired directory paths. The `GTEX_V8_DIR` is the directory path to the GTEx V8 data. If you don't have the GTEx V8 data, you can leave it empty.
+Modify the settings to the desired directory paths. Again, more information will be added to the WiKi page in the future. This user settings file will be loaded by the GLS command to set up the environment when it's invoked. (In future iterations, you can create multiple settings files for different project environments and specify which one to use by passing the `--settings` option to the GLS command.)
 
 Lastly, here is an example of how to run the GLS command:
 
