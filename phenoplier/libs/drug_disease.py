@@ -3,10 +3,9 @@ Contains functions to run drug-disease predictions given gene-disease
 associations and drug-induced gene expression.
 """
 
+import pandas as pd
 from pathlib import Path
 from IPython.display import display
-
-import pandas as pd
 from sklearn.metrics import pairwise_distances
 
 from entity import Trait
@@ -43,16 +42,16 @@ def _zero_nontop_genes(trait_vector, n_top, use_abs=True):
 
 
 def _predict(
-    drug_gene_data,
-    gene_trait_data_filename,
-    gene_trait_data,
-    output_dir,
-    prediction_function,
-    base_method_name,
-    preferred_doid_list,
-    force_run,
-    n_top_conditions=None,
-    use_abs=False,
+        drug_gene_data,
+        gene_trait_data_filename,
+        gene_trait_data,
+        output_dir,
+        prediction_function,
+        base_method_name,
+        preferred_doid_list,
+        force_run,
+        n_top_conditions=None,
+        use_abs=False,
 ):
     """
     Given gene-disease associations (standardized effect sizes) and the
@@ -197,15 +196,15 @@ def _save_predictions(drug_disease_assocs, store, key_name):
 
 
 def predict_dotprod_neg(
-    drug_gene_data,
-    gene_trait_data_filename,
-    gene_trait_data,
-    output_dir_base,
-    base_method_name,
-    preferred_doid_list,
-    force_run,
-    n_top_conditions=None,
-    use_abs=False,
+        drug_gene_data,
+        gene_trait_data_filename,
+        gene_trait_data,
+        output_dir_base,
+        base_method_name,
+        preferred_doid_list,
+        force_run,
+        n_top_conditions=None,
+        use_abs=False,
 ):
     """
     Predicts drug-disease associations using the dot product between

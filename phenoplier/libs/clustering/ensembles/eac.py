@@ -1,6 +1,6 @@
 from sklearn.cluster import AgglomerativeClustering
 
-from phenoplier.libs.clustering.ensembles.utils import get_ensemble_distance_matrix
+from .utils import get_ensemble_distance_matrix
 
 
 def eac(

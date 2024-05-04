@@ -2,8 +2,8 @@
 Specifies functions to read different files used in the project.
 """
 import pandas as pd
+from .. import conf
 
-import phenoplier.libs.conf as conf
 
 #
 # Generic reader

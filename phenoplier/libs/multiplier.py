@@ -1,9 +1,10 @@
 """
 Classes and code with MultiPLIER related functionality.
 """
-import conf
 import numpy as np
 import pandas as pd
+
+from . import conf
 
 
 class MultiplierProjection(object):
@@ -13,9 +14,9 @@ class MultiplierProjection(object):
         pass
 
     def transform(
-        self,
-        y: pd.DataFrame,
-        multiplier_compatible: bool = True,
+            self,
+            y: pd.DataFrame,
+            multiplier_compatible: bool = True,
     ) -> pd.DataFrame:
         """Projects a gene dataset into the MultiPLIER model.
 

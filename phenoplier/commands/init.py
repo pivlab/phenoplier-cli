@@ -5,14 +5,11 @@ The "init" command initializes the Phenoplier project by creating the necessary 
 at the user's home directory.
 """
 from typing import Annotated
-
 import typer
-from pathlib import Path
 import tomlkit
 from functools import wraps
-from phenoplier.constants.metadata import CONFIG_FILE, USER_SETTINGS_FILE
-from phenoplier.constants.templates import USER_SETTINGS
-
+from ..constants.metadata import CONFIG_FILE, USER_SETTINGS_FILE
+from ..constants.templates import USER_SETTINGS
 
 
 def create_user_settings():
@@ -24,7 +21,6 @@ def create_user_settings():
         typer.echo("User settings file created at " + str(settings_file) + ".")
     else:
         typer.echo("User settings file already exists at " + str(settings_file) + ".")
-
 
 
 def init_required(function):
@@ -41,9 +37,12 @@ def init_required(function):
 
     return wrapper
 
+
 # TODO: Add a prompt to ask the user if they want to overwrite the existing settings file
 def init(
-    output_file: Annotated[str, typer.Option("--output-file", "-o", help="Path to the output user settings file")] = str(USER_SETTINGS_FILE),
+        output_file: Annotated[
+            str, typer.Option("--output-file", "-o", help="Path to the output user settings file")] = str(
+            USER_SETTINGS_FILE),
 ):
     """
     Initialize a user settings file in the home directory in TOML format.
