@@ -2,10 +2,10 @@
 
 from typing import Optional
 import typer
-from phenoplier.constants.metadata import APP_NAME, APP_VERSION
-import phenoplier.commands.run as cmd_run
-import phenoplier.commands.init as cmd_init
-import phenoplier.commands.activate as cmd_activate
+from .constants.metadata import APP_NAME, APP_VERSION
+from .commands import run as cmd_run
+from .commands import init as cmd_init
+from .commands import activate as cmd_activate
 
 # Define the main CLI program/command
 app = typer.Typer(
@@ -18,6 +18,7 @@ app.add_typer(cmd_run.app, name="run")
 app.command()(cmd_init.init)
 app.command()(cmd_activate.activate)
 
+
 # Callbacks in Typer allows us to create "--" options for the main program/command
 def _version_callback(value: bool) -> None:
     """Callback for the --version option."""
@@ -25,18 +26,19 @@ def _version_callback(value: bool) -> None:
         typer.echo(f"{APP_NAME} v{APP_VERSION}")
         raise typer.Exit()
 
+
 @app.callback()
 def main(
-    version: Optional[bool] = typer.Option(
-        None,
-        "--version",
-        "-v",
-        help="Show the application's version and exit.",
-        callback=_version_callback,
-        is_eager=True,
-    ),
-    verbose: bool = False,
-    debug: bool = False
+        version: Optional[bool] = typer.Option(
+            None,
+            "--version",
+            "-v",
+            help="Show the application's version and exit.",
+            callback=_version_callback,
+            is_eager=True,
+        ),
+        verbose: bool = False,
+        debug: bool = False
 ) -> None:
     """
     Phenopliler CLI
@@ -62,6 +64,7 @@ def main(
     Interested in using PhenoPLIER? Any questions? Check out our Discussions section (https://github.com/greenelab/phenoplier/discussions) and start a discussion by asking a question or sharing your thoughts. We are happy to help!
     """
     return
+
 
 if __name__ == "__main__":
     app()

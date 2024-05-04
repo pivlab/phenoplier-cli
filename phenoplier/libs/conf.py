@@ -5,10 +5,10 @@ This file IS NOT intended to be modified by the user.
 """
 import os
 import tempfile
+import tomlkit
 from pathlib import Path
 
-from phenoplier.constants.metadata import USER_SETTINGS_FILE
-import tomlkit
+from ..constants.metadata import USER_SETTINGS_FILE
 
 # IMPORTANT: for variables or dictionary keys pointing to a directory,
 # add the _DIR suffix to make sure the directory is created during setup.

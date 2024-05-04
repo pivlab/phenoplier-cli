@@ -6,6 +6,7 @@ from phenoplier.libs.settings import update as update_settings
 from pathlib import Path
 import os
 
+
 def load_and_update_config(function):
     @wraps(function)
     def wrapper(*args, **kwargs):

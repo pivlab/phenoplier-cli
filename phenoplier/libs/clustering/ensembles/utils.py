@@ -9,7 +9,7 @@ from sklearn.metrics import adjusted_mutual_info_score as ami
 from sklearn.metrics import normalized_mutual_info_score as nmi
 from tqdm import tqdm
 
-from clustering.utils import reset_estimator, compare_arrays
+from ..utils import reset_estimator, compare_arrays
 
 
 def generate_ensemble(data, clusterers: dict, attributes: list, affinity_matrix=None):

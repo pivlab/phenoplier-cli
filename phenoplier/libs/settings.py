@@ -3,7 +3,7 @@ General settings. This file is intended to be modified by the user. Each entry
 also provides an alternative way to specify its value using an environment variable.
 """
 
-from phenoplier.constants.metadata import USER_SETTINGS_FILE
+from .. constants.metadata import USER_SETTINGS_FILE
 import tomlkit
 
 # Instead of changing this file, you can also use the environment variable name

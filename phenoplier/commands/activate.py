@@ -1,18 +1,18 @@
-"""This file implements the "activate" command for the Phenoplier CLI"""
+"""This file implements the "activate" command for the Phenoplier CLI
 
-"""The "activate" command activates the Phenoplier project by exporting the necessary environment variables derived from the user's setting file"""
+The "activate" command activates the Phenoplier project by exporting the necessary environment variables derived
+from the user's setting file
+"""
 
-from typing import Annotated
 import os
-
 import typer
+from typing import Annotated
 from pathlib import Path
 import tomlkit
-from functools import wraps
-from phenoplier.constants.metadata import APP_CODE_DIR, USER_SETTINGS_FILE
-from phenoplier.constants.templates import USER_SETTINGS
-from pathlib import Path
-from phenoplier.libs.settings import update as update_settings
+
+from ..constants.metadata import APP_CODE_DIR, USER_SETTINGS_FILE
+from ..constants.templates import USER_SETTINGS
+from ..libs.settings import update as update_settings
 
 
 def create_user_settings():
@@ -27,14 +27,17 @@ def create_user_settings():
 
 
 def activate(
-    user_settings: Annotated[str, typer.Option("--user-settings", "-s", help="Path to the local user settings file")] = str(USER_SETTINGS_FILE),
+        user_settings: Annotated[
+            str, typer.Option("--user-settings", "-s", help="Path to the local user settings file")] = str(
+            USER_SETTINGS_FILE),
 ):
     """
     Export the necessary environment variables derived from the user's setting file.
     """
     settings = Path(user_settings)
     if not settings.exists():
-        raise typer.BadParameter("User settings file does not exist at default location or not provided. Please run the init command first.")
+        raise typer.BadParameter(
+            "User settings file does not exist at default location or not provided. Please run the init command first.")
     # Optionally, read settings here if needed for the function
     update_settings()
     # eval "python3 src/phenoplier/libs/conf.py
