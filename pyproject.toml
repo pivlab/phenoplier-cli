@@ -18,6 +18,10 @@ scikit-learn = "^1.4"
 ipython = "^8.24"
 fastparquet = "^2024"
 tomlkit = "^0.12"
+seaborn = "^0.10.1"
+matplotlib = "^3.4.3"
+papermill = "^2.4.0"
+
 
 [build-system]
 requires = ["poetry-core"]
