@@ -6,7 +6,7 @@ import tomlkit
 from typing import Optional, Annotated, List
 from pathlib import Path
 from .constants.metadata import APP_NAME, APP_VERSION
-from .libs import gls_cli as gls_cli
+from phenoplier import gls_cli as gls_cli
 from .config import USER_SETTINGS_FILE
 from .templates.user_settings import DEFAULT as DEFAULT_USER_SETTINGS
 

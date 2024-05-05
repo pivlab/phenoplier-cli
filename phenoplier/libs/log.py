@@ -5,7 +5,7 @@ import logging
 import logging.config
 import yaml
 
-from . import conf
+from .. import conf
 
 
 def _get_logger_config():
