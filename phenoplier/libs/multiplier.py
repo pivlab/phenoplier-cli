@@ -4,7 +4,7 @@ Classes and code with MultiPLIER related functionality.
 import numpy as np
 import pandas as pd
 
-from . import conf
+from .. import conf
 
 
 class MultiplierProjection(object):
@@ -67,7 +67,7 @@ class MultiplierProjection(object):
 
         # if given data has Ensembl ID genes, then convert z genes to that
         if y.index[0].startswith("ENSG"):
-            from entity import Gene
+            from phenoplier.entity import Gene
 
             z = z.rename(index=Gene.GENE_NAME_TO_ID_MAP)
 

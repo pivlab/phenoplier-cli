@@ -12,7 +12,7 @@ import numpy as np
 import pandas as pd
 
 import conf
-from . data.cache import read_data
+from cache import read_data
 
 
 class Study(Enum):
@@ -60,7 +60,7 @@ class Trait(object, metaclass=ABCMeta):
     # This file was downloaded from https://github.com/EBISPOT/EFO-UKB-mappings
     UKB_TO_EFO_MAP_FILE = Path(
         Path(__file__).parent,
-        "data",
+        "libs/data",
         conf.PHENOMEXCAN["TRAITS_FULLCODE_TO_EFO_MAP_FILE"].name,
     ).resolve()
 
@@ -68,12 +68,12 @@ class Trait(object, metaclass=ABCMeta):
     # other ontology IDs
     EFO_XREFS_FILE = Path(
         Path(__file__).parent,
-        "data",
+        "libs/data",
         conf.GENERAL["TERM_ID_XREFS_FILE"].name,
     ).resolve()
 
     # This file was obtained from https://github.com/dhimmel/disease-ontology
-    DO_XREFS_FILE = Path(Path(__file__).parent, "data", "xrefs-prop-slim.tsv").resolve()
+    DO_XREFS_FILE = Path(Path(__file__).parent, "libs/data", "xrefs-prop-slim.tsv").resolve()
 
     def __init__(self, code=None, full_code=None):
         if code is None and full_code is None:
@@ -678,8 +678,8 @@ class Gene(object):
         model_prefix = conf.PHENOMEXCAN["PREDICTION_MODELS"][f"{model_type}_PREFIX"]
 
         tissue_weights_file = (
-            conf.PHENOMEXCAN["PREDICTION_MODELS"][model_type]
-            / f"{model_prefix}{tissue}.db"
+                conf.PHENOMEXCAN["PREDICTION_MODELS"][model_type]
+                / f"{model_prefix}{tissue}.db"
         )
 
         if not tissue_weights_file.exists():
@@ -777,11 +777,11 @@ class Gene(object):
                 3. A dictionary with SNPs ids in keys and positions as values.
         """
         input_dir = (
-            conf.RESULTS["GLS"]
-            / "gene_corrs"
-            / "reference_panels"
-            / reference_panel.lower()
-            / model_type.lower()
+                conf.RESULTS["GLS"]
+                / "gene_corrs"
+                / "reference_panels"
+                / reference_panel.lower()
+                / model_type.lower()
         )
         snps_cov_file = input_dir / "snps_chr_blocks_cov.h5"
         assert snps_cov_file.exists(), f"Input file does not exist: {snps_cov_file}"
@@ -807,8 +807,8 @@ class Gene(object):
         model_prefix = conf.PHENOMEXCAN["PREDICTION_MODELS"][f"{model_type}_PREFIX"]
 
         tissue_snps_var_file = (
-            conf.PHENOMEXCAN["PREDICTION_MODELS"][model_type]
-            / f"{model_prefix}{tissue}.txt.gz"
+                conf.PHENOMEXCAN["PREDICTION_MODELS"][model_type]
+                / f"{model_prefix}{tissue}.txt.gz"
         )
 
         if not tissue_snps_var_file.exists():

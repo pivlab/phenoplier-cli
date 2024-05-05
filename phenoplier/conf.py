@@ -8,22 +8,23 @@ import tempfile
 import tomlkit
 from pathlib import Path
 
-from ..constants.metadata import USER_SETTINGS_FILE
 
 # IMPORTANT: for variables or dictionary keys pointing to a directory,
 # add the _DIR suffix to make sure the directory is created during setup.
 
+# from phenoplier.constants.metadata import USER_SETTINGS_FILE
 settings = {}
+#
+# def load_user_settings():
+#     if not USER_SETTINGS_FILE.exists():
+#         raise FileNotFoundError(f"\nUser settings file not found: {USER_SETTINGS_FILE}\nA user settings file is required to run this command. Please run 'python3 -m phenoplier init' to create it.")
+#     else:
+#         with open(USER_SETTINGS_FILE, "r") as f:
+#             global settings
+#             settings = tomlkit.loads(f.read())
+#
+# load_user_settings()
 
-def load_user_settings():
-    if not USER_SETTINGS_FILE.exists():
-        raise FileNotFoundError(f"\nUser settings file not found: {USER_SETTINGS_FILE}\nA user settings file is required to run this command. Please run 'python3 -m phenoplier init' to create it.")
-    else:
-        with open(USER_SETTINGS_FILE, "r") as f:
-            global settings
-            settings = tomlkit.loads(f.read())
-            
-load_user_settings()
 #
 # PhenoPLIER, general file structure
 #
@@ -61,7 +62,7 @@ GENERAL["BIOMART_GENES_INFO_FILE"] = Path(
 ).resolve()
 
 GENERAL["LOG_CONFIG_FILE"] = Path(
-    Path(__file__).resolve().parent, "log_config.yaml"
+    Path(__file__).resolve().parent, "libs/log_config.yaml"
 ).resolve()
 
 # CPU usage
@@ -139,7 +140,7 @@ RESULTS["DATA_TRANSFORMATIONS_DIR"] = Path(
     RESULTS["BASE_DIR"], "data_transformations"
 ).resolve()
 
-RESULTS["CLUSTERING_DIR"] = Path(RESULTS["BASE_DIR"], "clustering").resolve()
+RESULTS["CLUSTERING_DIR"] = Path(RESULTS["BASE_DIR"], "libs/clustering").resolve()
 RESULTS["CLUSTERING_TESTS_DIR"] = Path(RESULTS["CLUSTERING_DIR"], "tests").resolve()
 RESULTS["CLUSTERING_RUNS_DIR"] = Path(RESULTS["CLUSTERING_DIR"], "runs").resolve()
 RESULTS["CLUSTERING_NULL_DIR"] = Path(RESULTS["CLUSTERING_DIR"], "null_sims").resolve()
@@ -444,7 +445,7 @@ PROJECTS = {}
 PROJECTS["ASTHMA_COPD"] = {}
 PROJECTS["ASTHMA_COPD"]["BASE_DIR"] = Path(PROJECTS_DIR, "asthma-copd").resolve()
 PROJECTS["ASTHMA_COPD"]["DATA_DIR"] = Path(
-    PROJECTS["ASTHMA_COPD"]["BASE_DIR"], "data"
+    PROJECTS["ASTHMA_COPD"]["BASE_DIR"], "libs/data"
 ).resolve()
 PROJECTS["ASTHMA_COPD"]["TRAITS_INFO_FILE"] = Path(
     CODE_DIR, "projects", "asthma-copd", "traits_info.csv"

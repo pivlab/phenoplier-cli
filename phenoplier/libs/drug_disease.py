@@ -6,9 +6,8 @@ associations and drug-induced gene expression.
 import pandas as pd
 from pathlib import Path
 from IPython.display import display
-from sklearn.metrics import pairwise_distances
 
-from entity import Trait
+from phenoplier.entity import Trait
 
 
 def _zero_nontop_genes(trait_vector, n_top, use_abs=True):

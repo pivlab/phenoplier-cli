@@ -8,8 +8,8 @@ from functools import lru_cache
 from fastparquet import ParquetFile
 import pandas as pd
 
-import phenoplier.libs.conf as conf
-from phenoplier.libs.entity import Gene
+import phenoplier.conf as conf
+from phenoplier.entity import Gene
 
 
 def get_gene_prediction_weights(gene_obj, gene_tissues, debug_messages: bool = True):
