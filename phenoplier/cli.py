@@ -14,6 +14,12 @@ app = typer.Typer(
     context_settings={"help_option_names": ["-h", "--help"]},
     add_completion=True
 )
+# Define the subcommands
+cmd_group_run = typer.Typer(
+    context_settings={"help_option_names": ["-h", "--help"]},
+    help="Execute a specific Phenoplier pipeline."
+)
+app.add_typer(cmd_group_run, name="run")
 
 
 # Callbacks in Typer allows us to create "--" options for the main program/command
@@ -67,21 +73,61 @@ def main(
     return
 
 
+# TODO: Add a prompt to ask the user if they want to overwrite the existing settings file
 @app.command()
+def init(
+        output_file: Annotated[
+            str, typer.Option("--output-file", "-o", help="Path to the output user settings file")] = str(
+            USER_SETTINGS_FILE),
+):
+    """
+    Initialize a user settings file in the home directory in TOML format.
+    """
+
+    def create_user_settings():
+        settings_file = USER_SETTINGS_FILE
+        if not settings_file.exists():
+            settings = DEFAULT_USER_SETTINGS
+            settings_file.parent.mkdir(parents=True, exist_ok=True)
+            settings_file.write_text(tomlkit.dumps(settings))
+            typer.echo("Config file created at " + str(settings_file) + ".")
+        else:
+            typer.echo("Config file already exists at " + str(settings_file) + ".")
+
+    create_user_settings()
+
+
+def activate(
+        user_settings: Annotated[
+            str, typer.Option("--user-settings", "-s", help="Path to the local user settings file")] = str(
+            USER_SETTINGS_FILE),
+):
+    """
+    Export the necessary environment variables derived from the user's setting file.
+    """
+    settings = Path(user_settings)
+    if not settings.exists():
+        raise typer.BadParameter(
+            "User settings file does not exist at default location or not provided. Please run the init command first.")
+    # Optionally, read settings here if needed for the function
+    raise NotImplementedError("This function is not implemented yet.")
+
+
+@cmd_group_run.command()
 # @load_and_update_config
 def gls(
         input_file: Annotated[str, typer.Option("--input-file", "-i", help="File path to S-MultiXcan result file (tab-separated and with at least columns 'gene' and 'pvalue")],
         output_file: Annotated[str, typer.Option("--output-file", "-o", help="File path where results will be written to")],
         # phenoplier_root_dir:            Annotated[str, typer.Option("--phenoplier-root-dir", envvar="PHENOPLIER_ROOT_DIR", help="Phenoplier root directory")],
         # phenoplier_metaxcan_base_dir:   Annotated[str, typer.Option("--phenoplier-metaxcan-base-dir", envvar="PHENOPLIER_METAXCAN_BASE_DIR", help="Phenoplier MetaXcan base directory")],
-        gene_corr_file: Annotated[Optional[str], typer.Option("--gene-corr-file",help="Path to a gene correlations file or folder. It's is mandatory if running a GLS model, and not necessary for OLS")] = None,
+        gene_corr_file: Annotated[Optional[str], typer.Option("--gene-corr-file", help="Path to a gene correlations file or folder. It's is mandatory if running a GLS model, and not necessary for OLS")] = None,
         use_covars: Annotated[Optional[str], typer.Option("--covars", help="List of covariates to use")] = None,
         cohort_name: Annotated[Optional[str], typer.Option("--cohort-name", help="Cohort name")] = None,
         lv_list: Annotated[Optional[List[str]], typer.Option("--lv-list", help="List of LV (gene modules) identifiers on which an association will be computed. All the rest not in the list are ignored")] = None,
         debug_use_sub_corr: Annotated[bool, typer.Option("--debug-use-sub-gene-corr", help="Use an LV-specific submatrix of the gene correlation matrix")] = True,
         debug_use_ols: Annotated[bool, typer.Option("--debug-use-ols", help="Use a standard OLS model instead of GLS for debugging purpose")] = False,
         batch_id: Annotated[Optional[int], typer.Option("--batch-id", help="Batch ID")] = None,
-        batch_n_splits: Annotated[Optional[int], typer.Option("--batch-n-splits", help="Number of splits in the batch")] = None,
+        batch_n_splits: Annotated[ Optional[int], typer.Option("--batch-n-splits", help="Number of splits in the batch")] = None,
 ) -> None:
     """
     Run the Generalized Least Squares (GLS) model. Note that you need to run "phenoplier init" first to set up the environment.
@@ -125,46 +171,6 @@ def gls(
     # typer.echo(f"Running command: {command}")
     # Execute Command
     os.system(command)
-
-
-# TODO: Add a prompt to ask the user if they want to overwrite the existing settings file
-@app.command()
-def init(
-        output_file: Annotated[
-            str, typer.Option("--output-file", "-o", help="Path to the output user settings file")] = str(
-            USER_SETTINGS_FILE),
-):
-    """
-    Initialize a user settings file in the home directory in TOML format.
-    """
-
-    def create_user_settings():
-        settings_file = USER_SETTINGS_FILE
-        if not settings_file.exists():
-            settings = DEFAULT_USER_SETTINGS
-            settings_file.parent.mkdir(parents=True, exist_ok=True)
-            settings_file.write_text(tomlkit.dumps(settings))
-            typer.echo("Config file created at " + str(settings_file) + ".")
-        else:
-            typer.echo("Config file already exists at " + str(settings_file) + ".")
-
-    create_user_settings()
-
-
-def activate(
-        user_settings: Annotated[
-            str, typer.Option("--user-settings", "-s", help="Path to the local user settings file")] = str(
-            USER_SETTINGS_FILE),
-):
-    """
-    Export the necessary environment variables derived from the user's setting file.
-    """
-    settings = Path(user_settings)
-    if not settings.exists():
-        raise typer.BadParameter(
-            "User settings file does not exist at default location or not provided. Please run the init command first.")
-    # Optionally, read settings here if needed for the function
-    raise NotImplementedError("This function is not implemented yet.")
 
 
 if __name__ == "__main__":
