@@ -13,6 +13,7 @@ import statsmodels.api as sm
 from entity import Gene
 import conf
 
+
 class GLSPhenoplier(object):
     """
     Runs a generalized least squares (GLS) model with a latent variable (gene
@@ -52,13 +53,13 @@ class GLSPhenoplier(object):
     """
 
     def __init__(
-        self,
-        smultixcan_result_set_filepath: str = None,
-        gene_corrs_file_path: Path = None,
-        debug_use_ols: bool = False,
-        debug_use_sub_gene_corr: bool = False,
-        use_own_implementation: bool = False,
-        logger="warnings_only",
+            self,
+            smultixcan_result_set_filepath: str = None,
+            gene_corrs_file_path: Path = None,
+            debug_use_ols: bool = False,
+            debug_use_sub_gene_corr: bool = False,
+            use_own_implementation: bool = False,
+            logger="warnings_only",
     ):
         self.smultixcan_result_set_filepath = conf.PHENOMEXCAN[
             "SMULTIXCAN_EFO_PARTIAL_MASHR_ZSCORES_FILE"
@@ -160,9 +161,9 @@ class GLSPhenoplier(object):
 
     @staticmethod
     def match_and_align_genes(
-        gene_phenotype_assoc: pd.Series,
-        gene_lv_weights: pd.Series,
-        gene_correlations: pd.DataFrame = None,
+            gene_phenotype_assoc: pd.Series,
+            gene_lv_weights: pd.Series,
+            gene_correlations: pd.DataFrame = None,
     ):
         """
         Given the gene-trait associations, gene-lv weights and a gene
@@ -329,7 +330,7 @@ class GLSPhenoplier(object):
         n_genes_without_nan = y.shape[0]
         if n_genes_orig != n_genes_without_nan:
             self.log_warning(
-                f"{n_genes_orig- n_genes_without_nan} genes with missing values have been removed"
+                f"{n_genes_orig - n_genes_without_nan} genes with missing values have been removed"
             )
 
         # make sure data is aligned
@@ -351,7 +352,7 @@ class GLSPhenoplier(object):
             dependent_var = y
         elif len(y.shape) > 1:
             assert (
-                "y" in y.columns
+                    "y" in y.columns
             ), "y must have a 'y' column with the dependant variable"
             dependent_var = y["y"]
             extra_predictor_cols = [c for c in y.columns if c not in ("y",)]
@@ -385,7 +386,7 @@ class GLSPhenoplier(object):
                 "i": 1.0,
                 "lv": x_binarized,
                 phenotype_col: (dependent_var - dependent_var.mean())
-                / dependent_var.std(),
+                               / dependent_var.std(),
             }
         )
 
@@ -483,7 +484,7 @@ class GLSPhenoplier(object):
                 else:
                     cov_inv = self.cov_inv
                     assert (
-                        data.index.tolist() == self.cov_inv_genes
+                            data.index.tolist() == self.cov_inv_genes
                     ), "Cached inverse matrix is not compatible with new data"
 
             Xn = data[predictor_cols].to_numpy()

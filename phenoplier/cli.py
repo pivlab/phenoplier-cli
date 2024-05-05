@@ -40,16 +40,19 @@ def main(
     """
     Phenopliler CLI
 
-    \n
-    PhenoPLIER is a flexible computational framework that combines gene-trait and gene-drug associations with gene modules expressed in specific contexts (see Figure above). The approach uses a latent representation (with latent variables or LVs representing gene modules) derived from a large gene expression compendium to integrate TWAS with drug-induced transcriptional responses for a joint analysis. The approach consists in three main components:
+    \n PhenoPLIER is a flexible computational framework that combines gene-trait and gene-drug associations with gene
+    modules expressed in specific contexts (see Figure above). The approach uses a latent representation (with latent
+    variables or LVs representing gene modules) derived from a large gene expression compendium to integrate TWAS
+    with drug-induced transcriptional responses for a joint analysis. The approach consists in three main components:
 
     \n
     1. an LV-based regression model to compute an association between an LV and a trait,
     2. a clustering framework to learn groups of traits with shared transcriptomic properties, and
     3. an LV-based drug repurposing approach that links diseases to potential treatments.
 
-    \n
-    For more details, check out our article in Nature Communications (https://doi.org/10.1038/s41467-023-41057-4) or our Manubot web version (https://greenelab.github.io/phenoplier_manuscript/). To cite PhenoPLIER, see 10.1038/s41467-023-41057-4:
+    \n For more details, check out our article in Nature Communications (https://doi.org/10.1038/s41467-023-41057-4)
+    or our Manubot web version (https://greenelab.github.io/phenoplier_manuscript/). To cite PhenoPLIER,
+    see 10.1038/s41467-023-41057-4:
 
     \n
     Projecting genetic associations through gene expression patterns highlights disease etiology and drug mechanisms
@@ -57,8 +60,9 @@ def main(
     Nat Commun 14, 5562 (2023) https://doi.org/gspsxr
     DOI: 10.1038/s41467-023-41057-4
 
-    \n
-    Interested in using PhenoPLIER? Any questions? Check out our Discussions section (https://github.com/greenelab/phenoplier/discussions) and start a discussion by asking a question or sharing your thoughts. We are happy to help!
+    \n Interested in using PhenoPLIER? Any questions? Check out our Discussions section (
+    https://github.com/greenelab/phenoplier/discussions) and start a discussion by asking a question or sharing your
+    thoughts. We are happy to help!
     """
     return
 
@@ -66,25 +70,18 @@ def main(
 @app.command()
 # @load_and_update_config
 def gls(
-        input_file: Annotated[str, typer.Option("--input-file", "-i",
-                                                help="File path to S-MultiXcan result file (tab-separated and with at least columns 'gene' and 'pvalue")],
-        output_file: Annotated[
-            str, typer.Option("--output-file", "-o", help="File path where results will be written to")],
+        input_file: Annotated[str, typer.Option("--input-file", "-i", help="File path to S-MultiXcan result file (tab-separated and with at least columns 'gene' and 'pvalue")],
+        output_file: Annotated[str, typer.Option("--output-file", "-o", help="File path where results will be written to")],
         # phenoplier_root_dir:            Annotated[str, typer.Option("--phenoplier-root-dir", envvar="PHENOPLIER_ROOT_DIR", help="Phenoplier root directory")],
         # phenoplier_metaxcan_base_dir:   Annotated[str, typer.Option("--phenoplier-metaxcan-base-dir", envvar="PHENOPLIER_METAXCAN_BASE_DIR", help="Phenoplier MetaXcan base directory")],
-        gene_corr_file: Annotated[Optional[str], typer.Option("--gene-corr-file",
-                                                              help="Path to a gene correlations file or folder. It's is mandatory if running a GLS model, and not necessary for OLS")] = None,
+        gene_corr_file: Annotated[Optional[str], typer.Option("--gene-corr-file",help="Path to a gene correlations file or folder. It's is mandatory if running a GLS model, and not necessary for OLS")] = None,
         use_covars: Annotated[Optional[str], typer.Option("--covars", help="List of covariates to use")] = None,
         cohort_name: Annotated[Optional[str], typer.Option("--cohort-name", help="Cohort name")] = None,
-        lv_list: Annotated[Optional[List[str]], typer.Option("--lv-list",
-                                                             help="List of LV (gene modules) identifiers on which an association will be computed. All the rest not in the list are ignored")] = None,
-        debug_use_sub_corr: Annotated[bool, typer.Option("--debug-use-sub-gene-corr",
-                                                         help="Use an LV-specific submatrix of the gene correlation matrix")] = True,
-        debug_use_ols: Annotated[bool, typer.Option("--debug-use-ols",
-                                                    help="Use a standard OLS model instead of GLS for debugging purpose")] = False,
+        lv_list: Annotated[Optional[List[str]], typer.Option("--lv-list", help="List of LV (gene modules) identifiers on which an association will be computed. All the rest not in the list are ignored")] = None,
+        debug_use_sub_corr: Annotated[bool, typer.Option("--debug-use-sub-gene-corr", help="Use an LV-specific submatrix of the gene correlation matrix")] = True,
+        debug_use_ols: Annotated[bool, typer.Option("--debug-use-ols", help="Use a standard OLS model instead of GLS for debugging purpose")] = False,
         batch_id: Annotated[Optional[int], typer.Option("--batch-id", help="Batch ID")] = None,
-        batch_n_splits: Annotated[
-            Optional[int], typer.Option("--batch-n-splits", help="Number of splits in the batch")] = None,
+        batch_n_splits: Annotated[Optional[int], typer.Option("--batch-n-splits", help="Number of splits in the batch")] = None,
 ) -> None:
     """
     Run the Generalized Least Squares (GLS) model. Note that you need to run "phenoplier init" first to set up the environment.
@@ -118,7 +115,8 @@ def gls(
 
     # Assemble and execute the final command
     GLS_PATH = Path(gls_cli.__file__).resolve()
-    # TODO: remove gls_cli, call directly the function from the library, instead of use shell command. Otherwise, tests and exceptions handling tricky
+    # TODO: remove gls_cli, call directly the function from the library, instead of use shell command. Otherwise,
+    #  tests and exceptions handling tricky
     command = (f"python3 {GLS_PATH} "
                f"-i {input_file} "
                f"--duplicated-genes-action keep-first "
