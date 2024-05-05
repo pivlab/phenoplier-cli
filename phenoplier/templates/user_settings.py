@@ -1,4 +1,3 @@
-from phenoplier.constants.metadata import APP_CODE_DIR, APP_TEST_DIR
 from pathlib import Path
 import tempfile
 

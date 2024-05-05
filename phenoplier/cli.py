@@ -5,9 +5,8 @@ import typer
 import tomlkit
 from typing import Optional, Annotated, List
 from pathlib import Path
-from .constants.metadata import APP_NAME, APP_VERSION
-from phenoplier import gls_cli as gls_cli
-from .config import USER_SETTINGS_FILE
+from . import gls_cli
+from .config import USER_SETTINGS_FILE, APP_NAME, APP_VERSION
 from .templates.user_settings import DEFAULT as DEFAULT_USER_SETTINGS
 
 # Define the main CLI program/command

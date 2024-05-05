@@ -2,7 +2,6 @@
 
 from importlib.metadata import distribution
 from pathlib import Path
-import tempfile
 
 # Package metadata
 dist = distribution("phenoplier")

@@ -1,6 +1,6 @@
 """Entry point for Phenoplier CLI."""
-from phenoplier import cli
-from phenoplier.constants.metadata import APP_NAME
+import phenoplier.cli as cli
+from phenoplier.config import APP_NAME
 
 
 def main():
