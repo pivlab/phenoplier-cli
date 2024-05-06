@@ -134,3 +134,6 @@ _tmp/
 
 # Pycharm files
 .idea/
+
+# Ignore dynaconf secret files
+.secrets.toml

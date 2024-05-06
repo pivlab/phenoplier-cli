@@ -11,8 +11,7 @@ from scipy import sparse
 import statsmodels.api as sm
 
 from entity import Gene
-import conf
-
+from config import settings as conf
 
 class GLSPhenoplier(object):
     """

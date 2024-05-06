@@ -11,7 +11,7 @@ from functools import lru_cache
 import numpy as np
 import pandas as pd
 
-import conf
+from config import settings as conf
 from cache import read_data
 
 
@@ -61,7 +61,7 @@ class Trait(object, metaclass=ABCMeta):
     UKB_TO_EFO_MAP_FILE = Path(
         Path(__file__).parent,
         "libs/data",
-        conf.PHENOMEXCAN["TRAITS_FULLCODE_TO_EFO_MAP_FILE"].name,
+        Path(conf.PHENOMEXCAN["TRAITS_FULLCODE_TO_EFO_MAP_FILE"]).name,
     ).resolve()
 
     # This file was generated from the EFO ontology, which has a map to several
@@ -69,7 +69,7 @@ class Trait(object, metaclass=ABCMeta):
     EFO_XREFS_FILE = Path(
         Path(__file__).parent,
         "libs/data",
-        conf.GENERAL["TERM_ID_XREFS_FILE"].name,
+        Path(conf.GENERAL["TERM_ID_XREFS_FILE"]).name,
     ).resolve()
 
     # This file was obtained from https://github.com/dhimmel/disease-ontology
@@ -579,9 +579,9 @@ class Gene(object):
     (correlations of predicted expression, etc).
     """
 
-    GENE_ID_TO_NAME_MAP = read_data(conf.PHENOMEXCAN["GENE_MAP_ID_TO_NAME"])
-    GENE_NAME_TO_ID_MAP = read_data(conf.PHENOMEXCAN["GENE_MAP_NAME_TO_ID"])
-    BIOMART_GENES = read_data(conf.GENERAL["BIOMART_GENES_INFO_FILE"])
+    GENE_ID_TO_NAME_MAP = read_data(Path(conf.PHENOMEXCAN["GENE_MAP_ID_TO_NAME"]))
+    GENE_NAME_TO_ID_MAP = read_data(Path(conf.PHENOMEXCAN["GENE_MAP_NAME_TO_ID"]))
+    BIOMART_GENES = read_data(Path(conf.GENERAL["BIOMART_GENES_INFO_FILE"]))
 
     def __init__(self, ensembl_id=None, name=None):
         if ensembl_id is not None:

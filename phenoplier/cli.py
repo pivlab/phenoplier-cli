@@ -6,8 +6,9 @@ import tomlkit
 from typing import Optional, Annotated, List
 from pathlib import Path
 from . import gls_cli
-from .config import USER_SETTINGS_FILE, APP_NAME, APP_VERSION
 from .templates.user_settings import DEFAULT as DEFAULT_USER_SETTINGS
+from .config import settings
+from .config import USER_SETTINGS_FILE
 
 # Define the main CLI program/command
 app = typer.Typer(
@@ -26,7 +27,7 @@ app.add_typer(cmd_group_run, name="run")
 def _version_callback(value: bool) -> None:
     """Callback for the --version option."""
     if value:
-        typer.echo(f"{APP_NAME} v{APP_VERSION}")
+        typer.echo(f"{settings.APP_NAME} v{settings.APP_VERSION}")
         raise typer.Exit()
 
 

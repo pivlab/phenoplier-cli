@@ -459,7 +459,6 @@ if __name__ == "__main__":
     # if this script is run, then it exports the configuration as environment
     # variables (for bash/R, etc)
     from pathlib import PurePath
-    load_user_settings()
 
     def print_conf(conf_dict):
         for var_name, var_value in conf_dict.items():
