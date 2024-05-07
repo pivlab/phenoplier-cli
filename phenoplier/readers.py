@@ -2,7 +2,7 @@
 Specifies functions to read different files used in the project.
 """
 import pandas as pd
-import conf
+from config import settings as conf
 
 
 #
@@ -60,7 +60,7 @@ def read_term_id_xrefs():
 #
 def read_phenomexcan_rapid_gwas_pheno_info_file():
     return pd.read_csv(
-        conf.PHENOMEXCAN["RAPID_GWAS_PHENO_INFO_FILE"],
+        conf.TWAS["RAPID_GWAS_PHENO_INFO_FILE"],
         sep="\t",
         index_col="phenotype",
     )
@@ -68,7 +68,7 @@ def read_phenomexcan_rapid_gwas_pheno_info_file():
 
 def read_phenomexcan_rapid_gwas_data_dict():
     return pd.read_csv(
-        conf.PHENOMEXCAN["RAPID_GWAS_DATA_DICT_FILE"],
+        conf.TWAS["RAPID_GWAS_DATA_DICT_FILE"],
         sep="\t",
         index_col="FieldID",
     )
@@ -76,7 +76,7 @@ def read_phenomexcan_rapid_gwas_data_dict():
 
 def read_phenomexcan_gtex_gwas_pheno_info():
     return pd.read_csv(
-        conf.PHENOMEXCAN["GTEX_GWAS_PHENO_INFO_FILE"], sep="\t", index_col="Tag"
+        conf.TWAS["GTEX_GWAS_PHENO_INFO_FILE"], sep="\t", index_col="Tag"
     )
 
 
@@ -114,14 +114,14 @@ DATA_READERS = {
     # UK Biobank
     conf.UK_BIOBANK["CODING_3_FILE"]: read_uk_biobank_codings(3),
     conf.UK_BIOBANK["CODING_6_FILE"]: read_uk_biobank_codings(6),
-    # PhenomeXcan
-    conf.PHENOMEXCAN[
+    # TWAS
+    conf.TWAS[
         "RAPID_GWAS_PHENO_INFO_FILE"
     ]: read_phenomexcan_rapid_gwas_pheno_info_file,
-    conf.PHENOMEXCAN[
+    conf.TWAS[
         "RAPID_GWAS_DATA_DICT_FILE"
     ]: read_phenomexcan_rapid_gwas_data_dict,
-    conf.PHENOMEXCAN[
+    conf.TWAS[
         "GTEX_GWAS_PHENO_INFO_FILE"
     ]: read_phenomexcan_gtex_gwas_pheno_info,
 }
