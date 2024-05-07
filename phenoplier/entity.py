@@ -61,7 +61,7 @@ class Trait(object, metaclass=ABCMeta):
     UKB_TO_EFO_MAP_FILE = Path(
         Path(__file__).parent,
         "libs/data",
-        Path(conf.PHENOMEXCAN["TRAITS_FULLCODE_TO_EFO_MAP_FILE"]).name,
+        Path(conf.TWAS["TRAITS_FULLCODE_TO_EFO_MAP_FILE"]).name,
     ).resolve()
 
     # This file was generated from the EFO ontology, which has a map to several
@@ -141,7 +141,7 @@ class Trait(object, metaclass=ABCMeta):
     def get_do_info(self, mapping_type=None):
         """
         Get the Disease Ontology ID (DOID) for this Trait instance. It uses
-        several sources to map the PhenomeXcan trait to a DOID.
+        several sources to map the TWAS trait to a DOID.
 
         Args:
             mapping_type:
@@ -152,7 +152,7 @@ class Trait(object, metaclass=ABCMeta):
             A MAP_INFO namedtuple with two fields: id (which could be a list of
             IDs) and label (which here is always None).
         """
-        # obtain the EFO data for this PhenomeXcan/UK Biobank trait
+        # obtain the EFO data for this TWAS/UK Biobank trait
         efo_info = self.get_efo_info(mapping_type=mapping_type)
         if efo_info is None:
             return None
@@ -254,7 +254,7 @@ class Trait(object, metaclass=ABCMeta):
     @staticmethod
     def get_traits_from_efo(efo_label: str):
         """
-        It returns a map from an EFO label to a list of PhenomeXcan traits.
+        It returns a map from an EFO label to a list of TWAS traits.
 
         Args:
             efo_label: an EFO label.
@@ -424,12 +424,12 @@ class UKBiobankTrait(Trait):
     @classmethod
     @lru_cache(maxsize=None)
     def read_rapid_gwas_pheno_info(cls):
-        return read_data(conf.PHENOMEXCAN["RAPID_GWAS_PHENO_INFO_FILE"])
+        return read_data(conf.TWAS["RAPID_GWAS_PHENO_INFO_FILE"])
 
     @classmethod
     @lru_cache(maxsize=None)
     def read_rapid_gwas_data_dict(cls):
-        return read_data(conf.PHENOMEXCAN["RAPID_GWAS_DATA_DICT_FILE"])
+        return read_data(conf.TWAS["RAPID_GWAS_DATA_DICT_FILE"])
 
     @classmethod
     @lru_cache(maxsize=None)
@@ -533,7 +533,7 @@ class GTEXGWASTrait(Trait):
     @classmethod
     @lru_cache(maxsize=None)
     def read_gtex_gwas_pheno_info(cls):
-        return read_data(conf.PHENOMEXCAN["GTEX_GWAS_PHENO_INFO_FILE"])
+        return read_data(conf.TWAS["GTEX_GWAS_PHENO_INFO_FILE"])
 
     @property
     def category(self):
@@ -579,11 +579,12 @@ class Gene(object):
     (correlations of predicted expression, etc).
     """
 
-    GENE_ID_TO_NAME_MAP = read_data(Path(conf.PHENOMEXCAN["GENE_MAP_ID_TO_NAME"]))
-    GENE_NAME_TO_ID_MAP = read_data(Path(conf.PHENOMEXCAN["GENE_MAP_NAME_TO_ID"]))
-    BIOMART_GENES = read_data(Path(conf.GENERAL["BIOMART_GENES_INFO_FILE"]))
 
     def __init__(self, ensembl_id=None, name=None):
+        self.GENE_ID_TO_NAME_MAP = read_data(Path(conf.TWAS["GENE_MAP_ID_TO_NAME"]))
+        self.GENE_NAME_TO_ID_MAP = read_data(Path(conf.TWAS["GENE_MAP_NAME_TO_ID"]))
+        self.BIOMART_GENES = read_data(Path(conf.GENERAL["BIOMART_GENES_INFO_FILE"]))
+
         if ensembl_id is not None:
             if ensembl_id not in self.GENE_ID_TO_NAME_MAP:
                 raise ValueError("Ensembl ID not found.")
@@ -675,10 +676,10 @@ class Gene(object):
             An read-only SQLite connection object.
         """
         # check that the file for the tissue exists
-        model_prefix = conf.PHENOMEXCAN["PREDICTION_MODELS"][f"{model_type}_PREFIX"]
+        model_prefix = conf.TWAS["PREDICTION_MODELS"][f"{model_type}_PREFIX"]
 
         tissue_weights_file = (
-                conf.PHENOMEXCAN["PREDICTION_MODELS"][model_type]
+                conf.TWAS["PREDICTION_MODELS"][model_type]
                 / f"{model_prefix}{tissue}.db"
         )
 
@@ -804,10 +805,10 @@ class Gene(object):
         prediction model of PrediXcan (model_type) in a given tissue.
         """
         # check that the file for the tissue exists
-        model_prefix = conf.PHENOMEXCAN["PREDICTION_MODELS"][f"{model_type}_PREFIX"]
+        model_prefix = conf.TWAS["PREDICTION_MODELS"][f"{model_type}_PREFIX"]
 
         tissue_snps_var_file = (
-                conf.PHENOMEXCAN["PREDICTION_MODELS"][model_type]
+                conf.TWAS["PREDICTION_MODELS"][model_type]
                 / f"{model_prefix}{tissue}.txt.gz"
         )
 
@@ -1088,7 +1089,7 @@ class Gene(object):
         if tissues is not None and len(tissues) > 0:
             return tissues
 
-        all_tissues = conf.PHENOMEXCAN["PREDICTION_MODELS"][
+        all_tissues = conf.TWAS["PREDICTION_MODELS"][
             f"{model_type}_TISSUES"
         ].split(" ")
 

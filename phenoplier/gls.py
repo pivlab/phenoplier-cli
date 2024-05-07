@@ -60,7 +60,7 @@ class GLSPhenoplier(object):
             use_own_implementation: bool = False,
             logger="warnings_only",
     ):
-        self.smultixcan_result_set_filepath = conf.PHENOMEXCAN[
+        self.smultixcan_result_set_filepath = conf.TWAS[
             "SMULTIXCAN_EFO_PARTIAL_MASHR_ZSCORES_FILE"
         ]
         if smultixcan_result_set_filepath is not None:
@@ -107,14 +107,14 @@ class GLSPhenoplier(object):
     @lru_cache(maxsize=None)
     def _get_lv_weights(gene_loadings_file: str = None) -> pd.DataFrame:
         """
-        It returns the gene loadings matrix from MultiPLIER. It contains genes
-        in rows and LVs in columns. It accepts an optional file path, in that
-        case it will load it from there. Otherwise, it returns the default
-        MultiPLIER Z matrix from the PhenoPLIER's configuration.
+        It returns the gene loadings matrix from a GENE_MODULE_MODEL such as MultiPLIER. It 
+        contains genes in rows and LVs in columns. It accepts an optional file path, in that
+        case it will load it from there. Otherwise, it returns the default Gene Module Model Z
+        matrix from the PhenoPLIER's configuration.
         """
         # load gene loadings
         if gene_loadings_file is None:
-            gene_loadings_file = conf.MULTIPLIER["MODEL_Z_MATRIX_FILE"]
+            gene_loadings_file = conf.GENE_MODULE_MODEL["MODEL_Z_MATRIX_FILE"]
 
         return pd.read_pickle(gene_loadings_file)
 
