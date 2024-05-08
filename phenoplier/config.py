@@ -1,7 +1,8 @@
-from dynaconf import Dynaconf
 import tempfile
+import os
 from pathlib import Path
 from importlib.metadata import distribution
+from dynaconf import Dynaconf
 
 _APP_NAME = "phenoplier"
 dist = distribution(_APP_NAME)
@@ -18,10 +19,12 @@ USER_SETTINGS_FILE = CONFIG_FOLDER / "user_settings.toml"
 
 settings = Dynaconf(
     envvar_prefix=_APP_NAME.upper(),
+    # TODO: Append the curr_dir settings to override the default settings
     settings_files=["user_settings.toml", "internal_settings.toml"],
 
     APP_NAME=_APP_NAME,
     APP_VERSION=_APP_VERSION,
+    CURRENT_DIR=os.getcwd(),
 
     # Specifies the main directory where all data and results generated are stored.
     # When setting up the environment for the first time, input data will be

@@ -10,7 +10,7 @@ CONDA_ENVS_DIR = "@format {this.SOFTWARE_DIR}/conda_envs"
 # General Settings
 [GENERAL]
 BIOMART_GENES_INFO_FILE = "@format {this.DATA_DIR}/biomart_genes_hg38.csv.gz"
-LOG_CONFIG_FILE = "@format {this.ROOT_DIR}/config/log_config.yaml"
+LOG_CONFIG_FILE = "@format {this.CODE_DIR}/log_config.yaml"
 TERM_ID_LABEL_FILE = "@format {this.DATA_DIR}/term_id_labels.tsv.gz"
 TERM_ID_XREFS_FILE = "@format {this.DATA_DIR}/term_id_xrefs.tsv.gz"
 
@@ -54,6 +54,8 @@ GTEX_GWAS_PHENO_INFO_FILE = "@format {this.TWAS.BASE_DIR}/gtex_gwas_phenotypes_m
 # UK Biobank Settings
 [UK_BIOBANK]
 BASE_DIR = "@format {this.DATA_DIR}/uk_biobank"
+
+
 CODINGS_DIR = "@format {this.UK_BIOBANK.BASE_DIR}/codings"
 CODING_3_FILE = "@format {this.UK_BIOBANK.CODINGS_DIR}/config3.tsv"
 CODING_6_FILE = "@format {this.UK_BIOBANK.CODINGS_DIR}/config6.tsv"

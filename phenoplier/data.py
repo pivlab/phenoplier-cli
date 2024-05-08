@@ -8,9 +8,9 @@ import argparse
 from collections import defaultdict
 from pathlib import Path
 
-from config import settings as conf
-from utils import curl, md5_matches
-from log import get_logger
+from .config import settings as conf
+from .utils import curl, md5_matches
+from .log import get_logger
 
 logger = get_logger("setup")
 
@@ -997,36 +997,48 @@ def download_eur_ld_regions(**kwargs):
 
 
 def setup_data(mode="full", actions=None):
-    # Define available actions and their corresponding functions
+    # create a list of available options. For example:
+    #   --mode=full:    it downloads all the data.
+    #   --mode=testing: it downloads a smaller set of the data. This is useful for
+    #                   Github Action workflows.
+    #   --mode=demo:    it downloads the data needed for the demo
+    # (other modes might be specified in MODES_ACTION
     AVAILABLE_ACTIONS = defaultdict(dict)
-    MODES_ACTIONS = defaultdict(list)  # Presumably defined elsewhere
 
-    # Example functions that might be downloading data
-    def download_phenomexcan_rapid_gwas_pheno_info():
-        logger.info("Downloading PhenomeXcan Rapid GWAS Pheno Info")
-
-    def download_phenomexcan_rapid_gwas_data_dict_file():
-        logger.info("Downloading PhenomeXcan Rapid GWAS Data Dict File")
-
-    # Populate AVAILABLE_ACTIONS based on local function definitions
-    local_items = locals().items()
+    # Obtain all local attributes of this module and run functions to download files
+    local_items = list(globals().items())
     for key, value in local_items:
-        if callable(value) and value.__module__ == __name__ and key.startswith("download_"):
-            for mode_key, mode_actions in MODES_ACTIONS.items():
-                if not mode_actions:  # If empty, add to all modes
-                    AVAILABLE_ACTIONS[mode_key][key] = value
-                elif key in mode_actions:
-                    AVAILABLE_ACTIONS[mode_key][key] = value
+        # iterate only on download_* methods
+        if not (
+            callable(value)
+            and value.__module__ == __name__
+            and key.startswith("download_")
+        ):
+            continue
+
+        print(key, value)
+        for mode, mode_actions in MODES_ACTIONS.items():
+            if len(mode_actions) == 0:
+                # if modes_actions is empty, it means all actions should be
+                # added to that mode (e.g. "full" mode)
+                AVAILABLE_ACTIONS[mode][key] = value
+            elif key in mode_actions:
+                AVAILABLE_ACTIONS[mode][key] = value
+
+    assert (len(AVAILABLE_ACTIONS) > 0)
+
+    for k, v in AVAILABLE_ACTIONS.items():
+        print(f"Available actions for mode '{k}': {list(v.keys())}")
 
     methods_to_run = {}
 
-    # Select methods to run based on mode or specific actions
-    if actions:
-        for action in actions:
-            if action not in AVAILABLE_ACTIONS["full"]:
-                logger.error(f"The action does not exist: {action}")
+    if actions is not None:
+        for a in actions:
+            if a not in AVAILABLE_ACTIONS["full"]:
+                logger.error(f"The action does not exist: {a}")
                 sys.exit(1)
-            methods_to_run[action] = AVAILABLE_ACTIONS["full"][action]
+
+            methods_to_run[a] = AVAILABLE_ACTIONS["full"][a]
     else:
         methods_to_run = AVAILABLE_ACTIONS[mode]
 
