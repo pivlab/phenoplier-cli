@@ -47,28 +47,31 @@ def main(
     """
     Phenopliler CLI
 
-    \n PhenoPLIER is a flexible computational framework that combines gene-trait and gene-drug associations with gene
-    modules expressed in specific contexts (see Figure above). The approach uses a latent representation (with latent
-    variables or LVs representing gene modules) derived from a large gene expression compendium to integrate TWAS
+    \n
+    PhenoPLIER is a flexible computational framework that combines gene-trait and gene-drug associations with gene\n
+    modules expressed in specific contexts (see Figure above). The approach uses a latent representation (with latent\n
+    variables or LVs representing gene modules) derived from a large gene expression compendium to integrate TWAS\n
     with drug-induced transcriptional responses for a joint analysis. The approach consists in three main components:
 
     \n
-    1. an LV-based regression model to compute an association between an LV and a trait,
-    2. a clustering framework to learn groups of traits with shared transcriptomic properties, and
-    3. an LV-based drug repurposing approach that links diseases to potential treatments.
+    1. an LV-based regression model to compute an association between an LV and a trait,\n
+    2. a clustering framework to learn groups of traits with shared transcriptomic properties, and\n
+    3. an LV-based drug repurposing approach that links diseases to potential treatments.\n
 
-    \n For more details, check out our article in Nature Communications (https://doi.org/10.1038/s41467-023-41057-4)
-    or our Manubot web version (https://greenelab.github.io/phenoplier_manuscript/). To cite PhenoPLIER,
+    \n
+    For more details, check out our article in Nature Communications (https://doi.org/10.1038/s41467-023-41057-4)\n
+    or our Manubot web version (https://greenelab.github.io/phenoplier_manuscript/). To cite PhenoPLIER,\n
     see 10.1038/s41467-023-41057-4:
 
     \n
-    Projecting genetic associations through gene expression patterns highlights disease etiology and drug mechanisms
-    Pividori, M., Lu, S., Li, B. et al.
-    Nat Commun 14, 5562 (2023) https://doi.org/gspsxr
-    DOI: 10.1038/s41467-023-41057-4
+    Projecting genetic associations through gene expression patterns highlights disease etiology and drug mechanisms\n
+    Pividori, M., Lu, S., Li, B. et al.\n
+    Nat Commun 14, 5562 (2023) https://doi.org/gspsxr\n
+    DOI: 10.1038/s41467-023-41057-4\n
 
-    \n Interested in using PhenoPLIER? Any questions? Check out our Discussions section (
-    https://github.com/greenelab/phenoplier/discussions) and start a discussion by asking a question or sharing your
+    \n
+    Interested in using PhenoPLIER? Any questions? Check out our Discussions section (\n
+    https://github.com/greenelab/phenoplier/discussions) and start a discussion by asking a question or sharing your\n
     thoughts. We are happy to help!
     """
     return
@@ -78,24 +81,49 @@ def main(
 @app.command()
 def init(
         output_file: Annotated[
-            str, typer.Option("--output-file", "-o", help="Path to the output user settings file")] = str(
-            USER_SETTINGS_FILE),
+            str, typer.Option("--output-file", "-o",
+             help="Path to output the initialized project files. Default to current shell directory.")] = settings.CURRENT_DIR
 ):
     """
     Initialize a user settings file in the home directory in TOML format.
     """
+    import subprocess
+    from importlib import reload, import_module
+    from .data import setup_data
 
-    def create_user_settings():
-        settings_file = USER_SETTINGS_FILE
-        if not settings_file.exists():
-            settings = DEFAULT_USER_SETTINGS
-            settings_file.parent.mkdir(parents=True, exist_ok=True)
-            settings_file.write_text(tomlkit.dumps(settings))
-            typer.echo("Config file created at " + str(settings_file) + ".")
-        else:
-            typer.echo("Config file already exists at " + str(settings_file) + ".")
+    print(output_file)
+    settings.ROOT_DIR = output_file
+    reload(import_module(".config", package="phenoplier"))
 
-    create_user_settings()
+    # Define the path to the script
+    script_path = Path(settings.CODE_DIR, "data.py").resolve()
+
+    # Define the command with the script path variable
+    actions = [
+        "download_phenomexcan_rapid_gwas_pheno_info",
+        "download_phenomexcan_rapid_gwas_data_dict_file",
+        "download_uk_biobank_coding_3",
+        "download_uk_biobank_coding_6",
+        "download_phenomexcan_gtex_gwas_pheno_info",
+        "download_gene_map_id_to_name",
+        "download_gene_map_name_to_id",
+        "download_biomart_genes_hg38",
+        "download_multiplier_model_z_pkl"
+    ]
+
+    setup_data(actions=actions)
+
+    # def create_user_settings():
+    #     settings_file = USER_SETTINGS_FILE
+    #     if not settings_file.exists():
+    #         settings = DEFAULT_USER_SETTINGS
+    #         settings_file.parent.mkdir(parents=True, exist_ok=True)
+    #         settings_file.write_text(tomlkit.dumps(settings))
+    #         typer.echo("Config file created at " + str(settings_file) + ".")
+    #     else:
+    #         typer.echo("Config file already exists at " + str(settings_file) + ".")
+    #
+    # create_user_settings()
 
 
 def activate(
