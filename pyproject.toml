@@ -6,6 +6,7 @@ authors = ["Haoyu Zhang"]
 license = "BSD-2-Clause Plus Patent License"
 readme = "README.md"
 
+
 # Todo: constrain the version of the dependencies except for python to avoid breaking changes
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -22,6 +23,7 @@ tomlkit = "^0.12"
 dynaconf = "^3.2.5"
 numpy = "1.26.*"
 pytest-dependency = "0.6.*"
+pyyaml = "6.0.*"
 
 
 [build-system]
