@@ -21,6 +21,7 @@ fastparquet = "^2024"
 tomlkit = "^0.12"
 dynaconf = "^3.2.5"
 numpy = "1.26.*"
+pytest-dependency = "0.6.*"
 
 
 [build-system]
