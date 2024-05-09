@@ -61,4 +61,4 @@ jobs:
           source .venv/bin/activate
           python3 scripts/setup_data.py
           pytest test/
-          coverage report
+          # coverage report
