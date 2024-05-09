@@ -5,16 +5,16 @@ import tempfile
 import numpy as np
 import pandas as pd
 import pytest
-import os
 
 import phenoplier.gls_cli as gls_cli
+from phenoplier.config import settings
 
 GLS_CLI_PATH = Path(gls_cli.__file__).resolve()
 assert GLS_CLI_PATH is not None
 assert GLS_CLI_PATH.exists()
 
-TEST_DIR = Path(os.getenv("PHENOPLIER_TEST_DIR") or "./test/").resolve()
-DATA_DIR = (TEST_DIR / "data" / "gls").resolve()
+TEST_DIR = settings.TEST_DIR
+DATA_DIR = Path(TEST_DIR, "data", "gls").resolve()
 assert DATA_DIR.exists()
 
 TEMP_DIR = tempfile.mkdtemp()
@@ -45,6 +45,7 @@ def full_gene_corrs_filepath():
 
 
 def test_gls_cli_without_parameters():
+    print(GLS_CLI_PATH)
     r = subprocess.run(
         [
             "python",

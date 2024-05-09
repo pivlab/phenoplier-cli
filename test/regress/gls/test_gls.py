@@ -9,13 +9,13 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import pytest
-import os
 
 from phenoplier.gls import GLSPhenoplier
+from phenoplier.config import settings
 
 
-TEST_DIR = Path(os.getenv("PHENOPLIER_TEST_DIR") or "./test/").resolve()
-DATA_DIR = (TEST_DIR / "data" / "gls").resolve()
+TEST_DIR = settings.TEST_DIR
+DATA_DIR = Path(TEST_DIR, "data", "gls").resolve()
 assert DATA_DIR.exists()
 
 

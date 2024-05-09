@@ -968,7 +968,6 @@ class Downloader:
             ):
                 continue
 
-            print(key, value)
             for mode, mode_actions in self.MODES_ACTIONS.items():
                 if len(mode_actions) == 0:
                     # if modes_actions is empty, it means all actions should be
@@ -978,9 +977,6 @@ class Downloader:
                     AVAILABLE_ACTIONS[mode][key] = value
 
         assert (len(AVAILABLE_ACTIONS) > 0)
-
-        for k, v in AVAILABLE_ACTIONS.items():
-            print(f"Available actions for mode '{k}': {list(v.keys())}")
 
         methods_to_run = {}
 
