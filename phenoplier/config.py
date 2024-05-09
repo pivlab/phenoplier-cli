@@ -18,7 +18,7 @@ USER_SETTINGS_FILE = CONFIG_FOLDER / "user_settings.toml"
 # E.g. `export {$_APP_NAME}_FOO=bar` will load `FOO=bar` in the settings
 
 settings = Dynaconf(
-    envvar_prefix=_APP_NAME.upper(),
+    envvar_prefix="PHENOPLIER",
     # TODO: Append the curr_dir settings to override the default settings
     settings_files=["user_settings.toml", "internal_settings.toml"],
 
@@ -36,7 +36,7 @@ settings = Dynaconf(
     # Directory contains the git repository
     CODE_DIR=str(Path(__file__).resolve().parent),
     # Directory contains the tests
-    TESTS_DIR=str(Path(__file__).resolve().parent / "test"),
+    TEST_DIR=str(Path(__file__).resolve().parent.parent / "test"),
 )
 
 # `envvar_prefix` = export envvars with `export DYNACONF_FOO=bar`.
