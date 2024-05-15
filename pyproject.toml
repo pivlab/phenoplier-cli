@@ -6,7 +6,6 @@ authors = ["Haoyu Zhang"]
 license = "BSD-2-Clause Plus Patent License"
 readme = "README.md"
 
-
 # Todo: constrain the version of the dependencies except for python to avoid breaking changes
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -26,13 +25,16 @@ pytest-dependency = "0.6.*"
 pyyaml = "6.0.*"
 coverage = "7.5.*"
 
-
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.poetry.scripts]
+phenoplier = "phenoplier.__main__:main"
 
 [tool.pytest.ini_options]
 pythonpath = [
   "./", "./phenoplier/"
 ]
+
+
