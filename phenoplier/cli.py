@@ -147,7 +147,7 @@ def gls(
     if model != "ols" and gene_corr_file is None:
         raise typer.BadParameter("When not using --model=ols, option '--gene-corr-file <value>' must be provided")
     # and they should not be both provided
-    if model == "ols" is True and gene_corr_file is not None:
+    if model == "ols" and gene_corr_file is not None:
         # Todo: can print a message to tell the user that the gene_corr_file will be ignored
         raise typer.BadParameter("When using '--model=ols', option '--gene-corr-file <value>' should not be provided")
 
