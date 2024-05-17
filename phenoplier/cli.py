@@ -116,6 +116,15 @@ def activate(
     raise NotImplementedError("This function is not implemented yet.")
 
 
+def run_gls_model_callback(model: str) -> None:
+    """
+    Callback for the --model option.
+    """
+    if model not in ["gls", "ols"]:
+        raise typer.BadParameter("Model must be either 'gls' or 'ols'.")
+    return
+
+
 @cmd_group_run.command()
 def gls(
         input_file: Annotated[str, typer.Option("--input-file", "-i", help=RUN_GLS["input_file"])],
@@ -125,7 +134,7 @@ def gls(
         cohort_name: Annotated[Optional[str], typer.Option("--cohort-name", help=RUN_GLS["cohort_name"])] = None,
         lv_list: Annotated[Optional[List[str]], typer.Option("--lv-list", help=RUN_GLS["lv_list"])] = None,
         debug_use_sub_corr: Annotated[bool, typer.Option("--debug-use-sub-gene-corr", help=RUN_GLS["debug_use_sub_corr"])] = True,
-        debug_use_ols: Annotated[bool, typer.Option("--debug-use-ols", help=RUN_GLS["debug_use_ols"])] = False,
+        model: Annotated[str, typer.Option("--model", "-m", help=RUN_GLS["model"], callback=run_gls_model_callback)] = False,
         batch_id: Annotated[Optional[int], typer.Option("--batch-id", help=RUN_GLS["batch_id"])] = None,
         batch_n_splits: Annotated[ Optional[int], typer.Option("--batch-n-splits", help=RUN_GLS["batch_n_splits"])] = None,
 ) -> None:
@@ -135,11 +144,12 @@ def gls(
 
     # TODO: Put error messages in constants.messages as dict kv paris
     # Check if both "debug_use_ols" and "gene_corr_file" are None
-    if debug_use_ols is False and gene_corr_file is None:
-        raise typer.BadParameter("Either --debug-use-ols or --gene-corr-file <value> must be provided")
+    if model != "ols" and gene_corr_file is None:
+        raise typer.BadParameter("When not using --model=ols, option '--gene-corr-file <value>' must be provided")
     # and they should not be both provided
-    if debug_use_ols is True and gene_corr_file is not None:
-        raise typer.BadParameter("Only one of --debug-use-ols or --gene-corr-file <value> can be provided")
+    if model == "ols" is True and gene_corr_file is not None:
+        # Todo: can print a message to tell the user that the gene_corr_file will be ignored
+        raise typer.BadParameter("When using '--model=ols', option '--gene-corr-file <value>' should not be provided")
 
     # Build command line arguments
     gene_corrs_args = f"--gene-corr-file {gene_corr_file}" if gene_corr_file else "--debug-use-ols"

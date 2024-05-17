@@ -1,9 +1,13 @@
+import os
 from typer.testing import CliRunner
-from pytest import fixture, mark
-from importlib.metadata import distribution
+from pathlib import Path
+from pytest import mark
 from phenoplier import cli
+from phenoplier.config import settings
+from .utils import diff_tsv
 
 runner = CliRunner()
+IN_GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
 
 
 @mark.parametrize("options, expected_output", [
@@ -14,4 +18,28 @@ def test_options(options, expected_output):
         result = runner.invoke(cli.app, options[i])
         assert result.exit_code == 0
         assert expected_output in result.stdout
+
+
+def _test_without_covars_random_pheno(idx: int):
+    test_dir = settings.TEST_DIR
+    input_file = Path(f"{test_dir}/data/gls/covars_test/random.pheno{idx}-gtex_v8-mashr-smultixcan.txt").resolve()
+    output_file = Path(f"/tmp/phenoplier_test/random.pheno{idx}.tsv").resolve()
+    gene_corr_file = Path(f"{test_dir}/data/gls/covars_test/gene_corr_file/gene_corrs-symbols-within_distance_5mb.per_lv").resolve()
+    option = f"run gls -i {input_file} -o {output_file} -m gls --gene-corr-file {gene_corr_file}"
+    result = runner.invoke(cli.app, option)
+    assert result.exit_code == 0
+    # Compare output
+    expected_output_file = Path(f"{test_dir}/data/gls/covars_test/ref_output/without_covars/random.pheno{idx}.tsv").resolve()
+    assert not diff_tsv(output_file, expected_output_file)
+    # Cleanup
+    # output_file.unlink()
+
+
+def test_without_covars_random_pheno0():
+    _test_without_covars_random_pheno(0)
+
+
+@mark.skipif(IN_GITHUB_ACTIONS, reason="Redundant test. Slow for GitHub Actions.")
+def test_without_covars_random_pheno15():
+    _test_without_covars_random_pheno(15)
 

@@ -4,13 +4,11 @@ from pathlib import Path
 from dynaconf import Dynaconf
 from tomlkit import parse
 
-
 pacakge_toml_file = Path(__file__).parent.parent.resolve() / "pyproject.toml"
 with open(pacakge_toml_file) as f:
     package_toml = parse(f.read())
     _PACKAGE_NAME = package_toml["tool"]["poetry"]["name"]
     _PACKAGE_VERSION = package_toml["tool"]["poetry"]["version"]
-
 
 # Config files
 CONFIG_FOLDER = Path.home() / ("." + _PACKAGE_NAME)
