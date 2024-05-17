@@ -8,8 +8,7 @@ RUN_GLS = ImmutableDict(
         "use_covars": "List of covariates to use",
         "cohort_name": "Cohort name",
         "lv_list": "List of LV (gene modules) identifiers on which an association will be computed. All the rest not in the list are ignored",
-        "debug_use_sub_corr": "Use an LV-specific submatrix of the gene correlation matrix",
-        "debug_use_ols": "Choose which regression model to use",
+        "debug_use_sub_corr": "Use an LV-specific submatrix of the gene correlation matrix",       "model": "Choose which regression model to use",
         "batch_id": "Batch ID",
         "batch_n_splits": "Number of splits in the batch"
     }
