@@ -21,18 +21,24 @@ def test_options(options, expected_output):
 
 
 def _test_without_covars_random_pheno(idx: int):
+    # Prepare directories
     test_dir = settings.TEST_DIR
+    test_output_dir = settings.TEST_OUTPUT_DIR + "/" + os.path.basename(__file__).replace(".py", "")
+    Path(test_output_dir).mkdir(parents=True, exist_ok=True)
+    print(test_output_dir)
+    # Prepare cli options
     input_file = Path(f"{test_dir}/data/gls/covars_test/random.pheno{idx}-gtex_v8-mashr-smultixcan.txt").resolve()
-    output_file = Path(f"/tmp/phenoplier_test/random.pheno{idx}.tsv").resolve()
+    output_file = Path(f"{test_output_dir}/random.pheno{idx}.tsv").resolve()
     gene_corr_file = Path(f"{test_dir}/data/gls/covars_test/gene_corr_file/gene_corrs-symbols-within_distance_5mb.per_lv").resolve()
     option = f"run gls -i {input_file} -o {output_file} -m gls --gene-corr-file {gene_corr_file}"
+    # Run command
     result = runner.invoke(cli.app, option)
     assert result.exit_code == 0
     # Compare output
     expected_output_file = Path(f"{test_dir}/data/gls/covars_test/ref_output/without_covars/random.pheno{idx}.tsv").resolve()
     assert not diff_tsv(output_file, expected_output_file)
     # Cleanup
-    # output_file.unlink()
+    output_file.unlink()
 
 
 def test_without_covars_random_pheno0():

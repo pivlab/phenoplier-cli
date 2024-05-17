@@ -2,7 +2,7 @@
 name = "phenoplier"
 version = "0.1.6"
 description = ""
-authors = ["Haoyu Zhang"]
+authors = ["Milton Pividori", "Haoyu Zhang"]
 license = "BSD-2-Clause Plus Patent License"
 readme = "README.md"
 
