@@ -39,6 +39,8 @@ settings = Dynaconf(
     CODE_DIR=str(Path(__file__).resolve().parent),
     # Directory contains the tests
     TEST_DIR=str(Path(__file__).resolve().parent.parent / "test"),
+    # Directory to put test outputs
+    TEST_OUTPUT_DIR=str(Path("/tmp/" + _PACKAGE_NAME + "_test_output/").resolve()),
 )
 
 # `envvar_prefix` = export envvars with `export DYNACONF_FOO=bar`.
