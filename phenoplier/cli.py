@@ -130,11 +130,11 @@ def gls(
         input_file: Annotated[str, typer.Option("--input-file", "-i", help=RUN_GLS["input_file"])],
         output_file: Annotated[str, typer.Option("--output-file", "-o", help=RUN_GLS["output_file"])],
         gene_corr_file: Annotated[Optional[str], typer.Option("--gene-corr-file", help=RUN_GLS["gene_corr_file"])] = None,
-        use_covars: Annotated[Optional[str], typer.Option("--covars", help=RUN_GLS["use_covars"])] = None,
+        covars: Annotated[Optional[str], typer.Option("--covars", help=RUN_GLS["covars"])] = "gene_size gene_size_log gene_density gene_density_log",
         cohort_name: Annotated[Optional[str], typer.Option("--cohort-name", help=RUN_GLS["cohort_name"])] = None,
         lv_list: Annotated[Optional[List[str]], typer.Option("--lv-list", help=RUN_GLS["lv_list"])] = None,
         debug_use_sub_corr: Annotated[bool, typer.Option("--debug-use-sub-gene-corr", help=RUN_GLS["debug_use_sub_corr"])] = True,
-        model: Annotated[str, typer.Option("--model", "-m", help=RUN_GLS["model"], callback=run_gls_model_callback)] = False,
+        model: Annotated[str, typer.Option("--model", "-m", help=RUN_GLS["model"], callback=run_gls_model_callback)] = "gls",
         batch_id: Annotated[Optional[int], typer.Option("--batch-id", help=RUN_GLS["batch_id"])] = None,
         batch_n_splits: Annotated[ Optional[int], typer.Option("--batch-n-splits", help=RUN_GLS["batch_n_splits"])] = None,
 ) -> None:
@@ -156,7 +156,7 @@ def gls(
     if debug_use_sub_corr:
         gene_corrs_args += " --debug-use-sub-gene-corr"
     # Build covars arguments
-    covars_args = f"--covars {use_covars}" if use_covars else ""
+    covars_args = f"--covars {covars}" if covars else ""
     cohort_args = ""
     if cohort_name:
         # FIXME: hardcoded
