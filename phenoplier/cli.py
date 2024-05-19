@@ -8,6 +8,7 @@ from . import gls_cli
 from .config import settings
 from .config import USER_SETTINGS_FILE
 from .constants import RUN_GLS_ARGS, RUN_GLS_DEFAULTS
+from rich import print
 
 
 # Define the main CLI program/command
@@ -35,7 +36,6 @@ def version_callback(value: bool) -> None:
 def main(
         version: Optional[bool] = typer.Option(
             None,
-            "--version",
             "-v",
             help="Show the application's version and exit.",
             callback=version_callback,
@@ -160,6 +160,14 @@ def gls(
     if model == "ols" and gene_corr_file is not None:
         # Todo: can print a message to tell the user that the gene_corr_file will be ignored
         raise typer.BadParameter("When using '--model=ols', option '--gene-corr-file <value>' should not be provided")
+
+    # Print out useful information
+    covars_info = (
+        f"Using DEFAULT covariates: {RUN_GLS_DEFAULTS["covars"]}" if covars == "default"
+        else f"Using covariates {covars}" if covars
+        else "Running gls without covariates."
+    )
+    print("[blue][Info]: " + covars_info)
 
     # Build command line arguments
     gene_corrs_args = f"--gene-corr-file {gene_corr_file}" if gene_corr_file else "--debug-use-ols"

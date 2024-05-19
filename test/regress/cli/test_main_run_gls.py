@@ -39,6 +39,7 @@ def _test_random_pheno(idx: int, with_default_covars: bool):
         output_file.unlink()
     # Run command
     result = runner.invoke(cli.app, option)
+    print(result.stdout)
     if result.exit_code != 0:
         print(result.stdout)
         print(result.stderr)
@@ -52,17 +53,17 @@ def _test_random_pheno(idx: int, with_default_covars: bool):
     output_file.unlink()
 
 
-# def test_without_covars_random_pheno0():
-#     _test_random_pheno(0, False)
+def test_without_covars_random_pheno0():
+    _test_random_pheno(0, False)
 
 
 def test_with_covars_random_pheno0():
     _test_random_pheno(0, True)
 
 
-# @mark.skipif(IN_GITHUB_ACTIONS, reason="Redundant test. Slow for GitHub Actions.")
-# def test_without_covars_random_pheno15():
-#     _test_random_pheno(15, False)
+@mark.skipif(IN_GITHUB_ACTIONS, reason="Redundant test. Slow for GitHub Actions.")
+def test_without_covars_random_pheno15():
+    _test_random_pheno(15, False)
 
 
 @mark.skipif(IN_GITHUB_ACTIONS, reason="Redundant test. Slow for GitHub Actions.")
