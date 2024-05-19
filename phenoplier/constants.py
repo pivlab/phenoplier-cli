@@ -29,13 +29,13 @@ RUN_GLS_ARGS = ImmutableDict(
                   f"covariates are: [{RUN_GLS_DEFAULTS['covars']}].",
         "cohort_name": "Cohort name.",
         "lv_list": "List of LV (gene modules) identifiers on which an association will be computed. All the rest not in the list are ignored.",
+        "lv_model_file": "A file containing the LV model. It has to be in pickle format, with gene symbols in rows and LVs in columns.",
         "debug_use_sub_corr": "Use an LV-specific submatrix of the gene correlation matrix.",
         "model": "Choose which regression model to use [gls | ols].",
         "batch_id": "Batch ID.",
         "batch_n_splits": "Number of splits in the batch."
     }
 )
-
 
 RUN = ImmutableDict(
     {
@@ -48,4 +48,3 @@ CLI = ImmutableDict(
         "run": RUN
     }
 )
-

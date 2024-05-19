@@ -143,6 +143,7 @@ def gls(
         covars:             Annotated[Optional[str], typer.Option("--covars", help=RUN_GLS_ARGS["covars"])]                                         = None,
         cohort_name:        Annotated[Optional[str], typer.Option("--cohort-name", help=RUN_GLS_ARGS["cohort_name"])]                               = None,
         lv_list:            Annotated[Optional[List[str]], typer.Option("--lv-list", help=RUN_GLS_ARGS["lv_list"])]                                 = None,
+        lv_model_file:      Annotated[Optional[str], typer.Option("--lv-model-file", help=RUN_GLS_ARGS["lv_model_file"])]                           = None,
         gene_corr_mode:     Annotated[str, typer.Option("--gene-corr-mode", help=RUN_GLS_ARGS["debug_use_sub_corr"])]                               = "sub",
         model:              Annotated[str, typer.Option("--model", "-m", help=RUN_GLS_ARGS["model"], callback=run_gls_model_callback)] = "gls",
         batch_id:           Annotated[Optional[int], typer.Option("--batch-id", help=RUN_GLS_ARGS["batch_id"])]                                     = None,
@@ -191,7 +192,8 @@ def gls(
         batch_args = f"--batch-id {batch_id} --batch-n-splits {batch_n_splits}"
     elif lv_list:
         batch_args = f"--lv-list {','.join(lv_list)}"
-
+    # Build lv model file arguments
+    lv_model_args = f"--lv-model-file {lv_model_file}" if lv_model_file else ""
     # Assemble and execute the final command
     GLS_PATH = Path(gls_cli.__file__).resolve()
     # TODO: remove gls_cli, call directly the function from the library, instead of use shell command. Otherwise,
@@ -199,7 +201,7 @@ def gls(
     command = (f"python3 {GLS_PATH} "
                f"-i {input_file} "
                f"--duplicated-genes-action keep-first "
-               f"-o {output_file} {gene_corrs_args} {covars_args} {cohort_args} {batch_args}")
+               f"-o {output_file} {gene_corrs_args} {covars_args} {cohort_args} {batch_args} {lv_model_args}")
     # TODO: Add pretty print for command. Should have indentation and new lines
     # typer.echo(f"Running command: {command}")
     # Execute Command
