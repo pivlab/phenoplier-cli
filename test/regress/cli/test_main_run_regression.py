@@ -5,7 +5,7 @@ from pytest import mark
 from rich import print
 from phenoplier import cli
 from phenoplier.config import settings
-from .utils import diff_tsv
+from .utils import diff_tsv, get_test_output_dir
 
 runner = CliRunner()
 IN_GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
@@ -25,7 +25,7 @@ def test_options(options, expected_output):
 def _test_random_pheno(idx: int, with_default_covars: bool):
     # Prepare directories
     test_dir = settings.TEST_DIR
-    test_output_dir = settings.TEST_OUTPUT_DIR + "/" + os.path.basename(__file__).replace(".py", "")
+    test_output_dir = get_test_output_dir(__file__)
     Path(test_output_dir).mkdir(parents=True, exist_ok=True)
     print(test_output_dir)
     # Prepare cli options
