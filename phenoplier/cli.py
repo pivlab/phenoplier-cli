@@ -2,13 +2,14 @@
 
 import os
 import typer
-from typing import Optional, Annotated, List, Dict, Any, Tuple
+from typing import Optional, Annotated, List
 from pathlib import Path
 from . import gls_cli
 from .config import settings
 from .config import USER_SETTINGS_FILE
 from .constants import RUN_GLS_ARGS, RUN_GLS_DEFAULTS
 from rich import print
+
 
 # Define the main CLI program/command
 app = typer.Typer(
@@ -81,7 +82,7 @@ def main(
 def init(
         output_file: Annotated[
             str, typer.Option("--output-file", "-o",
-                              help="Path to output the initialized project files. Default to current shell directory.")] = settings.CURRENT_DIR
+             help="Path to output the initialized project files. Default to current shell directory.")] = settings.CURRENT_DIR
 ):
     """
     Initialize a user settings file in the home directory in TOML format.
@@ -134,124 +135,76 @@ def run_gls_gene_corr_mode_callback(mode: str) -> None:
     return
 
 
-# Define common option types with default values
-RUN_COMMON_OPTIONS: Dict[str, Tuple[Annotated, Any]] = {
-    "input_file":       (Annotated[str, typer.Option("--input-file", "-i", help=RUN_GLS_ARGS["input_file"])], None),
-    "output_file":      (Annotated[str, typer.Option("--output-file", "-o", help=RUN_GLS_ARGS["output_file"])], None),
-    "covars":           (Annotated[Optional[str], typer.Option("--covars", help=RUN_GLS_ARGS["covars"])], None),
-    "cohort_name":      (Annotated[Optional[str], typer.Option("--cohort-name", help=RUN_GLS_ARGS["cohort_name"])], None),
-    "lv_list":          (Annotated[Optional[List[str]], typer.Option("--lv-list", help=RUN_GLS_ARGS["lv_list"])], None),
-    "lv_model_file":    (Annotated[Optional[str], typer.Option("--lv-model-file", help=RUN_GLS_ARGS["lv_model_file"])], None),
-    "gene_corr_mode":   (Annotated[str, typer.Option("--gene-corr-mode", help=RUN_GLS_ARGS["gene_corr_mode"])], "sub"),
-    "batch_id":         (Annotated[Optional[int], typer.Option("--batch-id", help=RUN_GLS_ARGS["batch_id"])], None),
-    "batch_n_splits":   (Annotated[Optional[int], typer.Option("--batch-n-splits", help=RUN_GLS_ARGS["batch_n_splits"])], None),
-}
-
-
-def build_common_command(
-        input_file: str,
-        output_file: str,
-        gene_corrs_args: str,
-        gene_corr_mode: str,
-        covars: Optional[str],
-        cohort_name: Optional[str],
-        lv_list: Optional[List[str]],
-        lv_model_file: Optional[str],
-        batch_id: Optional[int],
-        batch_n_splits: Optional[int],
-        gls_cli: object) -> str:
+@cmd_group_run.command()
+def gls(
+        input_file:         Annotated[str, typer.Option("--input-file", "-i", help=RUN_GLS_ARGS["input_file"])],
+        output_file:        Annotated[str, typer.Option("--output-file", "-o", help=RUN_GLS_ARGS["output_file"])],
+        gene_corr_file:     Annotated[Optional[str], typer.Option("--gene-corr-file", help=RUN_GLS_ARGS["gene_corr_file"])]                         = None,
+        covars:             Annotated[Optional[str], typer.Option("--covars", help=RUN_GLS_ARGS["covars"])]                                         = None,
+        cohort_name:        Annotated[Optional[str], typer.Option("--cohort-name", help=RUN_GLS_ARGS["cohort_name"])]                               = None,
+        lv_list:            Annotated[Optional[List[str]], typer.Option("--lv-list", help=RUN_GLS_ARGS["lv_list"])]                                 = None,
+        lv_model_file:      Annotated[Optional[str], typer.Option("--lv-model-file", help=RUN_GLS_ARGS["lv_model_file"])]                           = None,
+        gene_corr_mode:     Annotated[str, typer.Option("--gene-corr-mode", help=RUN_GLS_ARGS["debug_use_sub_corr"])]                               = "sub",
+        model:              Annotated[str, typer.Option("--model", "-m", help=RUN_GLS_ARGS["model"], callback=run_gls_model_callback)] = "gls",
+        batch_id:           Annotated[Optional[int], typer.Option("--batch-id", help=RUN_GLS_ARGS["batch_id"])]                                     = None,
+        batch_n_splits:     Annotated[ Optional[int], typer.Option("--batch-n-splits", help=RUN_GLS_ARGS["batch_n_splits"])]                        = None,
+) -> None:
     """
-    Build the command for running the GLS or OLS model.
+    Run the Generalized Least Squares (GLS) model. Note that you need to run "phenoplier init" first to set up the environment.
     """
+
+    # TODO: Put error messages in constants.messages as dict kv paris
+    # Check if both "debug_use_ols" and "gene_corr_file" are None
+    if model != "ols" and gene_corr_file is None:
+        raise typer.BadParameter("When not using --model=ols, option '--gene-corr-file <value>' must be provided")
+    # and they should not be both provided
+    if model == "ols" and gene_corr_file is not None:
+        # Todo: can print a message to tell the user that the gene_corr_file will be ignored
+        raise typer.BadParameter("When using '--model=ols', option '--gene-corr-file <value>' should not be provided")
 
     # Print out useful information
     covars_info = (
-        f"Using DEFAULT covariates: {RUN_GLS_DEFAULTS['covars']}" if covars == "default"
+        f"Using DEFAULT covariates: {RUN_GLS_DEFAULTS["covars"]}" if covars == "default"
         else f"Using covariates {covars}" if covars
-        else "Running without covariates."
+        else "Running gls without covariates."
     )
     print("[blue][Info]: " + covars_info)
 
-    # Update gene corrs arguments
+    # Build command line arguments
+    gene_corrs_args = f"--gene-corr-file {gene_corr_file}" if gene_corr_file else "--debug-use-ols"
     if gene_corr_mode == "sub":
         gene_corrs_args += " --debug-use-sub-gene-corr"
-
     # Build covars arguments
     covars_args = (
-        f"--covars {RUN_GLS_DEFAULTS['covars']}" if covars == "default"
+        f"--covars {RUN_GLS_DEFAULTS["covars"]}" if covars == "default"
         else f"--covars {covars}" if covars
         else ""
     )
-
     # Build cohort arguments
     cohort_args = ""
     if cohort_name:
+        # FIXME: hardcoded
         cohort_metadata_dir = f"{os.getenv('PHENOPLIER_RESULTS_GLS')}/gene_corrs/cohorts/{cohort_name}/gtex_v8/mashr/"
         cohort_args = f"--cohort-metadata-dir {cohort_metadata_dir}"
-
     # Build batch arguments
     batch_args = ""
     if batch_id and batch_n_splits:
         batch_args = f"--batch-id {batch_id} --batch-n-splits {batch_n_splits}"
     elif lv_list:
         batch_args = f"--lv-list {','.join(lv_list)}"
-
     # Build lv model file arguments
     lv_model_args = f"--lv-model-file {lv_model_file}" if lv_model_file else ""
-
-    # Assemble and return the final command
+    # Assemble and execute the final command
     GLS_PATH = Path(gls_cli.__file__).resolve()
+    # TODO: remove gls_cli, call directly the function from the library, instead of use shell command. Otherwise,
+    #  tests and exceptions handling tricky
     command = (f"python3 {GLS_PATH} "
                f"-i {input_file} "
                f"--duplicated-genes-action keep-first "
                f"-o {output_file} {gene_corrs_args} {covars_args} {cohort_args} {batch_args} {lv_model_args}")
-    return command
-
-
-@cmd_group_run.command()
-def ols(
-        input_file:     RUN_COMMON_OPTIONS["input_file"][0],
-        output_file:    RUN_COMMON_OPTIONS["output_file"][0],
-        gene_corr_mode: RUN_COMMON_OPTIONS["gene_corr_mode"][0] = RUN_COMMON_OPTIONS["gene_corr_mode"][1],
-        covars:         RUN_COMMON_OPTIONS["covars"][0] = RUN_COMMON_OPTIONS["covars"][1],
-        cohort_name:    RUN_COMMON_OPTIONS["cohort_name"][0] = RUN_COMMON_OPTIONS["cohort_name"][1],
-        lv_list:        RUN_COMMON_OPTIONS["lv_list"][0] = RUN_COMMON_OPTIONS["lv_list"][1],
-        lv_model_file:  RUN_COMMON_OPTIONS["lv_model_file"][0] = RUN_COMMON_OPTIONS["lv_model_file"][1],
-        batch_id:       RUN_COMMON_OPTIONS["batch_id"][0] = RUN_COMMON_OPTIONS["batch_id"][1],
-        batch_n_splits: RUN_COMMON_OPTIONS["batch_n_splits"][0] = RUN_COMMON_OPTIONS["batch_n_splits"][1],
-) -> None:
-    """
-    Run the Ordinary Least Squares (OLS) model. Note that you need to run "phenoplier init" first to set up the environment.
-    """
-    gene_corrs_args = "--debug-use-ols"
-    command = build_common_command(
-        input_file, output_file, gene_corrs_args, gene_corr_mode, covars, cohort_name, lv_list, lv_model_file, batch_id, batch_n_splits,
-        gls_cli
-    )
-    os.system(command)
-
-
-@cmd_group_run.command()
-def gls(
-        input_file:     RUN_COMMON_OPTIONS["input_file"][0],
-        output_file:    RUN_COMMON_OPTIONS["output_file"][0],
-        gene_corr_file: Annotated[str, typer.Option("--gene-corr-file", help=RUN_GLS_ARGS["gene_corr_file"])],
-        gene_corr_mode: RUN_COMMON_OPTIONS["gene_corr_mode"][0] = RUN_COMMON_OPTIONS["gene_corr_mode"][1],
-        covars:         RUN_COMMON_OPTIONS["covars"][0] = RUN_COMMON_OPTIONS["covars"][1],
-        cohort_name:    RUN_COMMON_OPTIONS["cohort_name"][0] = RUN_COMMON_OPTIONS["cohort_name"][1],
-        lv_list:        RUN_COMMON_OPTIONS["lv_list"][0] = RUN_COMMON_OPTIONS["lv_list"][1],
-        lv_model_file:  RUN_COMMON_OPTIONS["lv_model_file"][0] = RUN_COMMON_OPTIONS["lv_model_file"][1],
-        batch_id:       RUN_COMMON_OPTIONS["batch_id"][0] = RUN_COMMON_OPTIONS["batch_id"][1],
-        batch_n_splits: RUN_COMMON_OPTIONS["batch_n_splits"][0] = RUN_COMMON_OPTIONS["batch_n_splits"][1],
-) -> None:
-    """
-    Run the Generalized Least Squares (GLS) model. Note that you need to run "phenoplier init" first to set up the environment.
-    """
-    gene_corrs_args = f"--gene-corr-file {gene_corr_file}"
-    command = build_common_command(
-        input_file, output_file, gene_corrs_args, gene_corr_mode, covars, cohort_name, lv_list, lv_model_file, batch_id, batch_n_splits,
-        gls_cli
-    )
+    # TODO: Add pretty print for command. Should have indentation and new lines
+    # typer.echo(f"Running command: {command}")
+    # Execute Command
     os.system(command)
 
 
