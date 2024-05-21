@@ -1,5 +1,7 @@
 import csv
 from math import isclose
+from pathlib import Path
+from phenoplier.config import settings
 
 
 def diff_tsv(file1, file2, epsilon=1e-6) -> bool:
@@ -56,3 +58,7 @@ def diff_tsv(file1, file2, epsilon=1e-6) -> bool:
     else:
         print(f"Both files are identical given an acceptable floating point error threshold: {epsilon}")
         return False
+
+
+def get_test_output_dir(test_name: str) -> Path:
+    return Path(settings.TEST_OUTPUT_DIR) / Path(test_name).stem
