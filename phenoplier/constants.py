@@ -44,6 +44,6 @@ RUN = ImmutableDict(
 
 CLI = ImmutableDict(
     {
-        "version": "Print out the app's version."
+        "run": RUN
     }
 )
