@@ -7,7 +7,7 @@ from pathlib import Path
 from . import gls_cli
 from .config import settings
 from .config import USER_SETTINGS_FILE
-from .constants import RUN_GLS_ARGS, RUN_GLS_DEFAULTS
+from .constants import RUN_GLS_ARGS, RUN_GLS_DEFAULTS, CLI
 from rich import print
 
 
@@ -34,15 +34,9 @@ def version_callback(value: bool) -> None:
 
 @app.callback()
 def main(
-        version: Optional[bool] = typer.Option(
-            None,
-            "-v",
-            help="Show the application's version and exit.",
-            callback=version_callback,
-            is_eager=True,
-        ),
-        verbose: bool = False,
-        debug: bool = False
+        version: Annotated[bool, typer.Option("--version", "-v", help=CLI["version"], callback=version_callback)] = False
+        # verbose: bool = False,
+        # debug: bool = False
 ) -> None:
     """
     Phenopliler CLI
@@ -136,21 +130,21 @@ def run_gls_gene_corr_mode_callback(mode: str) -> None:
 
 
 @cmd_group_run.command()
-def gls(
+def regression(
         input_file:         Annotated[str, typer.Option("--input-file", "-i", help=RUN_GLS_ARGS["input_file"])],
         output_file:        Annotated[str, typer.Option("--output-file", "-o", help=RUN_GLS_ARGS["output_file"])],
-        gene_corr_file:     Annotated[Optional[str], typer.Option("--gene-corr-file", help=RUN_GLS_ARGS["gene_corr_file"])]                         = None,
-        covars:             Annotated[Optional[str], typer.Option("--covars", help=RUN_GLS_ARGS["covars"])]                                         = None,
-        cohort_name:        Annotated[Optional[str], typer.Option("--cohort-name", help=RUN_GLS_ARGS["cohort_name"])]                               = None,
-        lv_list:            Annotated[Optional[List[str]], typer.Option("--lv-list", help=RUN_GLS_ARGS["lv_list"])]                                 = None,
-        lv_model_file:      Annotated[Optional[str], typer.Option("--lv-model-file", help=RUN_GLS_ARGS["lv_model_file"])]                           = None,
-        gene_corr_mode:     Annotated[str, typer.Option("--gene-corr-mode", help=RUN_GLS_ARGS["debug_use_sub_corr"])]                               = "sub",
-        model:              Annotated[str, typer.Option("--model", "-m", help=RUN_GLS_ARGS["model"], callback=run_gls_model_callback)] = "gls",
-        batch_id:           Annotated[Optional[int], typer.Option("--batch-id", help=RUN_GLS_ARGS["batch_id"])]                                     = None,
-        batch_n_splits:     Annotated[ Optional[int], typer.Option("--batch-n-splits", help=RUN_GLS_ARGS["batch_n_splits"])]                        = None,
+        model:              Annotated[str, typer.Option("--model", help=RUN_GLS_ARGS["model"], callback=run_gls_model_callback)] = "gls",
+        gene_corr_file:     Annotated[Optional[str], typer.Option("--gene-corr-file", "-f", help=RUN_GLS_ARGS["gene_corr_file"])] = None,
+        gene_corr_mode:     Annotated[str, typer.Option("--gene-corr-mode", "-m", help=RUN_GLS_ARGS["debug_use_sub_corr"])]       = "sub",
+        covars:             Annotated[Optional[str], typer.Option("--covars", "-c", help=RUN_GLS_ARGS["covars"])]                 = None,
+        cohort_name:        Annotated[Optional[str], typer.Option("--cohort-name", "-n", help=RUN_GLS_ARGS["cohort_name"])]       = None,
+        lv_list:            Annotated[Optional[List[str]], typer.Option("--lv-list", help=RUN_GLS_ARGS["lv_list"])]                             = None,
+        lv_model_file:      Annotated[Optional[str], typer.Option("--lv-model-file", help=RUN_GLS_ARGS["lv_model_file"])]                       = None,
+        batch_id:           Annotated[Optional[int], typer.Option("--batch-id", help=RUN_GLS_ARGS["batch_id"])]                                 = None,
+        batch_n_splits:     Annotated[ Optional[int], typer.Option("--batch-n-splits", help=RUN_GLS_ARGS["batch_n_splits"])]                    = None,
 ) -> None:
     """
-    Run the Generalized Least Squares (GLS) model. Note that you need to run "phenoplier init" first to set up the environment.
+    Run the Generalized Least Squares (GLS) model by default. Note that you need to run "phenoplier init" first to set up the environment.
     """
 
     # TODO: Put error messages in constants.messages as dict kv paris
@@ -166,7 +160,7 @@ def gls(
     covars_info = (
         f"Using DEFAULT covariates: {RUN_GLS_DEFAULTS["covars"]}" if covars == "default"
         else f"Using covariates {covars}" if covars
-        else "Running gls without covariates."
+        else f"Running {model} without covariates."
     )
     print("[blue][Info]: " + covars_info)
 

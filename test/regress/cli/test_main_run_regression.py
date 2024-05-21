@@ -8,10 +8,11 @@ from .utils import diff_tsv
 
 runner = CliRunner()
 IN_GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
+_COMMAND_NAME = "run regression"
 
 
 @mark.parametrize("options, expected_output", [
-    (["run gls --help", "run gls -h"], "Run the Generalized Least Squares (GLS) model"),
+    ([f"{_COMMAND_NAME} --help", f"{_COMMAND_NAME} regression -h"], "Run the Generalized Least Squares (GLS) model"),
 ])
 def test_options(options, expected_output):
     for i in range(len(options)):
@@ -31,7 +32,7 @@ def _test_random_pheno(idx: int, with_default_covars: bool):
     output_file_prefix = "with_covars_" if with_default_covars else "without_covars_"
     output_file = Path(f"{test_output_dir}/{output_file_prefix}random.pheno{idx}.tsv").resolve()
     gene_corr_file = Path(f"{test_dir}/data/gls/covars_test/gene_corr_file/gene_corrs-symbols-within_distance_5mb.per_lv").resolve()
-    option = f"run gls -i {input_file} -o {output_file} -m gls --gene-corr-file {gene_corr_file}"
+    option = f"{_COMMAND_NAME} -i {input_file} -o {output_file} --gene-corr-file {gene_corr_file}"
     if with_default_covars:
         option += ' --covars default'
     # Delete output file if it already exists
