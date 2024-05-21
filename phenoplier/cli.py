@@ -7,7 +7,7 @@ from pathlib import Path
 from . import gls_cli
 from .config import settings
 from .config import USER_SETTINGS_FILE
-from .constants import RUN_GLS_ARGS, RUN_GLS_DEFAULTS, CLI
+from .constants import RUN_GLS_ARGS, RUN_GLS_DEFAULTS
 from rich import print
 
 # Define the main CLI program/command
@@ -33,9 +33,15 @@ def version_callback(value: bool) -> None:
 
 @app.callback()
 def main(
-        version: Annotated[bool, typer.Option("--version", "-v", help=CLI["version"], callback=version_callback)] = False
-        # verbose: bool = False,
-        # debug: bool = False
+        version: Optional[bool] = typer.Option(
+            None,
+            "-v",
+            help="Show the application's version and exit.",
+            callback=version_callback,
+            is_eager=True,
+        ),
+        verbose: bool = False,
+        debug: bool = False
 ) -> None:
     """
     Phenopliler CLI
