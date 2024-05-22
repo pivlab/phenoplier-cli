@@ -47,7 +47,7 @@ RUN = ImmutableDict(
 
 INIT = ImmutableDict(
     {
-        "output_dir": "Path to output the initialized project files. Default to current directory."
+        "project_dir": "Path to output the initialized project files. Default to current directory."
     }
 )
 

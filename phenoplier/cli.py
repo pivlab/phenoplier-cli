@@ -91,25 +91,30 @@ def main(
 # TODO: Add a prompt to ask the user if they want to overwrite the existing settings file
 @app.command()
 def init(
-        output_file: Annotated[
-            str, typer.Option("--output-file", "-o",
-             help="Path to output the initialized project files. Default to current shell directory.")] = settings.CURRENT_DIR
+        project_dir: Annotated[str, typer.Option("--project-dir", "-p",
+             help=INIT["project_dir"])] = settings.CURRENT_DIR
 ):
     """
     Initialize a user settings file in the home directory in TOML format.
     """
-    raise NotImplementedError("This function is not implemented yet.")
-    # def create_user_settings():
-    #     settings_file = USER_SETTINGS_FILE
-    #     if not settings_file.exists():
-    #         settings = DEFAULT_USER_SETTINGS
-    #         settings_file.parent.mkdir(parents=True, exist_ok=True)
-    #         settings_file.write_text(tomlkit.dumps(settings))
-    #         typer.echo("Config file created at " + str(settings_file) + ".")
-    #     else:
-    #         typer.echo("Config file already exists at " + str(settings_file) + ".")
-    #
-    # create_user_settings()
+    def create_user_settings(dir):
+        for file_name in SETTINGS_FILES:
+            settings_file = Path(dir) / file_name
+            if settings_file.exists():
+                typer.echo(f"Config file {str(file_name)} already exsists at {dir}.")
+            else:
+                with open(settings_file, "w") as f:
+                    print(f"Config file {str(file_name)} created at {dir}.")
+                    pass
+        # if not settings_file.exists():
+        #     settings = DEFAULT_USER_SETTINGS
+        #     settings_file.parent.mkdir(parents=True, exist_ok=True)
+        #     settings_file.write_text(tomlkit.dumps(settings))
+        #     typer.echo("Config file created at " + str(settings_file) + ".")
+        # else:
+        #     typer.echo("Config file already exists at " + str(settings_file) + ".")
+    Path(project_dir).mkdir(parents=True, exist_ok=True)
+    create_user_settings(project_dir)
 
 
 def activate(
