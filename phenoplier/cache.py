@@ -3,12 +3,25 @@ Provides functions to read frequently used files (which are cached) and returns
 pandas.DataFrame objects.
 """
 from pathlib import Path
-
 import pandas as pd
+from readers import get_data_readers, get_data_format_readers
+from .config import settings
 
 from phenoplier.readers import DATA_READERS, DATA_FORMAT_READERS
 
 DATA_CACHE = {}
+
+
+def cache_dir_exists() -> bool:
+    """Checks if the cache directory exists and creates it if it doesn't."""
+    return Path(settings.CACHE_DIR).exists()
+
+
+def get_cache_dir() -> Path:
+    """Returns the cache directory."""
+    if not cache_dir_exists():
+        Path(settings.CACHE_DIR).mkdir(parents=True)
+    return settings.CACHE_DIR
 
 
 def read_data(filepath: Path, **kwargs) -> pd.DataFrame:
@@ -26,6 +39,8 @@ def read_data(filepath: Path, **kwargs) -> pd.DataFrame:
         data.readers.DATA_READER.
     """
     file_extensions = "".join(filepath.suffixes)
+    DATA_READERS = get_data_readers()
+    DATA_FORMAT_READERS = get_data_format_readers()
 
     if filepath in DATA_READERS:
         reading_function = DATA_READERS[filepath]
