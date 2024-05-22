@@ -13,7 +13,7 @@ _TEST_OUTPUT_DIR = Path(settings.TEST_OUTPUT_DIR) / "test_main_init"
     "internal_settings.toml",
 ])
 def test_create_file(file):
-    command = f"init -o {_TEST_OUTPUT_DIR}"
+    command = f"init -p {_TEST_OUTPUT_DIR}"
     result = runner.invoke(cli.app, command)
     assert result.exit_code == 0
     out_path = Path(_TEST_OUTPUT_DIR, file)
