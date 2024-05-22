@@ -176,10 +176,19 @@ class DUP_GENE_ACTIONS(str, Enum):
     keep_last = "keep-last"
     remove_all = "remove-all"
 
+
+def check_config_files(dir: str) -> None:
+    for file_name in SETTINGS_FILES:
+        settings_file = Path(dir) / file_name
+        if not settings_file.exists():
+            raise typer.BadParameter(f"Config file {str(file_name)} does not exist at {dir}. Please run 'phenoplier init' first.")
+
+
 @cmd_group_run.command()
 def regression(
-        input_file:         Annotated[Path, typer.Option("--input-file", "-i", help=RUN_GLS_ARGS["input_file"])],
-        output_file:        Annotated[Path, typer.Option("--output-file", "-o", help=RUN_GLS_ARGS["output_file"])],
+        input_file:         Annotated[str, typer.Option("--input-file", "-i", help=RUN_GLS_ARGS["input_file"])],
+        output_file:        Annotated[str, typer.Option("--output-file", "-o", help=RUN_GLS_ARGS["output_file"])],
+        project_dir:        Annotated[str, typer.Option("--project-dir", "-p", help=RUN_GLS_ARGS["project_dir"])] = settings.CURRENT_DIR,
         model:              Annotated[str, typer.Option("--model", help=RUN_GLS_ARGS["model"], callback=run_gls_model_callback)] = "gls",
         gene_corr_file:     Annotated[Optional[Path], typer.Option("--gene-corr-file", "-f", help=RUN_GLS_ARGS["gene_corr_file"])] = None,
         gene_corr_mode:     Annotated[str, typer.Option("--gene-corr-mode", "-m", help=RUN_GLS_ARGS["debug_use_sub_corr"])]       = "sub",
@@ -251,6 +260,9 @@ def regression(
             f"Data now has {data.shape[0]} genes"
         )
         return data.loc[~data.index.duplicated(keep=keep_action)]
+
+    # Check if the settings files exist
+    check_config_files(project_dir)
 
     # TODO: Put error messages in constants.messages as dict kv paris
     # Check if both "debug_use_ols" and "gene_corr_file" are None
