@@ -44,6 +44,12 @@ RUN = ImmutableDict(
     }
 )
 
+INIT = ImmutableDict(
+    {
+        "output_dir": "Path to output the initialized project files. Default to current directory."
+    }
+)
+
 CLI = ImmutableDict(
     {
         "version": "Print out the app's version."

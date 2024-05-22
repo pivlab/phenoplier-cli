@@ -11,9 +11,9 @@ with open(pacakge_toml_file) as f:
     _PACKAGE_VERSION = package_toml["tool"]["poetry"]["version"]
 
 # Config files
-CONFIG_FOLDER = Path.home() / ("." + _PACKAGE_NAME)
-CONFIG_FILE = CONFIG_FOLDER / "config.toml"
-USER_SETTINGS_FILE = CONFIG_FOLDER / "user_settings.toml"
+INTERNAL_SETTINGS_FILENAME = "internal_settings.toml"
+USER_SETTINGS_FILENAME = "user_settings.toml"
+SETTINGS_FILES = [INTERNAL_SETTINGS_FILENAME, USER_SETTINGS_FILENAME]
 
 # The environment variables name supersede these settings
 # Prefix the environment variables with `$_PACKAGE_NAME` to automatically load them
@@ -22,7 +22,7 @@ USER_SETTINGS_FILE = CONFIG_FOLDER / "user_settings.toml"
 settings = Dynaconf(
     envvar_prefix="PHENOPLIER",
     # TODO: Append the curr_dir settings to override the default settings
-    settings_files=["user_settings.toml", "internal_settings.toml"],
+    settings_files=SETTINGS_FILES,
 
     APP_NAME=_PACKAGE_NAME,
     APP_VERSION=_PACKAGE_VERSION,
@@ -38,7 +38,7 @@ settings = Dynaconf(
     # Directory contains the git repository
     CODE_DIR=str(Path(__file__).resolve().parent),
     # Directory contains the tests
-    TEST_DIR=str(Path(__file__).resolve().parent.parent / "test"),
+    TEST_DIR=Path(__file__).resolve().parent.parent / "test",
     # Directory to put test outputs
     TEST_OUTPUT_DIR=str(Path("/tmp/" + _PACKAGE_NAME + "_test_output/").resolve()),
 )

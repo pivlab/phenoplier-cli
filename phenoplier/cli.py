@@ -7,8 +7,6 @@ from pathlib import Path
 import logging
 
 import typer
-from enum import Enum, EnumMeta, unique
-from rich import print
 import pandas as pd
 import numpy as np
 
