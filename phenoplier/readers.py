@@ -103,36 +103,41 @@ def read_genes_biomart_data():
     )
 
 
-#
-# This dictionary specifies as the value the function that knows how to read the
-# file given in the key.
-#
-DATA_READERS = {
-    # General
-    conf.GENERAL["BIOMART_GENES_INFO_FILE"]: read_genes_biomart_data,
-    conf.GENERAL["TERM_ID_XREFS_FILE"]: read_term_id_xrefs,
-    # UK Biobank
-    conf.UK_BIOBANK["CODING_3_FILE"]: read_uk_biobank_codings(3),
-    conf.UK_BIOBANK["CODING_6_FILE"]: read_uk_biobank_codings(6),
-    # TWAS
-    conf.TWAS[
-        "RAPID_GWAS_PHENO_INFO_FILE"
-    ]: read_phenomexcan_rapid_gwas_pheno_info_file,
-    conf.TWAS[
-        "RAPID_GWAS_DATA_DICT_FILE"
-    ]: read_phenomexcan_rapid_gwas_data_dict,
-    conf.TWAS[
-        "GTEX_GWAS_PHENO_INFO_FILE"
-    ]: read_phenomexcan_gtex_gwas_pheno_info,
-}
+def get_data_readers():
+    #
+    # This dictionary specifies as the value the function that knows how to read the
+    # file given in the key.
+    #
+    data_readers = {
+        # General
+        conf.GENERAL["BIOMART_GENES_INFO_FILE"]: read_genes_biomart_data,
+        conf.GENERAL["TERM_ID_XREFS_FILE"]: read_term_id_xrefs,
+        # UK Biobank
+        conf.UK_BIOBANK["CODING_3_FILE"]: read_uk_biobank_codings(3),
+        conf.UK_BIOBANK["CODING_6_FILE"]: read_uk_biobank_codings(6),
+        # TWAS
+        conf.TWAS[
+            "RAPID_GWAS_PHENO_INFO_FILE"
+        ]: read_phenomexcan_rapid_gwas_pheno_info_file,
+        conf.TWAS[
+            "RAPID_GWAS_DATA_DICT_FILE"
+        ]: read_phenomexcan_rapid_gwas_data_dict,
+        conf.TWAS[
+            "GTEX_GWAS_PHENO_INFO_FILE"
+        ]: read_phenomexcan_gtex_gwas_pheno_info,
+    }
 
-#
-# Differently than DATA_READERS, this dictionary does not specify absolute file
-# paths, but just extensions. It's useful when reading standard format such as
-# pickle.
-#
-DATA_FORMAT_READERS = {
-    ".pkl": read_pickle,
-    ".tsv": read_tsv,
-    ".tsv.gz": read_tsv,
-}
+    return data_readers
+
+
+def get_data_format_readers():
+    #
+    # Differently than DATA_READERS, this dictionary does not specify absolute file
+    # paths, but just extensions. It's useful when reading standard format such as
+    # pickle.
+    #
+    DATA_FORMAT_READERS = {
+        ".pkl": read_pickle,
+        ".tsv": read_tsv,
+        ".tsv.gz": read_tsv,
+    }

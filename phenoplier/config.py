@@ -36,9 +36,9 @@ settings = Dynaconf(
     #
     ROOT_DIR=Path(tempfile.gettempdir(), _PACKAGE_NAME).resolve(),
     # Directory contains the git repository
-    CODE_DIR=Path(__file__).resolve().parent,
+    CODE_DIR=Path(__file__).resolve().parent.parent,
     # Directory contains the tests
-    TEST_DIR=Path(__file__).resolve().parent.parent / "test",
+    TEST_DIR="@format {this.CODE_DIR}/test/",
     # Directory to put test outputs
     TEST_OUTPUT_DIR=Path("/tmp/" + _PACKAGE_NAME + "_test_output/").resolve(),
     # Directory for cached data
