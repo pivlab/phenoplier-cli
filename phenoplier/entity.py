@@ -54,28 +54,27 @@ class Trait(object, metaclass=ABCMeta):
         pheno_data (pandas.Series): contains all the information available for
         the trait.
     """
-
-    MAP_INFO = namedtuple("EfoInfo", ["id", "label"])
-
-    # This file was downloaded from https://github.com/EBISPOT/EFO-UKB-mappings
-    UKB_TO_EFO_MAP_FILE = Path(
-        Path(__file__).parent,
-        "libs/data",
-        Path(conf.TWAS["TRAITS_FULLCODE_TO_EFO_MAP_FILE"]).name,
-    ).resolve()
-
-    # This file was generated from the EFO ontology, which has a map to several
-    # other ontology IDs
-    EFO_XREFS_FILE = Path(
-        Path(__file__).parent,
-        "libs/data",
-        Path(conf.GENERAL["TERM_ID_XREFS_FILE"]).name,
-    ).resolve()
-
-    # This file was obtained from https://github.com/dhimmel/disease-ontology
-    DO_XREFS_FILE = Path(Path(__file__).parent, "libs/data", "xrefs-prop-slim.tsv").resolve()
-
     def __init__(self, code=None, full_code=None):
+        self.MAP_INFO = namedtuple("EfoInfo", ["id", "label"])
+
+        # This file was downloaded from https://github.com/EBISPOT/EFO-UKB-mappings
+        self.UKB_TO_EFO_MAP_FILE = Path(
+            Path(__file__).parent,
+            "libs/data",
+            Path(conf.TWAS["TRAITS_FULLCODE_TO_EFO_MAP_FILE"]).name,
+        ).resolve()
+
+        # This file was generated from the EFO ontology, which has a map to several
+        # other ontology IDs
+        self.EFO_XREFS_FILE = Path(
+            Path(__file__).parent,
+            "libs/data",
+            Path(conf.GENERAL["TERM_ID_XREFS_FILE"]).name,
+        ).resolve()
+
+        # This file was obtained from https://github.com/dhimmel/disease-ontology
+        self.DO_XREFS_FILE = Path(Path(__file__).parent, "libs/data", "xrefs-prop-slim.tsv").resolve()
+
         if code is None and full_code is None:
             raise ValueError("Either code or full_code must be specified.")
 

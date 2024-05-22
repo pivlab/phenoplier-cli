@@ -22,7 +22,7 @@ SETTINGS_FILES = [INTERNAL_SETTINGS_FILENAME, USER_SETTINGS_FILENAME]
 settings = Dynaconf(
     envvar_prefix="PHENOPLIER",
     # TODO: Append the curr_dir settings to override the default settings
-    settings_files=SETTINGS_FILES,
+    settings_files=[".cache/internal_settings.toml", ".cache/user_settings.toml"],
 
     APP_NAME=_PACKAGE_NAME,
     APP_VERSION=_PACKAGE_VERSION,
