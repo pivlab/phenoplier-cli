@@ -88,7 +88,7 @@ def main(
     return
 
 
-def create_config_files(directory: Path) -> None:
+def create_settings_files(directory: Path) -> None:
     Path(directory).mkdir(parents=True, exist_ok=True)
     for file_name in SETTINGS_FILES:
         settings_file = Path(directory) / file_name
@@ -100,48 +100,48 @@ def create_config_files(directory: Path) -> None:
                 pass
 
 
-def check_config_files(directory: str) -> None:
+def remove_settings_files(directory: Path) -> None:
     for file_name in SETTINGS_FILES:
+        settings_file = Path(directory) / file_name
+        if settings_file.exists():
+            settings_file.unlink()
+            print(f"Config file {str(file_name)} removed from {directory}")
+
+
+def check_settings_files(directory: Path) -> None:
+   a[] for file_name in SETTINGS_FILES:
         settings_file = Path(directory) / file_name
         if not settings_file.exists():
             raise typer.BadParameter(f"Config file {str(file_name)} does not exist at {directory}. Please run 'phenoplier init' first.")
 
 
-def load_config_files(directory: str) -> None:
-    if not Path(directory).exists():
+def load_settings_files(directory: Path) -> None:
+    # Check if the directory exists
+    if not directory.exists():
         raise typer.BadParameter(f"Provided config directory does not exist: {directory}")
-    cache_dir = settings.CACHE_DIR
-    # if not cache_dir.exists():
-    #     cache_dir.mkdir(parents=True, exist_ok=True)
+    # Check if the settings files exist in the directory
+    check_settings_files(directory)
+    # Copy the settings files to the cache directory
+    cache_dir = get_cache_dir()
+    for file_name in SETTINGS_FILES:
+        settings_file = Path(directory) / file_name
+        if settings_file.exists():
+            shutil.copy2(settings_file, cache_dir)
+            print(f"Config file {str(file_name)} loaded from {directory}")
+        else:
+            raise typer.BadParameter(f"Config file {str(file_name)} does not exist at {directory}.")
     return
 
 
 # TODO: Add a prompt to ask the user if they want to overwrite the existing settings file
 @app.command()
 def init(
-        project_dir: Annotated[str, typer.Option("--project-dir", "-p",
-             help=INIT["project_dir"])] = settings.CURRENT_DIR
+        project_dir: Annotated[str, typer.Option("--project-dir", "-p", help=INIT["project_dir"])] = settings.CURRENT_DIR
 ):
     """
     Initialize a user settings file in the home directory in TOML format.
     """
-    create_config_files(project_dir)
-
-
-def activate(
-        user_settings: Annotated[
-            str, typer.Option("--user-settings", "-s", help="Path to the local user settings file")] = str(
-            USER_SETTINGS_FILE),
-):
-    """
-    Export the necessary environment variables derived from the user's setting file.
-    """
-    settings = Path(user_settings)
-    if not settings.exists():
-        raise typer.BadParameter(
-            "User settings file does not exist at default location or not provided. Please run the init command first.")
-    # Optionally, read settings here if needed for the function
-    raise NotImplementedError("This function is not implemented yet.")
+    create_settings_files(Path(project_dir))
 
 
 def run_gls_model_callback(model: str) -> None:
@@ -277,8 +277,8 @@ def regression(
         )
         return data.loc[~data.index.duplicated(keep=keep_action)]
 
-    # Check if the settings files exist
-    check_config_files(project_dir)
+    # Load config files
+    load_settings_files(Path(project_dir))
 
     # TODO: Put error messages in constants.messages as dict kv paris
     # Check if both "debug_use_ols" and "gene_corr_file" are None
