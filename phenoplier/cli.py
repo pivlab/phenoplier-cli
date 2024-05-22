@@ -88,6 +88,34 @@ def main(
     return
 
 
+def create_config_files(directory: Path) -> None:
+    Path(directory).mkdir(parents=True, exist_ok=True)
+    for file_name in SETTINGS_FILES:
+        settings_file = Path(directory) / file_name
+        if settings_file.exists():
+            typer.echo(f"Config file {str(file_name)} already exsists at {directory}.")
+        else:
+            with open(settings_file, "w") as f:
+                print(f"Config file {str(file_name)} created at {directory}.")
+                pass
+
+
+def check_config_files(directory: str) -> None:
+    for file_name in SETTINGS_FILES:
+        settings_file = Path(directory) / file_name
+        if not settings_file.exists():
+            raise typer.BadParameter(f"Config file {str(file_name)} does not exist at {directory}. Please run 'phenoplier init' first.")
+
+
+def load_config_files(directory: str) -> None:
+    if not Path(directory).exists():
+        raise typer.BadParameter(f"Provided config directory does not exist: {directory}")
+    cache_dir = settings.CACHE_DIR
+    # if not cache_dir.exists():
+    #     cache_dir.mkdir(parents=True, exist_ok=True)
+    return
+
+
 # TODO: Add a prompt to ask the user if they want to overwrite the existing settings file
 @app.command()
 def init(
@@ -97,24 +125,7 @@ def init(
     """
     Initialize a user settings file in the home directory in TOML format.
     """
-    def create_user_settings(dir):
-        for file_name in SETTINGS_FILES:
-            settings_file = Path(dir) / file_name
-            if settings_file.exists():
-                typer.echo(f"Config file {str(file_name)} already exsists at {dir}.")
-            else:
-                with open(settings_file, "w") as f:
-                    print(f"Config file {str(file_name)} created at {dir}.")
-                    pass
-        # if not settings_file.exists():
-        #     settings = DEFAULT_USER_SETTINGS
-        #     settings_file.parent.mkdir(parents=True, exist_ok=True)
-        #     settings_file.write_text(tomlkit.dumps(settings))
-        #     typer.echo("Config file created at " + str(settings_file) + ".")
-        # else:
-        #     typer.echo("Config file already exists at " + str(settings_file) + ".")
-    Path(project_dir).mkdir(parents=True, exist_ok=True)
-    create_user_settings(project_dir)
+    create_config_files(project_dir)
 
 
 def activate(
