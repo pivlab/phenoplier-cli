@@ -4,8 +4,8 @@ pandas.DataFrame objects.
 """
 from pathlib import Path
 import pandas as pd
-from phenoplier.readers import get_data_readers, get_data_format_readers
-from phenoplier.config import settings
+from readers import get_data_readers, get_data_format_readers
+from config import settings
 
 from phenoplier.readers import DATA_READERS, DATA_FORMAT_READERS
 

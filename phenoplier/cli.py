@@ -44,7 +44,7 @@ app.add_typer(cmd_group_run, name="run")
 def version_callback(value: bool) -> None:
     """Callback for the --version option."""
     if value:
-        typer.echo(f"{config.settings.APP_NAME} v{config.settings.APP_VERSION}")
+        typer.echo(f"{settings.APP_NAME} v{settings.APP_VERSION}")
         raise typer.Exit()
 
 
@@ -89,7 +89,7 @@ def main(
 
 def create_settings_files(directory: Path) -> None:
     Path(directory).mkdir(parents=True, exist_ok=True)
-    for file_name in config.SETTINGS_FILES:
+    for file_name in SETTINGS_FILES:
         settings_file = Path(directory) / file_name
         if settings_file.exists():
             typer.echo(f"Config file {str(file_name)} already exists at {directory}")
@@ -100,7 +100,7 @@ def create_settings_files(directory: Path) -> None:
 
 
 def remove_settings_files(directory: Path) -> None:
-    for file_name in config.SETTINGS_FILES:
+    for file_name in SETTINGS_FILES:
         settings_file = Path(directory) / file_name
         if settings_file.exists():
             settings_file.unlink()
@@ -108,7 +108,7 @@ def remove_settings_files(directory: Path) -> None:
 
 
 def check_settings_files(directory: Path) -> None:
-    for file_name in config.SETTINGS_FILES:
+    for file_name in SETTINGS_FILES:
         settings_file = Path(directory) / file_name
         if not settings_file.exists():
             raise typer.BadParameter(f"Config file {str(file_name)} does not exist at {directory}. Please run 'phenoplier init' first.")
@@ -116,45 +116,44 @@ def check_settings_files(directory: Path) -> None:
 
 def load_settings_files(directory: Path) -> None:
     """
-    Load the config.settings files from the specified directory. The expected side effect is that after this function is called,
-    config.settings defined in the toml config files will be available as attributes of the config.settings object.
-    :param directory: The directory where the config.settings files are located.
+    Load the settings files from the specified directory. The expected side effect is that after this function is called,
+    settings defined in the toml config files will be available as attributes of the settings object.
+    :param directory: The directory where the settings files are located.
     """
 
-    unloaded_settings = ['DATA_DIR']
+    unloaded_settings = ['DATA_DIR', 'GENERAL']
     for s in unloaded_settings:
-        assert not hasattr(config.settings, s)
+        assert not hasattr(settings, s)
 
     # Check if the directory exists
     if not directory.exists():
         raise typer.BadParameter(f"Provided config directory does not exist: {directory}")
-    # Check if the config.settings files exist in the directory
+    # Check if the settings files exist in the directory
     check_settings_files(directory)
-    # Copy the config.settings files to the cache directory
+    # Copy the settings files to the cache directory
     cache_dir = get_cache_dir()
-    for file_name in config.SETTINGS_FILES:
+    for file_name in SETTINGS_FILES:
         settings_file = Path(directory) / file_name
         if settings_file.exists():
             shutil.copy2(settings_file, cache_dir)
             print(f"Config file {str(file_name)} loaded from {directory}")
         else:
             raise typer.BadParameter(f"Config file {str(file_name)} does not exist at {directory}.")
-    print(hex(id(config.settings)))
-    importlib.reload(config)
-    # config.settings.update({"DATA_DIR": "test"})
-    print(hex(id(config.settings)))
-
+    print(hex(id(settings)))
+    # importlib.reload(config)
+    settings.load_file(f"{settings.CACHE_DIR}/user_settings.toml")
+    settings.load_file(f"{settings.CACHE_DIR}/internal_settings.toml")
     for s in unloaded_settings:
-        assert hasattr(config.settings, s)
+        assert hasattr(settings, s)
 
 
-# TODO: Add a prompt to ask the user if they want to overwrite the existing config.settings file
+# TODO: Add a prompt to ask the user if they want to overwrite the existing settings file
 @app.command()
 def init(
-        project_dir: Annotated[str, typer.Option("--project-dir", "-p", help=INIT["project_dir"])] = config.settings.CURRENT_DIR
+        project_dir: Annotated[str, typer.Option("--project-dir", "-p", help=INIT["project_dir"])] = settings.CURRENT_DIR
 ):
     """
-    Initialize config.settings file and necessary data in the specified directory.
+    Initialize settings file and necessary data in the specified directory.
     """
     create_settings_files(Path(project_dir))
 
@@ -219,7 +218,7 @@ def check_config_files(dir: str) -> None:
 def regression(
         input_file:         Annotated[str, typer.Option("--input-file", "-i", help=RUN_GLS_ARGS["input_file"])],
         output_file:        Annotated[str, typer.Option("--output-file", "-o", help=RUN_GLS_ARGS["output_file"])],
-        project_dir:        Annotated[str, typer.Option("--project-dir", "-p", help=RUN_GLS_ARGS["project_dir"])] = config.settings.CURRENT_DIR,
+        project_dir:        Annotated[str, typer.Option("--project-dir", "-p", help=RUN_GLS_ARGS["project_dir"])] = settings.CURRENT_DIR,
         model:              Annotated[str, typer.Option("--model", help=RUN_GLS_ARGS["model"], callback=run_gls_model_callback)] = "gls",
         gene_corr_file:     Annotated[Optional[Path], typer.Option("--gene-corr-file", "-f", help=RUN_GLS_ARGS["gene_corr_file"])] = None,
         gene_corr_mode:     Annotated[str, typer.Option("--gene-corr-mode", "-m", help=RUN_GLS_ARGS["debug_use_sub_corr"])]       = "sub",
@@ -293,7 +292,7 @@ def regression(
         return data.loc[~data.index.duplicated(keep=keep_action)]
 
     # Load config files
-    load_settings_files(Path(project_dir))
+    # load_settings_files(Path(project_dir))
 
     # TODO: Put error messages in constants.messages as dict kv paris
     # Check if both "debug_use_ols" and "gene_corr_file" are None
