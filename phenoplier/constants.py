@@ -33,7 +33,8 @@ RUN_GLS_ARGS = ImmutableDict(
         "debug_use_sub_corr": "Use an LV-specific submatrix of the gene correlation matrix.",
         "model": "Choose which regression model to use [gls | ols].",
         "batch_id": "Batch ID.",
-        "batch_n_splits": "Number of splits in the batch."
+        "batch_n_splits": "Number of splits in the batch.",
+        "dup_genes_action": "Mandatory if gene identifies are duplicated.",
     }
 )
 
