@@ -1,14 +1,30 @@
 """This module provides the command line interface for Phenoplier."""
 
 import os
+import sys
 import typer
+from enum import Enum
 from typing import Optional, Annotated, List
 from pathlib import Path
+from rich import print
+import pandas as pd
 from . import gls_cli
 from .config import settings
 from .config import USER_SETTINGS_FILE
 from .constants import RUN_GLS_ARGS, RUN_GLS_DEFAULTS, CLI
-from rich import print
+import logging
+
+
+LOG_FORMAT = "%(levelname)s: %(message)s"
+
+h1 = logging.StreamHandler(stream=sys.stdout)
+h1.setLevel(logging.INFO)
+h1.addFilter(lambda record: record.levelno <= logging.INFO)
+h2 = logging.StreamHandler()
+h2.setLevel(logging.WARNING)
+
+logging.basicConfig(format=LOG_FORMAT, level=logging.INFO, handlers=[h1, h2])
+logger = logging.getLogger("root")
 
 
 # Define the main CLI program/command
@@ -129,6 +145,11 @@ def run_gls_gene_corr_mode_callback(mode: str) -> None:
     return
 
 
+class DupGeneActions(str, Enum):
+    keep_first = "keep-first"
+    keep_last = "keep-last"
+    remove_all = "remove-all"
+
 @cmd_group_run.command()
 def regression(
         input_file:         Annotated[str, typer.Option("--input-file", "-i", help=RUN_GLS_ARGS["input_file"])],
@@ -136,6 +157,7 @@ def regression(
         model:              Annotated[str, typer.Option("--model", help=RUN_GLS_ARGS["model"], callback=run_gls_model_callback)] = "gls",
         gene_corr_file:     Annotated[Optional[str], typer.Option("--gene-corr-file", "-f", help=RUN_GLS_ARGS["gene_corr_file"])] = None,
         gene_corr_mode:     Annotated[str, typer.Option("--gene-corr-mode", "-m", help=RUN_GLS_ARGS["debug_use_sub_corr"])]       = "sub",
+        dup_genes_action:   Annotated[DupGeneActions, typer.Option("--dup-genes-action", help=RUN_GLS_ARGS["duplicated_genes_action"])] = DupGeneActions.keep_first,
         covars:             Annotated[Optional[str], typer.Option("--covars", "-c", help=RUN_GLS_ARGS["covars"])]                 = None,
         cohort_name:        Annotated[Optional[str], typer.Option("--cohort-name", "-n", help=RUN_GLS_ARGS["cohort_name"])]       = None,
         lv_list:            Annotated[Optional[List[str]], typer.Option("--lv-list", help=RUN_GLS_ARGS["lv_list"])]                             = None,
@@ -146,6 +168,64 @@ def regression(
     """
     Run the Generalized Least Squares (GLS) model by default. Note that you need to run "phenoplier init" first to set up the environment.
     """
+    def check_batch_args():
+        if len(lv_list) > 0 and (batch_id is not None or batch_n_splits is not None):
+            raise typer.BadParameter("Incompatible parameters: LV list and batches cannot be used together")
+        
+        if (batch_id is not None and batch_n_splits is None) or (
+            batch_id is None and batch_n_splits is not None
+        ):
+            raise typer.BadParameter(
+                "Both --batch-id and --batch-n-splits have to be provided (not only one of them)"
+            )
+
+        if batch_id is not None and batch_id < 1:
+            raise typer.BadParameter("--batch-id must be >= 1")
+
+        if (
+            batch_id is not None
+            and batch_n_splits is not None
+            and batch_id > batch_n_splits
+        ):
+            typer.BadParameter("--batch-id must be <= --batch-n-splits")
+
+    def check_output_file():
+        output_file = Path(output_file)
+        if output_file.exists():
+            typer.BadParameter(f"Skipping, output file exists: {str(output_file)}")
+
+        if not output_file.parent.exists():
+            typer.BadParameter(
+                f"Parent directory of output file does not exist: {str(output_file.parent)}"
+            )
+            
+    def read_input():
+        data = pd.read_csv(input_file, sep="\t")
+        logger.info(f"Input file has {data.shape[0]} genes")
+
+        if "gene_name" not in data.columns:
+            logger.error("Mandatory columns not present in data 'gene_name'")
+            sys.exit(1)
+
+        if "pvalue" not in data.columns:
+            logger.error("Mandatory columns not present in data 'pvalue'")
+            sys.exit(1)
+
+        data = data.set_index("gene_name")
+        return data
+    
+    def remove_dup_gene_entries(data):
+        if dup_genes_action.startswith("keep"):
+            keep_action = dup_genes_action.split("-")[1]
+        elif dup_genes_action == "remove-all":
+            keep_action = False
+        else:
+            raise ValueError("Wrong --duplicated-genes-action value")
+        logger.info(
+            f"Removed duplicated genes symbols using '{args.duplicated_genes_action}'. "
+            f"Data now has {data.shape[0]} genes"
+        )
+        return data.loc[~data.index.duplicated(keep=keep_action)]
 
     # TODO: Put error messages in constants.messages as dict kv paris
     # Check if both "debug_use_ols" and "gene_corr_file" are None
@@ -163,6 +243,17 @@ def regression(
         else f"Running {model} without covariates."
     )
     print("[blue][Info]: " + covars_info)
+
+    data = read_input()
+    data = remove_dup_gene_entries(data)
+    # unique index (gene names)
+    if not data.index.is_unique:
+        logger.error(
+            "Duplicated genes in input data. Use option --duplicated-genes-action "
+            "if you want to skip them."
+        )
+    sys.exit(1)
+
 
     # Build command line arguments
     gene_corrs_args = f"--gene-corr-file {gene_corr_file}" if gene_corr_file else "--debug-use-ols"
