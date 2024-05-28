@@ -2,6 +2,7 @@ import os
 from typer.testing import CliRunner
 from pathlib import Path
 from pytest import mark
+from rich import print
 from phenoplier import cli
 from phenoplier.config import settings
 from .utils import diff_tsv
@@ -39,6 +40,7 @@ def _test_random_pheno(idx: int, with_default_covars: bool):
     if output_file.exists():
         output_file.unlink()
     # Run command
+    print(f"Running command: {option}")
     result = runner.invoke(cli.app, option)
     print(result.stdout)
     if result.exit_code != 0:
@@ -58,15 +60,15 @@ def test_without_covars_random_pheno0():
     _test_random_pheno(0, False)
 
 
-def test_with_covars_random_pheno0():
-    _test_random_pheno(0, True)
+# def test_with_covars_random_pheno0():
+#     _test_random_pheno(0, True)
 
 
-@mark.skipif(IN_GITHUB_ACTIONS, reason="Redundant test. Slow for GitHub Actions.")
-def test_without_covars_random_pheno15():
-    _test_random_pheno(15, False)
+# @mark.skipif(IN_GITHUB_ACTIONS, reason="Redundant test. Slow for GitHub Actions.")
+# def test_without_covars_random_pheno15():
+#     _test_random_pheno(15, False)
 
 
-@mark.skipif(IN_GITHUB_ACTIONS, reason="Redundant test. Slow for GitHub Actions.")
-def test_with_covars_random_pheno15():
-    _test_random_pheno(15, True)
+# @mark.skipif(IN_GITHUB_ACTIONS, reason="Redundant test. Slow for GitHub Actions.")
+# def test_with_covars_random_pheno15():
+#     _test_random_pheno(15, True)

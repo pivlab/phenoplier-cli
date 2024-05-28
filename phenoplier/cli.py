@@ -183,16 +183,16 @@ class DUP_GENE_ACTIONS(str, Enum):
 
 @cmd_group_run.command()
 def regression(
-        input_file:         Annotated[str, typer.Option("--input-file", "-i", help=RUN_GLS_ARGS["input_file"])],
-        output_file:        Annotated[str, typer.Option("--output-file", "-o", help=RUN_GLS_ARGS["output_file"])],
+        input_file:         Annotated[Path, typer.Option("--input-file", "-i", help=RUN_GLS_ARGS["input_file"])],
+        output_file:        Annotated[Path, typer.Option("--output-file", "-o", help=RUN_GLS_ARGS["output_file"])],
         model:              Annotated[str, typer.Option("--model", help=RUN_GLS_ARGS["model"], callback=run_gls_model_callback)] = "gls",
-        gene_corr_file:     Annotated[Optional[str], typer.Option("--gene-corr-file", "-f", help=RUN_GLS_ARGS["gene_corr_file"])] = None,
+        gene_corr_file:     Annotated[Optional[Path], typer.Option("--gene-corr-file", "-f", help=RUN_GLS_ARGS["gene_corr_file"])] = None,
         gene_corr_mode:     Annotated[str, typer.Option("--gene-corr-mode", "-m", help=RUN_GLS_ARGS["debug_use_sub_corr"])]       = "sub",
         dup_genes_action:   Annotated[DUP_GENE_ACTIONS, typer.Option("--dup-genes-action", help=RUN_GLS_ARGS["dup_genes_action"])] = DUP_GENE_ACTIONS.keep_first,
         covars:             Annotated[Optional[str], typer.Option("--covars", "-c", help=RUN_GLS_ARGS["covars"])]                 = None,
         cohort_name:        Annotated[Optional[str], typer.Option("--cohort-name", "-n", help=RUN_GLS_ARGS["cohort_name"])]       = None,
         lv_list:            Annotated[Optional[List[str]], typer.Option("--lv-list", help=RUN_GLS_ARGS["lv_list"])]                             = [],
-        lv_model_file:      Annotated[Optional[str], typer.Option("--lv-model-file", help=RUN_GLS_ARGS["lv_model_file"])]                       = None,
+        lv_model_file:      Annotated[Optional[Path], typer.Option("--lv-model-file", help=RUN_GLS_ARGS["lv_model_file"])]                       = None,
         batch_id:           Annotated[Optional[int], typer.Option("--batch-id", help=RUN_GLS_ARGS["batch_id"])]                                 = None,
         batch_n_splits:     Annotated[ Optional[int], typer.Option("--batch-n-splits", help=RUN_GLS_ARGS["batch_n_splits"])]                    = None,
 ) -> None:
