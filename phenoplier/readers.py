@@ -2,7 +2,7 @@
 Specifies functions to read different files used in the project.
 """
 import pandas as pd
-from config import settings as conf
+from .config import settings as conf
 
 
 #
