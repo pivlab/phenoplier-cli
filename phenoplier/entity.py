@@ -11,8 +11,8 @@ from functools import lru_cache
 import numpy as np
 import pandas as pd
 
-from config import settings as conf
-from cache import read_data
+from .config import settings as conf
+from .cache import read_data
 
 
 class Study(Enum):

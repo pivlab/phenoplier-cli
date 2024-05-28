@@ -2,17 +2,21 @@
 
 import os
 import sys
-import typer
-from enum import Enum
 from typing import Optional, Annotated, List
 from pathlib import Path
+import logging
+
+import typer
+from enum import Enum, EnumMeta, unique
 from rich import print
 import pandas as pd
+import numpy as np
+
 from . import gls_cli
+from .gls import GLSPhenoplier
 from .config import settings
 from .config import USER_SETTINGS_FILE
 from .constants import RUN_GLS_ARGS, RUN_GLS_DEFAULTS, CLI
-import logging
 
 
 LOG_FORMAT = "%(levelname)s: %(message)s"
@@ -146,17 +150,25 @@ def run_gls_gene_corr_mode_callback(mode: str) -> None:
 
 
 # List of all supported covariates
-COVAR_OPTIONS = [
-    "all",
-    "gene_size",
-    "gene_size_log",
-    "gene_density",
-    "gene_density_log",
-    "gene_n_snps_used",
-    "gene_n_snps_used_log",
-    "gene_n_snps_used_density",
-    "gene_n_snps_used_density_log",
-]
+class CovarOptionsEnum(EnumMeta):
+    @classmethod
+    def placeholder(cls, *args, **kwds):
+        raise NotImplementedError("This method is not implemented yet.")
+
+
+@unique
+class CovarOptions(str, Enum, metaclass=CovarOptionsEnum):
+    all = "gene_size, gene_size_log, gene_density, gene_density_log, gene_n_snps_used \
+    gene_n_snps_used_log, gene_n_snps_used_density, gene_n_snps_used_density_log"
+    gene = "gene_size"
+    gene_log = "gene_size_log"
+    gene_density = "gene_density"
+    gene_density_log = "gene_density_log"
+    gene_n_snps_used = "gene_n_snps_used"
+    gene_n_snps_used_log = "gene_n_snps_used_log"
+    gene_n_snps_used_density = "gene_n_snps_used_density"
+    gene_n_snps_used_density_log = "gene_n_snps_used_density_log"
+    default = "gene_size gene_size_log gene_density gene_density_log"
 
 # Subset of covariates taht need SNP-level information
 SNPLEVEL_COVAR_OPTIONS_PREFIXES = [
@@ -164,7 +176,7 @@ SNPLEVEL_COVAR_OPTIONS_PREFIXES = [
     "gene_n_snps_used_density",
 ]
 
-class DupGeneActions(str, Enum):
+class DUP_GENE_ACTIONS(str, Enum):
     keep_first = "keep-first"
     keep_last = "keep-last"
     remove_all = "remove-all"
@@ -176,10 +188,10 @@ def regression(
         model:              Annotated[str, typer.Option("--model", help=RUN_GLS_ARGS["model"], callback=run_gls_model_callback)] = "gls",
         gene_corr_file:     Annotated[Optional[str], typer.Option("--gene-corr-file", "-f", help=RUN_GLS_ARGS["gene_corr_file"])] = None,
         gene_corr_mode:     Annotated[str, typer.Option("--gene-corr-mode", "-m", help=RUN_GLS_ARGS["debug_use_sub_corr"])]       = "sub",
-        dup_genes_action:   Annotated[DupGeneActions, typer.Option("--dup-genes-action", help=RUN_GLS_ARGS["dup_genes_action"])] = DupGeneActions.keep_first,
+        dup_genes_action:   Annotated[DUP_GENE_ACTIONS, typer.Option("--dup-genes-action", help=RUN_GLS_ARGS["dup_genes_action"])] = DUP_GENE_ACTIONS.keep_first,
         covars:             Annotated[Optional[str], typer.Option("--covars", "-c", help=RUN_GLS_ARGS["covars"])]                 = None,
         cohort_name:        Annotated[Optional[str], typer.Option("--cohort-name", "-n", help=RUN_GLS_ARGS["cohort_name"])]       = None,
-        lv_list:            Annotated[Optional[List[str]], typer.Option("--lv-list", help=RUN_GLS_ARGS["lv_list"])]                             = None,
+        lv_list:            Annotated[Optional[List[str]], typer.Option("--lv-list", help=RUN_GLS_ARGS["lv_list"])]                             = [],
         lv_model_file:      Annotated[Optional[str], typer.Option("--lv-model-file", help=RUN_GLS_ARGS["lv_model_file"])]                       = None,
         batch_id:           Annotated[Optional[int], typer.Option("--batch-id", help=RUN_GLS_ARGS["batch_id"])]                                 = None,
         batch_n_splits:     Annotated[ Optional[int], typer.Option("--batch-n-splits", help=RUN_GLS_ARGS["batch_n_splits"])]                    = None,
@@ -298,13 +310,14 @@ def regression(
     )
     
     # add covariates (if specified)
-    if covars is not None and len(covars) > 0:
-        covars_selected = covars
+    if covars is not None:
+        covars_selected = CovarOptions[covars].value
+        print("Covars selected: ", covars)
 
-        if "all" in covars_selected:
-            covars_selected = [c for c in COVAR_OPTIONS if c != "all"]
+        # if "all" in covars_selected:
+        #     covars_selected = [c for c in COVAR_OPTIONS if c != "all"]
 
-        covars_selected = sorted(covars_selected)
+        # covars_selected = sorted(covars_selected)
 
         logger.info(f"Using covariates: {covars_selected}")
 
@@ -408,7 +421,7 @@ def regression(
     if final_data.shape[1] == 1:
         final_data = final_data.squeeze().rename(input_file.stem)
 
-    if debug_use_ols and gene_corr_file is not None:
+    if model == "ols" and gene_corr_file is not None:
         logger.error(
             "Incompatible arguments: you cannot specify both "
             "--gene-corr-file and --debug-use-ols"
@@ -461,8 +474,8 @@ def regression(
     # create model object
     model = GLSPhenoplier(
         gene_corrs_file_path=gene_corr_file,
-        debug_use_ols=debug_use_ols,
-        debug_use_sub_gene_corr=debug_use_sub_gene_corr,
+        debug_use_ols=True if model == "ols" else False,
+        debug_use_sub_gene_corr=True if gene_corr_mode == "sub" else False,
         use_own_implementation=True,
         logger=logger,
     )

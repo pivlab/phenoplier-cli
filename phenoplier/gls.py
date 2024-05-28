@@ -10,8 +10,8 @@ from scipy import stats
 from scipy import sparse
 import statsmodels.api as sm
 
-from entity import Gene
-from config import settings as conf
+from .entity import Gene
+from .config import settings as conf
 
 class GLSPhenoplier(object):
     """
