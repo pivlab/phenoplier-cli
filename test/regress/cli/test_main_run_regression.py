@@ -60,15 +60,15 @@ def test_without_covars_random_pheno0():
     _test_random_pheno(0, False)
 
 
-# def test_with_covars_random_pheno0():
-#     _test_random_pheno(0, True)
+def test_with_covars_random_pheno0():
+    _test_random_pheno(0, True)
 
 
-# @mark.skipif(IN_GITHUB_ACTIONS, reason="Redundant test. Slow for GitHub Actions.")
-# def test_without_covars_random_pheno15():
-#     _test_random_pheno(15, False)
+@mark.skipif(IN_GITHUB_ACTIONS, reason="Redundant test. Slow for GitHub Actions.")
+def test_without_covars_random_pheno15():
+    _test_random_pheno(15, False)
 
 
-# @mark.skipif(IN_GITHUB_ACTIONS, reason="Redundant test. Slow for GitHub Actions.")
-# def test_with_covars_random_pheno15():
-#     _test_random_pheno(15, True)
+@mark.skipif(IN_GITHUB_ACTIONS, reason="Redundant test. Slow for GitHub Actions.")
+def test_with_covars_random_pheno15():
+    _test_random_pheno(15, True)
