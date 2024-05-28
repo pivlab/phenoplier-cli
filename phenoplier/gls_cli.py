@@ -42,7 +42,7 @@ SNPLEVEL_COVAR_OPTIONS_PREFIXES = [
 
 
 def run():
-    from gls import GLSPhenoplier
+    from .gls import GLSPhenoplier
 
     parser = argparse.ArgumentParser(
         description="""
