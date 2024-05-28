@@ -149,26 +149,24 @@ def run_gls_gene_corr_mode_callback(mode: str) -> None:
     return
 
 
-# List of all supported covariates
-class CovarOptionsEnum(EnumMeta):
-    @classmethod
-    def placeholder(cls, *args, **kwds):
-        raise NotImplementedError("This method is not implemented yet.")
+COVAR_OPTIONS = [
+    "all",
+    "gene_size",
+    "gene_size_log",
+    "gene_density",
+    "gene_density_log",
+    "gene_n_snps_used",
+    "gene_n_snps_used_log",
+    "gene_n_snps_used_density",
+    "gene_n_snps_used_density_log",
+]
 
-
-@unique
-class CovarOptions(str, Enum, metaclass=CovarOptionsEnum):
-    all = "gene_size, gene_size_log, gene_density, gene_density_log, gene_n_snps_used \
-    gene_n_snps_used_log, gene_n_snps_used_density, gene_n_snps_used_density_log"
-    gene = "gene_size"
-    gene_log = "gene_size_log"
-    gene_density = "gene_density"
-    gene_density_log = "gene_density_log"
-    gene_n_snps_used = "gene_n_snps_used"
-    gene_n_snps_used_log = "gene_n_snps_used_log"
-    gene_n_snps_used_density = "gene_n_snps_used_density"
-    gene_n_snps_used_density_log = "gene_n_snps_used_density_log"
-    default = "gene_size gene_size_log gene_density gene_density_log"
+COVAR_OPTIONS_DEFAULT = [
+    "gene_size",
+    "gene_size_log",
+    "gene_density",
+    "gene_density_log",
+]
 
 # Subset of covariates taht need SNP-level information
 SNPLEVEL_COVAR_OPTIONS_PREFIXES = [
@@ -221,7 +219,6 @@ def regression(
             typer.BadParameter("--batch-id must be <= --batch-n-splits")
 
     def check_output_file():
-        output_file = Path(output_file)
         if output_file.exists():
             typer.BadParameter(f"Skipping, output file exists: {str(output_file)}")
 
@@ -311,13 +308,16 @@ def regression(
     
     # add covariates (if specified)
     if covars is not None:
-        covars_selected = CovarOptions[covars].value
+        covars_selected = str.split(covars, " ")
         print("Covars selected: ", covars)
 
-        # if "all" in covars_selected:
-        #     covars_selected = [c for c in COVAR_OPTIONS if c != "all"]
+        if "all" in covars_selected:
+            covars_selected = [c for c in COVAR_OPTIONS if c != "all"]
 
-        # covars_selected = sorted(covars_selected)
+        if "default" in covars_selected:
+            covars_selected = COVAR_OPTIONS_DEFAULT
+
+        covars_selected = sorted(covars_selected)
 
         logger.info(f"Using covariates: {covars_selected}")
 
