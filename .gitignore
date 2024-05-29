@@ -137,3 +137,6 @@ _tmp/
 
 # Ignore dynaconf secret files
 .secrets.toml
+
+# Ignore the cache folder
+.cache/
