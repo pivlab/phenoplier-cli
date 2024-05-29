@@ -37,13 +37,15 @@ settings = Dynaconf(
     #
     ROOT_DIR=Path(tempfile.gettempdir(), _PACKAGE_NAME).resolve(),
     # Directory contains the git repository
-    CODE_DIR=Path(__file__).resolve().parent.parent,
+    REPO_DIR=Path(__file__).resolve().parent.parent,
+    # Directory contains the source code
+    SRC_DIR=Path(__file__).resolve().parent,
     # Directory contains the tests
-    TEST_DIR="@format {this.CODE_DIR}/test/",
+    TEST_DIR="@format {this.REPO_DIR}/test/",
     # Directory to put test outputs
     TEST_OUTPUT_DIR=Path("/tmp/" + _PACKAGE_NAME + "_test_output/").resolve(),
     # Directory for cached data
-    CACHE_DIR="@format {this.CODE_DIR}/.cache/",
+    CACHE_DIR="@format {this.REPO_DIR}/.cache/",
 )
 
 # `envvar_prefix` = export envvars with `export DYNACONF_FOO=bar`.
