@@ -60,5 +60,5 @@ jobs:
         run: |
           source .venv/bin/activate
           python3 scripts/setup_data.py
-          pytest test/
+          PYTHONPATH=. pytest test/
           # coverage report

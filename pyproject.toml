@@ -33,8 +33,4 @@ build-backend = "poetry.core.masonry.api"
 phenoplier = "phenoplier.__main__:main"
 
 [tool.pytest.ini_options]
-pythonpath = [
-  "./", "./phenoplier/"
-]
-
-
+pythonpath = "."

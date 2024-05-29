@@ -5,7 +5,7 @@ import logging
 import logging.config
 import yaml
 
-from .config import settings as conf
+from phenoplier.config import settings as conf
 
 
 def _get_logger_config():
