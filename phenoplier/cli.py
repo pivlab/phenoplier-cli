@@ -13,6 +13,7 @@ import numpy as np
 from phenoplier.gls import GLSPhenoplier
 from phenoplier.config import settings, SETTINGS_FILES
 from phenoplier.cli_constants import RUN_GLS_ARGS, RUN_GLS_DEFAULTS, CLI, INIT
+from phenoplier.cache import get_cache_dir
 
 
 LOG_FORMAT = "%(levelname)s: %(message)s"
@@ -121,9 +122,9 @@ def load_settings_files(directory: Path) -> None:
     :param directory: The directory where the settings files are located.
     """
 
-    unloaded_settings = ['DATA_DIR', 'GENERAL']
-    for s in unloaded_settings:
-        assert not hasattr(settings, s)
+    # unloaded_settings = ['DATA_DIR', 'GENERAL']
+    # for s in unloaded_settings:
+    #     assert not hasattr(settings, s)
 
     # Check if the directory exists
     if not directory.exists():
@@ -143,8 +144,8 @@ def load_settings_files(directory: Path) -> None:
     # importlib.reload(config)
     settings.load_file(f"{settings.CACHE_DIR}/user_settings.toml")
     settings.load_file(f"{settings.CACHE_DIR}/internal_settings.toml")
-    for s in unloaded_settings:
-        assert hasattr(settings, s)
+    # for s in unloaded_settings:
+    #     assert hasattr(settings, s)
 
 
 # TODO: Add a prompt to ask the user if they want to overwrite the existing settings file
@@ -216,19 +217,19 @@ def check_config_files(dir: str) -> None:
 
 @cmd_group_run.command()
 def regression(
-        input_file:         Annotated[Path, typer.Option("--input-file", "-i", help=RUN_GLS_ARGS["input_file"])],
-        output_file:        Annotated[Path, typer.Option("--output-file", "-o", help=RUN_GLS_ARGS["output_file"])],
-        project_dir:        Annotated[str, typer.Option("--project-dir", "-p", help=RUN_GLS_ARGS["project_dir"])] = settings.CURRENT_DIR,
-        model:              Annotated[str, typer.Option("--model", help=RUN_GLS_ARGS["model"], callback=run_gls_model_callback)] = "gls",
-        gene_corr_file:     Annotated[Optional[Path], typer.Option("--gene-corr-file", "-f", help=RUN_GLS_ARGS["gene_corr_file"])] = None,
-        gene_corr_mode:     Annotated[str, typer.Option("--gene-corr-mode", "-m", help=RUN_GLS_ARGS["debug_use_sub_corr"])]       = "sub",
-        dup_genes_action:   Annotated[DUP_GENE_ACTIONS, typer.Option("--dup-genes-action", help=RUN_GLS_ARGS["dup_genes_action"])] = DUP_GENE_ACTIONS.keep_first,
-        covars:             Annotated[Optional[str], typer.Option("--covars", "-c", help=RUN_GLS_ARGS["covars"])]                 = None,
-        cohort_name:        Annotated[Optional[str], typer.Option("--cohort-name", "-n", help=RUN_GLS_ARGS["cohort_name"])]       = None,
-        lv_list:            Annotated[Optional[List[str]], typer.Option("--lv-list", help=RUN_GLS_ARGS["lv_list"])]                             = [],
-        lv_model_file:      Annotated[Optional[Path], typer.Option("--lv-model-file", help=RUN_GLS_ARGS["lv_model_file"])]                       = None,
-        batch_id:           Annotated[Optional[int], typer.Option("--batch-id", help=RUN_GLS_ARGS["batch_id"])]                                 = None,
-        batch_n_splits:     Annotated[ Optional[int], typer.Option("--batch-n-splits", help=RUN_GLS_ARGS["batch_n_splits"])]                    = None,
+        input_file:             Annotated[Path, typer.Option("--input-file", "-i", help=RUN_GLS_ARGS["input_file"])],
+        output_file:            Annotated[Path, typer.Option("--output-file", "-o", help=RUN_GLS_ARGS["output_file"])],
+        project_dir:            Annotated[str, typer.Option("--project-dir", "-p", help=RUN_GLS_ARGS["project_dir"])] = settings.CURRENT_DIR,
+        model:                  Annotated[str, typer.Option("--model", help=RUN_GLS_ARGS["model"], callback=run_gls_model_callback)] = "gls",
+        gene_corr_file:         Annotated[Optional[Path], typer.Option("--gene-corr-file", "-f", help=RUN_GLS_ARGS["gene_corr_file"])] = None,
+        gene_corr_mode:         Annotated[str, typer.Option("--gene-corr-mode", "-m", help=RUN_GLS_ARGS["debug_use_sub_corr"])] = "sub",
+        dup_genes_action:       Annotated[DUP_GENE_ACTIONS, typer.Option("--dup-genes-action", help=RUN_GLS_ARGS["dup_genes_action"])] = DUP_GENE_ACTIONS.keep_first,
+        covars:                 Annotated[Optional[str], typer.Option("--covars", "-c", help=RUN_GLS_ARGS["covars"])] = None,
+        cohort_metadata_dir:    Annotated[Optional[str], typer.Option("--cohort-name", "-n", help=RUN_GLS_ARGS["cohort_metadata_dir"])] = None,
+        lv_list:                Annotated[Optional[List[str]], typer.Option("--lv-list", help=RUN_GLS_ARGS["lv_list"])] = [],
+        lv_model_file:          Annotated[Optional[Path], typer.Option("--lv-model-file", help=RUN_GLS_ARGS["lv_model_file"])] = None,
+        batch_id:               Annotated[Optional[int], typer.Option("--batch-id", help=RUN_GLS_ARGS["batch_id"])] = None,
+        batch_n_splits:         Annotated[ Optional[int], typer.Option("--batch-n-splits", help=RUN_GLS_ARGS["batch_n_splits"])] = None,
 ) -> None:
     """
     Run the Generalized Least Squares (GLS) model by default. Note that you need to run "phenoplier init" first to set up the environment.
@@ -278,7 +279,7 @@ def regression(
         data = data.set_index("gene_name")
         return data
     
-    def remove_dup_gene_entries(data):
+    def remove_dup_gene_entries(input_data):
         if dup_genes_action.startswith("keep"):
             keep_action = dup_genes_action.split("-")[1]
         elif dup_genes_action == "remove-all":
@@ -287,12 +288,16 @@ def regression(
             raise ValueError("Wrong --dup-gene-action value")
         logger.info(
             f"Removed duplicated genes symbols using '{dup_genes_action}'. "
-            f"Data now has {data.shape[0]} genes"
+            f"Data now has {input_data.shape[0]} genes"
         )
-        return data.loc[~data.index.duplicated(keep=keep_action)]
+        return input_data.loc[~input_data.index.duplicated(keep=keep_action)], keep_action
+
+    # Check arguments
+    check_batch_args()
+    check_output_file()
 
     # Load config files
-    # load_settings_files(Path(project_dir))
+    load_settings_files(Path(project_dir))
 
     # TODO: Put error messages in constants.messages as dict kv paris
     # Check if both "debug_use_ols" and "gene_corr_file" are None
@@ -312,7 +317,7 @@ def regression(
     print("[blue][Info]: " + covars_info)
 
     data = read_input()
-    data = remove_dup_gene_entries(data)
+    data, keep_action = remove_dup_gene_entries(data)
     # unique index (gene names)
     if not data.index.is_unique:
         logger.error(
@@ -550,46 +555,6 @@ def regression(
     results = pd.DataFrame(results).set_index("lv").sort_values("pvalue_onesided")
     logger.info(f"Writing results to {str(output_file)}")
     results.to_csv(output_file, sep="\t", na_rep="NA")
-
-
-
-
-    # # Build command line arguments
-    # gene_corrs_args = f"--gene-corr-file {gene_corr_file}" if gene_corr_file else "--debug-use-ols"
-    # if gene_corr_mode == "sub":
-    #     gene_corrs_args += " --debug-use-sub-gene-corr"
-    # # Build covars arguments
-    # covars_args = (
-    #     f"--covars {RUN_GLS_DEFAULTS["covars"]}" if covars == "default"
-    #     else f"--covars {covars}" if covars
-    #     else ""
-    # )
-    # # Build cohort arguments
-    # cohort_args = ""
-    # if cohort_name:
-    #     # FIXME: hardcoded
-    #     cohort_metadata_dir = f"{os.getenv('PHENOPLIER_RESULTS_GLS')}/gene_corrs/cohorts/{cohort_name}/gtex_v8/mashr/"
-    #     cohort_args = f"--cohort-metadata-dir {cohort_metadata_dir}"
-    # # Build batch arguments
-    # batch_args = ""
-    # if batch_id and batch_n_splits:
-    #     batch_args = f"--batch-id {batch_id} --batch-n-splits {batch_n_splits}"
-    # elif lv_list:
-    #     batch_args = f"--lv-list {','.join(lv_list)}"
-    # # Build lv model file arguments
-    # lv_model_args = f"--lv-model-file {lv_model_file}" if lv_model_file else ""
-    # # Assemble and execute the final command
-    # GLS_PATH = Path(gls_cli.__file__).resolve()
-    # # TODO: remove gls_cli, call directly the function from the library, instead of use shell command. Otherwise,
-    # #  tests and exceptions handling tricky
-    # command = (f"python3 {GLS_PATH} "
-    #            f"-i {input_file} "
-    #            f"--dup-gene-action keep-first "
-    #            f"-o {output_file} {gene_corrs_args} {covars_args} {cohort_args} {batch_args} {lv_model_args}")
-    # # TODO: Add pretty print for command. Should have indentation and new lines
-    # # typer.echo(f"Running command: {command}")
-    # # Execute Command
-    # os.system(command)
 
 
 if __name__ == "__main__":
