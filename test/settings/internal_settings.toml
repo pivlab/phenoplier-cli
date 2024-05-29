@@ -1,0 +1,63 @@
+# Core Settings
+# Directory stores input data
+DATA_DIR = "@format {this.ROOT_DIR}/data"
+# Directory stores output data
+RESULT_DIR = "@format {this.ROOT_DIR}/result"
+# Directory stores third-party applications
+SOFTWARE_DIR = "@format {this.ROOT_DIR}/software"
+CONDA_ENVS_DIR = "@format {this.SOFTWARE_DIR}/conda_envs"
+
+# General Settings
+[GENERAL]
+BIOMART_GENES_INFO_FILE = "@format {this.DATA_DIR}/biomart_genes_hg38.csv.gz"
+LOG_CONFIG_FILE = "@format {this.CODE_DIR}/log_config.yaml"
+TERM_ID_LABEL_FILE = "@format {this.DATA_DIR}/term_id_labels.tsv.gz"
+TERM_ID_XREFS_FILE = "@format {this.DATA_DIR}/term_id_xrefs.tsv.gz"
+
+# Gene Module Model settings
+[GENE_MODULE_MODEL]
+# Root directory for MultiPLIER
+BASE_DIR = "@format {this.DATA_DIR}/multiplier"
+# MultiPLIER model files
+MODEL_SUMMARY_FILE = "@format {this.GENE_MODULE_MODEL.BASE_DIR}/multiplier_model_summary.pkl"
+MODEL_Z_MATRIX_FILE = "@format {this.GENE_MODULE_MODEL.BASE_DIR}/multiplier_model_z.pkl"
+MODEL_B_MATRIX_FILE = "@format {this.GENE_MODULE_MODEL.BASE_DIR}/multiplier_model_b.pkl"
+MODEL_U_MATRIX_FILE = "@format {this.GENE_MODULE_MODEL.BASE_DIR}/multiplier_model_u.pkl"
+MODEL_U_AUC_MATRIX_FILE = "@format {this.GENE_MODULE_MODEL.BASE_DIR}/multiplier_model_u_auc.pkl"
+MODEL_METADATA_FILE = "@format {this.GENE_MODULE_MODEL.BASE_DIR}/multiplier_model_metadata.pkl"
+RECOUNT2_MODEL_FILE = "@format {this.GENE_MODULE_MODEL.BASE_DIR}/recount_PLIER_model.RDS"
+BANCHEREAU_MCPCOUNTER_NEUTROPHIL_FILE = "@format {this.GENE_MODULE_MODEL.BASE_DIR}/Banchereau_MCPcounter_neutrophil_LV.tsv"
+
+# TWAS Settings
+[TWAS]
+# Root directory for PhenomeXcan
+BASE_DIR = "@format {this.DATA_DIR}/phenomexcan"
+# Genes metadata and mappings
+GENES_METADATA_DIR = "@format {this.TWAS.BASE_DIR}/genes_metadata"
+GENE_MAP_ID_TO_NAME = "@format {this.TWAS.GENES_METADATA_DIR}/genes_mapping_id_to_name.pkl"
+GENE_MAP_NAME_TO_ID = "@format {this.TWAS.GENES_METADATA_DIR}/genes_mapping_name_to_id.pkl"
+TRAITS_FULLCODE_TO_EFO_MAP_FILE = "@format {this.TWAS.BASE_DIR}/phenomexcan_traits_fullcode_to_efo.tsv"
+# Gene association results
+GENE_ASSOC_DIR = "@format {this.TWAS.BASE_DIR}/gene_assoc"
+SPREDIXCAN_MASHR_ZSCORES_FOLDER = "@format {this.TWAS.GENE_ASSOC_DIR}/spredixcan"
+SMULTIXCAN_MASHR_ZSCORES_FILE = "@format {this.TWAS.GENE_ASSOC_DIR}/smultixcan-mashr-zscores.pkl"
+SMULTIXCAN_EFO_PARTIAL_MASHR_ZSCORES_FILE = "@format {this.TWAS.GENE_ASSOC_DIR}/smultixcan-efo_partial-mashr-zscores.pkl"
+SMULTIXCAN_EFO_PARTIAL_MASHR_PVALUES_FILE = "@format {this.TWAS.GENE_ASSOC_DIR}/smultixcan-efo_partial-mashr-pvalues.pkl"
+SMULTIXCAN_MASHR_PVALUES_FILE = "@format {this.TWAS.GENE_ASSOC_DIR}/smultixcan-mashr-pvalues.pkl"
+FASTENLOC_TORUS_RCP_FILE = "@format {this.TWAS.GENE_ASSOC_DIR}/fastenloc-torus-rcp.pkl"
+FASTENLOC_EFO_PARTIAL_TORUS_RCP_FILE = "@format {this.TWAS.GENE_ASSOC_DIR}/fasten loc-efo_partial-torus-rcp.pkl"
+# GWAS info
+RAPID_GWAS_PHENO_INFO_FILE = "@format {this.TWAS.BASE_DIR}/phenotypes.both_sexes.tsv.gz"
+RAPID_GWAS_DATA_DICT_FILE = "@format {this.TWAS.BASE_DIR}/UKB_Data_Dictionary_Showcase.tsv"
+GTEX_GWAS_PHENO_INFO_FILE = "@format {this.TWAS.BASE_DIR}/gtex_gwas_phenotypes_metadata.tsv"
+
+# UK Biobank Settings
+[UK_BIOBANK]
+BASE_DIR = "@format {this.DATA_DIR}/uk_biobank"
+
+
+CODINGS_DIR = "@format {this.UK_BIOBANK.BASE_DIR}/codings"
+CODING_3_FILE = "@format {this.UK_BIOBANK.CODINGS_DIR}/config3.tsv"
+CODING_6_FILE = "@format {this.UK_BIOBANK.CODINGS_DIR}/config6.tsv"
+UKBCODE_TO_EFO_MAP_FILE = "@format {this.UK_BIOBANK.BASE_DIR}/UK_Biobank_master_file.tsv"
+
