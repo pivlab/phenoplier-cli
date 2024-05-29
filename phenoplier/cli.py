@@ -1,18 +1,18 @@
 """This module provides the command line interface for Phenoplier."""
-import os
 import sys
+import shutil
+import logging
 from typing import Optional, Annotated, List
 from pathlib import Path
-import logging
+from enum import Enum
 
 import typer
 import pandas as pd
 import numpy as np
 
 from phenoplier.gls import GLSPhenoplier
-from phenoplier.config import settings
-from phenoplier.config import USER_SETTINGS_FILE
-from phenoplier.constants import RUN_GLS_ARGS, RUN_GLS_DEFAULTS, CLI
+from phenoplier.config import settings, SETTINGS_FILES
+from phenoplier.cli_constants import RUN_GLS_ARGS, RUN_GLS_DEFAULTS, CLI, INIT
 
 
 LOG_FORMAT = "%(levelname)s: %(message)s"
@@ -216,8 +216,8 @@ def check_config_files(dir: str) -> None:
 
 @cmd_group_run.command()
 def regression(
-        input_file:         Annotated[str, typer.Option("--input-file", "-i", help=RUN_GLS_ARGS["input_file"])],
-        output_file:        Annotated[str, typer.Option("--output-file", "-o", help=RUN_GLS_ARGS["output_file"])],
+        input_file:         Annotated[Path, typer.Option("--input-file", "-i", help=RUN_GLS_ARGS["input_file"])],
+        output_file:        Annotated[Path, typer.Option("--output-file", "-o", help=RUN_GLS_ARGS["output_file"])],
         project_dir:        Annotated[str, typer.Option("--project-dir", "-p", help=RUN_GLS_ARGS["project_dir"])] = settings.CURRENT_DIR,
         model:              Annotated[str, typer.Option("--model", help=RUN_GLS_ARGS["model"], callback=run_gls_model_callback)] = "gls",
         gene_corr_file:     Annotated[Optional[Path], typer.Option("--gene-corr-file", "-f", help=RUN_GLS_ARGS["gene_corr_file"])] = None,

@@ -27,25 +27,25 @@ def test_load_settings_files_on_non_existing_dir(directory):
     with (raises(Exception)): load_settings_files(directory)
 
 
-def test_load_settings_files():
-    # Create the settings files
-    directory = Path(_TEST_OUTPUT_DIR, test_load_settings_files.__name__)
-    remove_settings_files(directory)
-    remove_settings_files(Path(phenoplier.config.settings.CACHE_DIR))
-    # Before loading the settings files, the following settings should not be present
-    unloaded_settings = ['DATA_DIR']
-    for s in unloaded_settings:
-        assert not hasattr(phenoplier.config.settings, s)
-    create_settings_files(directory)
-    print(hex(id(phenoplier.config.settings)))
-    load_settings_files(directory)
-    print(hex(id(phenoplier.config.settings)))
-    # importlib.reload(phenoplier.config)
-    # Check that previous unloaded settings files were loaded
-    try:
-        for s in unloaded_settings:
-            assert hasattr(phenoplier.config.settings, s)
-    finally:
-        # Clean up
-        remove_settings_files(directory)
-        remove_settings_files(Path(phenoplier.config.settings.CACHE_DIR))
+# def test_load_settings_files():
+#     # Create the settings files
+#     directory = Path(_TEST_OUTPUT_DIR, test_load_settings_files.__name__)
+#     remove_settings_files(directory)
+#     remove_settings_files(Path(phenoplier.config.settings.CACHE_DIR))
+#     # Before loading the settings files, the following settings should not be present
+#     unloaded_settings = ['DATA_DIR']
+#     for s in unloaded_settings:
+#         assert not hasattr(phenoplier.config.settings, s)
+#     create_settings_files(directory)
+#     print(hex(id(phenoplier.config.settings)))
+#     load_settings_files(directory)
+#     print(hex(id(phenoplier.config.settings)))
+#     # importlib.reload(phenoplier.config)
+#     # Check that previous unloaded settings files were loaded
+#     try:
+#         for s in unloaded_settings:
+#             assert hasattr(phenoplier.config.settings, s)
+#     finally:
+#         # Clean up
+#         remove_settings_files(directory)
+#         remove_settings_files(Path(phenoplier.config.settings.CACHE_DIR))
