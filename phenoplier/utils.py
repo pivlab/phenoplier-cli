@@ -8,7 +8,7 @@ from pathlib import Path
 from subprocess import run
 from typing import Dict
 
-from .log import get_logger
+from phenoplier.log import get_logger
 
 
 def is_number(s):

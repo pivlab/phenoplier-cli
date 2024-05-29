@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from .readers import DATA_READERS, DATA_FORMAT_READERS
+from phenoplier.readers import DATA_READERS, DATA_FORMAT_READERS
 
 DATA_CACHE = {}
 

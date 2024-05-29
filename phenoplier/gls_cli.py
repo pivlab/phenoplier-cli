@@ -8,7 +8,7 @@ import logging
 
 import numpy as np
 import pandas as pd
-
+from phenoplier.gls import GLSPhenoplier
 
 LOG_FORMAT = "%(levelname)s: %(message)s"
 
@@ -42,7 +42,6 @@ SNPLEVEL_COVAR_OPTIONS_PREFIXES = [
 
 
 def run():
-    from .gls import GLSPhenoplier
 
     parser = argparse.ArgumentParser(
         description="""

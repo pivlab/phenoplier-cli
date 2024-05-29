@@ -19,6 +19,8 @@ assert DATA_DIR.exists()
 
 TEMP_DIR = tempfile.mkdtemp()
 
+# Note that since the following tests execute the CLI script directly, we need to add the source root to the PYTHONPATH
+# i.e., PYTHONPATH=. pytest tests/test_gls_cli.py
 
 @pytest.fixture()
 def output_file():

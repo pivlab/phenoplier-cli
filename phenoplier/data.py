@@ -8,9 +8,9 @@ import argparse
 from collections import defaultdict
 from pathlib import Path
 
-from .config import settings as conf
-from .utils import curl, md5_matches
-from .log import get_logger
+from phenoplier.config import settings as conf
+from phenoplier.utils import curl, md5_matches
+from phenoplier.log import get_logger
 
 logger = get_logger("setup")
 

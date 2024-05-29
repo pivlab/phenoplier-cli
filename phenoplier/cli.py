@@ -12,11 +12,10 @@ from rich import print
 import pandas as pd
 import numpy as np
 
-from . import gls_cli
-from .gls import GLSPhenoplier
-from .config import settings
-from .config import USER_SETTINGS_FILE
-from .constants import RUN_GLS_ARGS, RUN_GLS_DEFAULTS, CLI
+from phenoplier.gls import GLSPhenoplier
+from phenoplier.config import settings
+from phenoplier.config import USER_SETTINGS_FILE
+from phenoplier.constants import RUN_GLS_ARGS, RUN_GLS_DEFAULTS, CLI
 
 
 LOG_FORMAT = "%(levelname)s: %(message)s"
