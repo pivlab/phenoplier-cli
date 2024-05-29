@@ -1,9 +1,4 @@
-import tempfile
-from pathlib import Path
 from phenoplier.data import Downloader
-from phenoplier.config import settings
-import os
-import importlib
 
 
 def setup_test_data():
