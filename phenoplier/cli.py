@@ -157,6 +157,7 @@ def init(
     create_settings_files(Path(project_dir))
 
 
+# TODO: use Enum istesad of callbakcs for typer
 def run_gls_model_callback(model: str) -> None:
     """
     Callback for the --model option.
@@ -205,6 +206,13 @@ class DUP_GENE_ACTIONS(str, Enum):
     keep_last = "keep-last"
     remove_all = "remove-all"
 
+class REGRESSION_MODEL(str, Enum):
+    gls = "gls"
+    ols = "ols"
+
+class GENE_CORREALATION_MODE(str, Enum):
+    sub = "sub"
+    full = "full"
 
 def check_config_files(dir: str) -> None:
     for file_name in SETTINGS_FILES:
@@ -218,16 +226,16 @@ def regression(
         input_file:             Annotated[Path, typer.Option("--input-file", "-i", help=RUN_GLS_ARGS["input_file"])],
         output_file:            Annotated[Path, typer.Option("--output-file", "-o", help=RUN_GLS_ARGS["output_file"])],
         project_dir:            Annotated[str, typer.Option("--project-dir", "-p", help=RUN_GLS_ARGS["project_dir"])] = settings.CURRENT_DIR,
-        model:                  Annotated[str, typer.Option("--model", help=RUN_GLS_ARGS["model"], callback=run_gls_model_callback)] = "gls",
+        model:                  Annotated[REGRESSION_MODEL, typer.Option("--model", help=RUN_GLS_ARGS["model"])] = REGRESSION_MODEL.gls,
         gene_corr_file:         Annotated[Optional[Path], typer.Option("--gene-corr-file", "-f", help=RUN_GLS_ARGS["gene_corr_file"])] = None,
-        gene_corr_mode:         Annotated[str, typer.Option("--gene-corr-mode", "-m", help=RUN_GLS_ARGS["debug_use_sub_corr"])] = "sub",
+        gene_corr_mode:         Annotated[GENE_CORREALATION_MODE, typer.Option("--gene-corr-mode", "-m", help=RUN_GLS_ARGS["debug_use_sub_corr"])] = GENE_CORREALATION_MODE.sub,
         dup_genes_action:       Annotated[DUP_GENE_ACTIONS, typer.Option("--dup-genes-action", help=RUN_GLS_ARGS["dup_genes_action"])] = DUP_GENE_ACTIONS.keep_first,
         covars:                 Annotated[Optional[str], typer.Option("--covars", "-c", help=RUN_GLS_ARGS["covars"])] = None,
         cohort_metadata_dir:    Annotated[Optional[str], typer.Option("--cohort-name", "-n", help=RUN_GLS_ARGS["cohort_metadata_dir"])] = None,
-        lv_list:                Annotated[Optional[List[str]], typer.Option("--lv-list", help=RUN_GLS_ARGS["lv_list"])] = [],
+        lv_list:                Annotated[Optional[List[str]], typer.Option("--lv-list", help=RUN_GLS_ARGS["lv_list"])] = None,
         lv_model_file:          Annotated[Optional[Path], typer.Option("--lv-model-file", help=RUN_GLS_ARGS["lv_model_file"])] = None,
         batch_id:               Annotated[Optional[int], typer.Option("--batch-id", help=RUN_GLS_ARGS["batch_id"])] = None,
-        batch_n_splits:         Annotated[ Optional[int], typer.Option("--batch-n-splits", help=RUN_GLS_ARGS["batch_n_splits"])] = None,
+        batch_n_splits:         Annotated[Optional[int], typer.Option("--batch-n-splits", help=RUN_GLS_ARGS["batch_n_splits"])] = None,
 ) -> None:
     """
     Run the Generalized Least Squares (GLS) model by default. Note that you need to run "phenoplier init" first to set up the environment.

@@ -39,7 +39,7 @@ RUN_GLS_ARGS = ImmutableDict(
         "lv_model_file": "A file containing the LV model. It has to be in pickle format, with gene symbols in rows "
                          "and LVs in columns.",
         "debug_use_sub_corr": "Use an LV-specific submatrix of the gene correlation matrix.",
-        "model": "Choose which regression model to use: [gls | ols].",
+        "model": "Choose which regression model to use. OLS is usually used for debugging / comparisson purpose.",
         "batch_id": "With --batch-n-splits, it allows to distribute computation of "
                     "each LV-trait pair across a set of batches.",
         "batch_n_splits": "With --batch-id, it allows to distribute computation of each LV-trait pair across a set of "
