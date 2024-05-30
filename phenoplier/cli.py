@@ -13,7 +13,6 @@ import numpy as np
 from phenoplier.gls import GLSPhenoplier
 from phenoplier.config import settings, SETTINGS_FILES
 from phenoplier.cli_constants import RUN_GLS_ARGS, RUN_GLS_DEFAULTS, CLI, INIT
-from phenoplier.cache import get_cache_dir
 
 
 LOG_FORMAT = "%(levelname)s: %(message)s"
@@ -115,37 +114,36 @@ def check_settings_files(directory: Path) -> None:
             raise typer.BadParameter(f"Config file {str(file_name)} does not exist at {directory}. Please run 'phenoplier init' first.")
 
 
-def load_settings_files(directory: Path) -> None:
+def load_settings_files(directory: Path, more_files: List[Path] = []) -> None:
     """
     Load the settings files from the specified directory. The expected side effect is that after this function is called,
     settings defined in the toml config files will be available as attributes of the settings object.
     :param directory: The directory where the settings files are located.
+    :param more_files: A list of settings files other than the default ones to load. Those files should be also in
+    the same directory as the default settings file.
     """
-
-    # unloaded_settings = ['DATA_DIR', 'GENERAL']
-    # for s in unloaded_settings:
-    #     assert not hasattr(settings, s)
 
     # Check if the directory exists
     if not directory.exists():
         raise typer.BadParameter(f"Provided config directory does not exist: {directory}")
     # Check if the settings files exist in the directory
     check_settings_files(directory)
-    # Copy the settings files to the cache directory
-    cache_dir = get_cache_dir()
+    # Load the default settings
     for file_name in SETTINGS_FILES:
-        settings_file = Path(directory) / file_name
+        settings_file = directory / file_name
         if settings_file.exists():
-            shutil.copy2(settings_file, cache_dir)
+            settings.load_file(settings_file)
             print(f"Config file {str(file_name)} loaded from {directory}")
         else:
             raise typer.BadParameter(f"Config file {str(file_name)} does not exist at {directory}.")
-    print(hex(id(settings)))
-    # importlib.reload(config)
-    settings.load_file(f"{settings.CACHE_DIR}/user_settings.toml")
-    settings.load_file(f"{settings.CACHE_DIR}/internal_settings.toml")
-    # for s in unloaded_settings:
-    #     assert hasattr(settings, s)
+    # Load the additional settings
+    for curr_dir_file in more_files:
+        file = directory / curr_dir_file
+        if not file.exists():
+            raise typer.BadParameter(f"Config file {str(file)} does not exist at {directory}.")
+        settings_file = directory / file
+        settings.load_file(settings_file)
+        print(f"Additional config file {str(file)} loaded from {directory}")
 
 
 # TODO: Add a prompt to ask the user if they want to overwrite the existing settings file
