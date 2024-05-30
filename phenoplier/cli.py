@@ -241,7 +241,7 @@ def regression(
     Run the Generalized Least Squares (GLS) model by default. Note that you need to run "phenoplier init" first to set up the environment.
     """
     def check_batch_args():
-        if len(lv_list) > 0 and (batch_id is not None or batch_n_splits is not None):
+        if lv_list and (batch_id is not None or batch_n_splits is not None):
             raise typer.BadParameter("Incompatible parameters: LV list and batches cannot be used together")
         
         if (batch_id is not None and batch_n_splits is None) or (
@@ -498,7 +498,7 @@ def regression(
     full_lvs_set = set(full_lvs_list)
     logger.info(f"{len(full_lvs_set)} LVs (gene modules) were found in LV model")
 
-    if len(lv_list) > 0:
+    if lv_list:
         selected_lvs = [lv for lv in lv_list if lv in full_lvs_set]
         logger.info(
             f"A list of {len(lv_list)} LVs was provided, and {len(selected_lvs)} "
