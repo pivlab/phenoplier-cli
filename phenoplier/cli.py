@@ -1112,5 +1112,148 @@ def plot_distribution_and_heatmap(full_corr_matrix):
     plt.show()
 
 
+@cmd_group_gene_corr.command()
+def filter(
+    cohort_name: str = typer.Option(..., help="Cohort name, e.g., UK_BIOBANK"),
+    reference_panel: str = typer.Option(..., help="Reference panel, e.g., 1000G or GTEX_V8"),
+    eqtl_model: str = typer.Option(..., help="Prediction/eQTL model, e.g., MASHR or ELASTIC_NET"),
+    distances: list[float] = typer.Option([10, 5, 2], help="List of distances to generate correlation matrices for")
+):
+    """
+    Reads the correlation matrix generated and creates new matrices with different "within distances" across genes.
+    For example, it generates a new correlation matrix with only genes within a distance of 10mb.
+    """
+    def validate_inputs(cohort_name, reference_panel, eqtl_model):
+        assert cohort_name is not None and len(cohort_name) > 0, "A cohort name must be given"
+        assert reference_panel is not None and len(reference_panel) > 0, "A reference panel must be given"
+        assert eqtl_model is not None and len(eqtl_model) > 0, "A prediction/eQTL model must be given"
+        return cohort_name.lower(), reference_panel, eqtl_model
+
+    cohort_name, reference_panel, eqtl_model = validate_inputs(cohort_name, reference_panel, eqtl_model)
+    
+    output_dir_base = (
+        conf.RESULTS["GLS"]
+        / "gene_corrs"
+        / "cohorts"
+        / cohort_name
+        / reference_panel.lower()
+        / eqtl_model.lower()
+    )
+    assert output_dir_base.exists(), f"Output directory {output_dir_base} does not exist"
+    typer.echo(f"Using output dir base: {output_dir_base}")
+
+    gene_corrs = pd.read_pickle(output_dir_base / "gene_corrs-symbols.pkl")
+    gene_objs = [Gene(name=gene_name) for gene_name in gene_corrs.index]
+
+    for full_distance in distances:
+        distance = full_distance / 2.0
+        typer.echo(f"Using within distance: {distance}")
+
+        genes_within_distance = np.eye(len(gene_objs)).astype(bool)
+        for g0_idx in range(len(gene_objs) - 1):
+            g0_obj = gene_objs[g0_idx]
+            for g1_idx in range(g0_idx + 1, len(gene_objs)):
+                g1_obj = gene_objs[g1_idx]
+                genes_within_distance[g0_idx, g1_idx] = g0_obj.within_distance(g1_obj, distance * 1e6)
+                genes_within_distance[g1_idx, g0_idx] = genes_within_distance[g0_idx, g1_idx]
+
+        genes_within_distance = pd.DataFrame(
+            genes_within_distance, index=gene_corrs.index.copy(), columns=gene_corrs.columns.copy()
+        )
+
+        gene_corrs_within_distance = gene_corrs[genes_within_distance].fillna(0.0)
+
+        is_pos_def = check_pos_def(gene_corrs_within_distance)
+        if not is_pos_def:
+            typer.echo("Fixing non-positive definite matrix...")
+            gene_corrs_within_distance = adjust_non_pos_def(gene_corrs_within_distance)
+            assert check_pos_def(gene_corrs_within_distance), "Could not adjust gene correlation matrix"
+
+        gene_corrs_within_distance.to_pickle(
+            output_dir_base / f"gene_corrs-symbols-within_distance_{int(full_distance)}mb.pkl"
+        )
+
+        genes_corrs_sum = gene_corrs_within_distance.sum()
+        n_genes_included = genes_corrs_sum[genes_corrs_sum > 1.0].shape[0]
+        genes_corrs_nonzero_sum = (gene_corrs_within_distance > 0.0).astype(int).sum().sum()
+
+        typer.echo(f"Number of genes with correlations with other genes: {n_genes_included}")
+        typer.echo(f"Number of nonzero cells: {genes_corrs_nonzero_sum}")
+
+        corr_matrix_flat = gene_corrs_within_distance.mask(
+            np.triu(np.ones(gene_corrs_within_distance.shape)).astype(bool)
+        ).stack()
+        typer.echo(corr_matrix_flat.describe().apply(str))
+
+
+@cmd_group_gene_corr.command()
+def generate(
+    cohort_name: str = typer.Option(..., help="Cohort name, e.g., UK_BIOBANK"),
+    reference_panel: str = typer.Option(..., help="Reference panel, e.g., 1000G or GTEX_V8"),
+    eqtl_model: str = typer.Option(..., help="Prediction/eQTL model, e.g., MASHR or ELASTIC_NET"),
+    lv_code: str = typer.Option(..., help="The code of the latent variable (LV) to compute the correlation matrix for"),
+    lv_percentile: float = typer.Option(None, help="A number from 0.0 to 1.0 indicating the top percentile of the genes in the LV to keep")
+):
+    """
+    Computes an LV-specific correlation matrix by using the top genes in that LV only.
+    """
+    def validate_inputs(cohort_name, reference_panel, eqtl_model, lv_code, lv_percentile):
+        assert cohort_name is not None and len(cohort_name) > 0, "A cohort name must be given"
+        assert reference_panel is not None and len(reference_panel) > 0, "A reference panel must be given"
+        assert eqtl_model is not None and len(eqtl_model) > 0, "A prediction/eQTL model must be given"
+        assert lv_code is not None and len(lv_code) > 0, "An LV code must be given"
+        if lv_percentile is not None:
+            lv_percentile = float(lv_percentile)
+        return cohort_name.lower(), reference_panel.lower(), eqtl_model.lower(), lv_code, lv_percentile
+
+    cohort_name, reference_panel, eqtl_model, lv_code, lv_percentile = validate_inputs(cohort_name, reference_panel, eqtl_model, lv_code, lv_percentile)
+
+    OUTPUT_DIR_BASE = conf.RESULTS["GLS"] / "gene_corrs" / "cohorts" / cohort_name / reference_panel / eqtl_model
+    gene_corrs_dict = {f.name: pd.read_pickle(f) for f in OUTPUT_DIR_BASE.glob("gene_corrs-symbols*.pkl")}
+
+    def exists_df(output_dir, base_filename):
+        full_filepath = output_dir / (base_filename + ".npz")
+        return full_filepath.exists()
+
+    def store_df(output_dir, nparray, base_filename):
+        if base_filename in ("metadata", "gene_names"):
+            np.savez_compressed(output_dir / (base_filename + ".npz"), data=nparray)
+        else:
+            sparse.save_npz(output_dir / (base_filename + ".npz"), sparse.csc_matrix(nparray), compressed=False)
+
+    def get_output_dir(gene_corr_filename):
+        path = OUTPUT_DIR_BASE / gene_corr_filename
+        assert path.exists()
+        return path.with_suffix(".per_lv")
+
+    def compute_chol_inv(lv_code):
+        for gene_corr_filename, gene_corrs in gene_corrs_dict.items():
+            output_dir = get_output_dir(gene_corr_filename)
+            output_dir.mkdir(parents=True, exist_ok=True)
+
+            lv_data = multiplier_z[lv_code]
+            corr_mat_sub = GLSPhenoplier.get_sub_mat(gene_corrs, lv_data, lv_percentile)
+            store_df(output_dir, corr_mat_sub.to_numpy(), f"{lv_code}_corr_mat")
+
+            chol_mat = np.linalg.cholesky(corr_mat_sub)
+            chol_inv = np.linalg.inv(chol_mat)
+            store_df(output_dir, chol_inv, lv_code)
+
+            if not exists_df(output_dir, "metadata"):
+                metadata = np.array([reference_panel, eqtl_model])
+                store_df(output_dir, metadata, "metadata")
+
+            if not exists_df(output_dir, "gene_names"):
+                gene_names = np.array(gene_corrs.index.tolist())
+                store_df(output_dir, gene_names, "gene_names")
+
+    lvs_chunks = [[lv_code]]
+
+    with ProcessPoolExecutor(max_workers=1) as executor, tqdm(total=len(lvs_chunks), ncols=100) as pbar:
+        tasks = [executor.submit(compute_chol_inv, chunk) for chunk in lvs_chunks]
+        for future in as_completed(tasks):
+            res = future.result()
+            pbar.update(1)
+
 if __name__ == "__main__":
     app()
