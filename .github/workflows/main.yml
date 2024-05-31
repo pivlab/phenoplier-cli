@@ -61,5 +61,5 @@ jobs:
           export ENV_FOR_DYNACONF=test
           source .venv/bin/activate
           python3 scripts/setup_data.py
-          PYTHONPATH=. pytest test/
+          PYTHONPATH=. pytest -rs --color=yes test/
           # coverage report
