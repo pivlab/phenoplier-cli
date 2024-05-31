@@ -14,10 +14,19 @@ pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://
 
 If no errors occur, you can check if the package is installed correctly by running the following command:
 ```bash
-python3 -m phenoplier -v
+phenoplier -v
 ```
 
-Lastly, set up necessary data by running ... (TODO)
+## Data Preparation
+The data downloader of this project is still under refinement. For lab members who have access to the data, simply download the data and put it either to the defualt directory `/tmp/phenoplier` or another place specified in the `user_settings.toml` config file (discussed in a later section). The directory structure should look like this:
+```bash
+(cli) ☁  phenoplier-cli [main] ⚡  ll /tmp/phenoplier
+total 12K
+drwxrwxr-x 10 haoyu haoyu 4.0K Apr 22 13:05 data
+drwxrwxr-x  3 haoyu haoyu 4.0K Apr 22 14:24 results
+drwxrwxr-x  6 haoyu haoyu 4.0K Apr 22 14:24 software
+```
+Ask the project developer for the data download method.
 
 ## Usage
 ### GLS
@@ -26,7 +35,7 @@ Lastly, set up necessary data by running ... (TODO)
 This section shows how to use the GLS command. First, we can check the help message by running the following command:
 
 ```bash
-python3 -m phenoplier run gls -h
+phenoplier run regression -h
 ```
 
 That will give you brief information about the command and its arguments. More detailed documentation will be added to this repo's WiKi page in the future.
@@ -34,30 +43,50 @@ That will give you brief information about the command and its arguments. More d
 Note that, before running the GLS command, you need to set up the environment by running the following command:
 
 ```bash
-python3 -m phenoplier init
+phenoplier init -p <project_name>
 ```
 
-This command will create a configuration file named "user_settings.toml" in the `~/.phenoplier` directory by default. You can modify this file to set up the environment for the GLS command:
+This command will create a configuration files named `user_settings.toml` and `internal_settings.toml` in the directory specified by the `-p` option. (If omitted, will use the current shell directory by default.) You can modify these files to set up your own environment to run the GLS command.
 
 ```bash
-vim ~/.phenoplier/user_settings.toml
+vim ./user_settings.toml
 
 # Default user_settings.toml
 ROOT_DIR = "/tmp/phenoplier"
-MANUSCRIPT_DIR = "/ tmp/manuscript"
-GTEX_V8_DIR = ""
 ```
 
-Modify the settings to the desired directory paths. Again, more information will be added to the WiKi page in the future. This user settings file will be loaded by the GLS command to set up the environment when it's invoked. (In future iterations, you can create multiple settings files for different project environments and specify which one to use by passing the `--settings` option to the GLS command.)
+```bash
+vim ./internal_settings.toml
 
-Lastly, here is an example of how to run the GLS command:
+# Core Settings
+# Directory stores input data
+DATA_DIR = "@format {this.ROOT_DIR}/data"
+# Directory stores output data
+RESULT_DIR = "@format {this.ROOT_DIR}/result"
+# Directory stores third-party applications
+SOFTWARE_DIR = "@format {this.ROOT_DIR}/software"
+CONDA_ENVS_DIR = "@format {this.SOFTWARE_DIR}/conda_envs"
+
+# General Settings
+[GENERAL]
+BIOMART_GENES_INFO_FILE = "@format {this.DATA_DIR}/biomart_genes_hg38.csv.gz"
+LOG_CONFIG_FILE = "@format {this.SRC_DIR}/log_config.yaml"
+TERM_ID_LABEL_FILE = "@format {this.DATA_DIR}/term_id_labels.tsv.gz"
+TERM_ID_XREFS_FILE = "@format {this.DATA_DIR}/term_id_xrefs.tsv.gz"
+...
+```
+
+If you have access to the aforementioned lab data, you can download the data and put it in the directory specified by the `ROOT_DIR` variable in the `user_settings.toml` file. That way you should not need to modify the `internal_settings.toml` file anymore. If you have your own data directory structure, you can modify the `internal_settings.toml` file to set up the environment accordingly. Future iterations of this project will provide more detailed instructions and less cumbersome ways for setting up the environment.
+
+Now you can try it out by running the following sample command:
 
 ```bash
-python3 -m phenoplier run gls \
-        -i /media/haoyu/extradrive1/alpine_data/pivlab/data/phenoplier/results/gls/null_sims/twas/smultixcan/random.pheno17-gtex_v8-mashr-smultixcan.txt \
-        -o /media/haoyu/extradrive1/alpine_data/pivlab/data/phenoplier/results/gls/null_sims/phenoplier/1000g_eur/covars/gls-gtex_v8_mashr-sub_corr/random.pheno17-gls_phenoplier.tsv.gz \
-        --gene-corr-file /media/haoyu/extradrive1/alpine_data/pivlab/data/phenoplier/results/gls/gene_corrs/cohorts/1000g_eur/gtex_v8/mashr/gene_corrs-symbols-within_distance_5mb.per_lv/ \
-        --covars "gene_size gene_size_log gene_density gene_density_log"
+phenoplier run regression \
+           -p <project_dir> \
+           -i <path_to_the_input_file> \
+           -o <path_to_the_output_file> \
+           --gene-corr-file <path_to_your_gene_corr_file> \
+           --covars default (or other available options)
 ```
 Please adjust the option arguments according to your own data and file paths.
 
@@ -111,16 +140,11 @@ python3 -m pip install --index-url https://test.pypi.org/simple/ --extra-index-u
 
 Check if the package is installed correctly by running the following command:
 ```bash
-python3 -m phenoplier -v
+phenoplier -v
 ```
 
 ## Testing
 In the root directory of the project, run the following command:
 ```bash
-poetry run pytest
+PYTHONPATH=. pytest -rs --color=yes test/
 ```
-
-## Roadmap
-- [ ] Build up CLI
-- [ ] Port core logic from the Jupyter notebook to the CLI
-- [ ] Add interactive mode to setup the environment
