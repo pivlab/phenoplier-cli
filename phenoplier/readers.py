@@ -1,6 +1,7 @@
 """
 Specifies functions to read different files used in the project.
 """
+from pathlib import Path
 import pandas as pd
 from phenoplier.config import settings as conf
 
@@ -116,17 +117,12 @@ def get_data_readers():
         conf.UK_BIOBANK["CODING_3_FILE"]: read_uk_biobank_codings(3),
         conf.UK_BIOBANK["CODING_6_FILE"]: read_uk_biobank_codings(6),
         # TWAS
-        conf.TWAS[
-            "RAPID_GWAS_PHENO_INFO_FILE"
-        ]: read_phenomexcan_rapid_gwas_pheno_info_file,
-        conf.TWAS[
-            "RAPID_GWAS_DATA_DICT_FILE"
-        ]: read_phenomexcan_rapid_gwas_data_dict,
-        conf.TWAS[
-            "GTEX_GWAS_PHENO_INFO_FILE"
-        ]: read_phenomexcan_gtex_gwas_pheno_info,
+        conf.TWAS["RAPID_GWAS_PHENO_INFO_FILE"]: read_phenomexcan_rapid_gwas_pheno_info_file,
+        conf.TWAS["RAPID_GWAS_DATA_DICT_FILE"]: read_phenomexcan_rapid_gwas_data_dict,
+        conf.TWAS["GTEX_GWAS_PHENO_INFO_FILE"]: read_phenomexcan_gtex_gwas_pheno_info,
     }
-
+    # Use map to apply Path to each key and construct the new dictionary
+    data_readers = {Path(k): v for k, v in data_readers.items()}
     return data_readers
 
 
@@ -136,7 +132,7 @@ def get_data_format_readers():
     # paths, but just extensions. It's useful when reading standard format such as
     # pickle.
     #
-    DATA_FORMAT_READERS = {
+    return {
         ".pkl": read_pickle,
         ".tsv": read_tsv,
         ".tsv.gz": read_tsv,
