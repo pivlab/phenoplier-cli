@@ -1,6 +1,6 @@
 """Entry point for Phenoplier CLI."""
-from . import cli
-from .config import settings
+from phenoplier import cli
+from phenoplier.config import settings
 import sys
 
 
