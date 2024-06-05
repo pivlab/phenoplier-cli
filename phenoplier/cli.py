@@ -36,6 +36,13 @@ logging.basicConfig(format=LOG_FORMAT, level=logging.INFO, handlers=[h1, h2])
 logger = logging.getLogger("root")
 
 
+# This class is used to group the commands in the order they appear in the code
+class OrderCommands(TyperGroup):
+    def list_commands(self, ctx: Context):
+        """Return list of commands in the order appear."""
+        return list(self.commands)    # get commands using self.commands
+
+
 # Define the main CLI program/command
 app = typer.Typer(
     context_settings={"help_option_names": ["-h", "--help"]},
@@ -49,6 +56,7 @@ cmd_group_run = typer.Typer(
 cmd_group_gene_corr = typer.Typer(
     context_settings={"help_option_names": ["-h", "--help"]},
     help="Execute a specific Phenoplier pipeline for gene-gene correlation matrix generation.",
+    cls=OrderCommands
 )
 cmd_group_gene_corr.command()(cov)
 cmd_group_gene_corr.command()(preprocess)
