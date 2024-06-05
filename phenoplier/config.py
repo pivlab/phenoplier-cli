@@ -40,6 +40,8 @@ settings = Dynaconf(
     REPO_DIR=Path(__file__).resolve().parent.parent,
     # Directory contains the source code
     SRC_DIR=Path(__file__).resolve().parent,
+    # Directory contains the templates
+    TEMPLATE_DIR="@format {this.SRC_DIR}/templates/",
     # Directory contains the tests
     TEST_DIR="@format {this.REPO_DIR}/test/",
     # Directory to put test outputs
