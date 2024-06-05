@@ -9,8 +9,7 @@ _TEST_OUTPUT_DIR = Path(settings.TEST_OUTPUT_DIR) / "test_main_init"
 
 
 @mark.parametrize("file", [
-    "user_settings.toml",
-    "internal_settings.toml",
+    "phenoplier_settings.toml"
 ])
 def test_create_file(file):
     command = f"init -p {_TEST_OUTPUT_DIR}"

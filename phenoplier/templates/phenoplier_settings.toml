@@ -1,4 +1,5 @@
 # Core Settings
+ROOT_DIR = "/tmp/phenoplier"
 # Directory stores input data
 DATA_DIR = "@format {this.ROOT_DIR}/data"
 # Directory stores output data
