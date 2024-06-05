@@ -49,9 +49,9 @@ phenoplier init -p <project_name>
 This command will create a configuration files named `user_settings.toml` and `internal_settings.toml` in the directory specified by the `-p` option. (If omitted, will use the current shell directory by default.) You can modify these files to set up your own environment to run the GLS command.
 
 ```bash
-vim ./user_settings.toml
+vim ./phenoplier_settings.toml
 
-# Default user_settings.toml
+# Default phenoplier_settings.toml
 ROOT_DIR = "/tmp/phenoplier"
 ```
 
