@@ -1,9 +1,6 @@
-import sys
 import shutil
-import logging
-from typing import Optional, Annotated, List
 from pathlib import Path
-from enum import Enum
+from typing import List
 
 import typer
 
@@ -23,6 +20,18 @@ def check_settings_files(directory: Path) -> None:
         settings_file = Path(directory) / file_name
         if not settings_file.exists():
             raise typer.BadParameter(f"Config file {str(file_name)} does not exist at {directory}. Please run 'phenoplier init' first.")
+
+
+def create_settings_files(directory: Path) -> None:
+    Path(directory).mkdir(parents=True, exist_ok=True)
+    for file_name in SETTINGS_FILES:
+        settings_file = Path(directory) / file_name
+        if settings_file.exists():
+            typer.echo(f"Config file {str(file_name)} already exists at {directory}")
+        else:
+            template_file = Path(settings.TEMPLATE_DIR) / file_name
+            shutil.copy2(template_file, settings_file)
+            print(f"Config file {str(file_name)} created at {directory}")
 
 
 def load_settings_files(directory: Path, more_files: List[Path] = []) -> None:
