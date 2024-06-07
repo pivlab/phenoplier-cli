@@ -77,6 +77,3 @@ UKBCODE_TO_EFO_MAP_FILE = "@format {this.UK_BIOBANK.BASE_DIR}/UK_Biobank_master_
 [RESULTS]
 BASE_DIR = "@format {this.RESULT_DIR}"
 GLS = "@format {this.RESULTS.BASE_DIR}/gls"
-
-[TWAS__A]
-test = "test"
