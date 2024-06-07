@@ -21,8 +21,10 @@ SETTINGS_FILES = [USER_SETTINGS_FILENAME]
 settings = Dynaconf(
     envvar_prefix="PHENOPLIER",
     # TODO: Append the curr_dir settings to override the default settings
-    settings_files=["test/settings/phenoplier_settings.toml"]
-    if os.getenv("ENV_FOR_DYNACONF") == "test" else [".cache/phenoplier_settings.toml"],
+    # settings_files=["test/settings/phenoplier_settings.toml"]
+    # if os.getenv("ENV_FOR_DYNACONF") == "test" else [".cache/phenoplier_settings.toml"],
+    settings_files=["phenoplier/templates/phenoplier_settings.toml"]
+    if os.getenv("ENV_FOR_DYNACONF") == "test" else None,
 
     APP_NAME=_PACKAGE_NAME,
     APP_VERSION=_PACKAGE_VERSION,
@@ -46,6 +48,3 @@ settings = Dynaconf(
     # Directory for cached data
     CACHE_DIR="@format {this.REPO_DIR}/.cache/",
 )
-
-# `envvar_prefix` = export envvars with `export DYNACONF_FOO=bar`.
-# `settings_files` = Load these files in the order.
