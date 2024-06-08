@@ -1,6 +1,8 @@
 import shutil
 from pathlib import Path
-from typing import List
+from typing import List, Callable
+from functools import wraps
+from pathlib import Path
 
 import typer
 
@@ -19,7 +21,8 @@ def check_settings_files(directory: Path) -> None:
     for file_name in SETTINGS_FILES:
         settings_file = Path(directory) / file_name
         if not settings_file.exists():
-            raise typer.BadParameter(f"Config file {str(file_name)} does not exist at {directory}. Please run 'phenoplier init' first.")
+            raise typer.BadParameter(
+                f"Config file {str(file_name)} does not exist at {directory}. Please run 'phenoplier init' first.")
 
 
 def create_settings_files(directory: Path) -> None:
@@ -64,3 +67,17 @@ def load_settings_files(directory: Path, more_files: List[Path] = []) -> None:
         settings_file = directory / file
         settings.load_file(settings_file)
         print(f"Additional config file {str(file)} loaded from {directory}")
+
+
+def load_settings_files_deco(directory: Path, more_files: List[Path] = []) -> Callable:
+    def decorator(func: Callable) -> Callable:
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            # Call the settings loading function
+            load_settings_files(directory, more_files)
+            # Call the original function
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
