@@ -577,25 +577,24 @@ class Gene(object):
     It represents a Gene with certain attributes (symbol, id, etc) and functions
     (correlations of predicted expression, etc).
     """
-
+    GENE_ID_TO_NAME_MAP = lambda: read_data(Path(conf.TWAS["GENE_MAP_ID_TO_NAME"]))
+    GENE_NAME_TO_ID_MAP = lambda: read_data(Path(conf.TWAS["GENE_MAP_NAME_TO_ID"]))
+    BIOMART_GENES = lambda: read_data(Path(conf.GENERAL["BIOMART_GENES_INFO_FILE"]))
 
     def __init__(self, ensembl_id=None, name=None):
-        self.GENE_ID_TO_NAME_MAP = read_data(Path(conf.TWAS["GENE_MAP_ID_TO_NAME"]))
-        self.GENE_NAME_TO_ID_MAP = read_data(Path(conf.TWAS["GENE_MAP_NAME_TO_ID"]))
-        self.BIOMART_GENES = read_data(Path(conf.GENERAL["BIOMART_GENES_INFO_FILE"]))
 
         if ensembl_id is not None:
-            if ensembl_id not in self.GENE_ID_TO_NAME_MAP:
+            if ensembl_id not in Gene.GENE_ID_TO_NAME_MAP():
                 raise ValueError("Ensembl ID not found.")
 
             self.ensembl_id = ensembl_id
-            self.name = self.GENE_ID_TO_NAME_MAP[self.ensembl_id]
+            self.name = Gene.GENE_ID_TO_NAME_MAP()[self.ensembl_id]
         elif name is not None:
-            if name not in self.GENE_NAME_TO_ID_MAP:
+            if name not in Gene.GENE_NAME_TO_ID_MAP():
                 raise ValueError("Gene name not found.")
 
             self.name = name
-            self.ensembl_id = self.GENE_NAME_TO_ID_MAP[self.name]
+            self.ensembl_id = Gene.GENE_NAME_TO_ID_MAP()[self.name]
 
         self._band = None
 
@@ -603,20 +602,20 @@ class Gene(object):
     @lru_cache(maxsize=None)
     def chromosome(self):
         """Returns the chromosome of the gene."""
-        if self.ensembl_id not in Gene.BIOMART_GENES.index:
+        if self.ensembl_id not in Gene.BIOMART_GENES().index:
             return None
 
-        gene_data = Gene.BIOMART_GENES.loc[self.ensembl_id]
+        gene_data = Gene.BIOMART_GENES().loc[self.ensembl_id]
         return gene_data["chromosome_name"]
 
     @property
     @lru_cache(maxsize=None)
     def band(self):
         """Returns the cytoband of the gene."""
-        if self.ensembl_id not in Gene.BIOMART_GENES.index:
+        if self.ensembl_id not in Gene.BIOMART_GENES().index:
             return None
 
-        gene_data = Gene.BIOMART_GENES.loc[self.ensembl_id]
+        gene_data = Gene.BIOMART_GENES().loc[self.ensembl_id]
         chrom = gene_data["chromosome_name"]
         band = gene_data["band"]
 
@@ -625,10 +624,10 @@ class Gene(object):
     @lru_cache(maxsize=None)
     def get_attribute(self, attribute_name):
         """Returns any attribute of the gene in BioMart."""
-        if self.ensembl_id not in Gene.BIOMART_GENES.index:
+        if self.ensembl_id not in Gene.BIOMART_GENES().index:
             return None
 
-        gene_data = Gene.BIOMART_GENES.loc[self.ensembl_id]
+        gene_data = Gene.BIOMART_GENES().loc[self.ensembl_id]
         attr = gene_data[attribute_name]
 
         return attr

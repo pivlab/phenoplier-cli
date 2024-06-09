@@ -141,3 +141,4 @@ def get_data_format_readers():
         ".tsv": read_tsv,
         ".tsv.gz": read_tsv,
     }
+    return DATA_FORMAT_READERS

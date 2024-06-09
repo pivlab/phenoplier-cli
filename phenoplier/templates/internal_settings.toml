@@ -2,7 +2,7 @@
 # Directory stores input data
 DATA_DIR = "@format {this.ROOT_DIR}/data"
 # Directory stores output data
-RESULT_DIR = "@format {this.ROOT_DIR}/result"
+RESULT_DIR = "@format {this.ROOT_DIR}/results"
 # Directory stores third-party applications
 SOFTWARE_DIR = "@format {this.ROOT_DIR}/software"
 CONDA_ENVS_DIR = "@format {this.SOFTWARE_DIR}/conda_envs"
@@ -50,14 +50,31 @@ FASTENLOC_EFO_PARTIAL_TORUS_RCP_FILE = "@format {this.TWAS.GENE_ASSOC_DIR}/faste
 RAPID_GWAS_PHENO_INFO_FILE = "@format {this.TWAS.BASE_DIR}/phenotypes.both_sexes.tsv.gz"
 RAPID_GWAS_DATA_DICT_FILE = "@format {this.TWAS.BASE_DIR}/UKB_Data_Dictionary_Showcase.tsv"
 GTEX_GWAS_PHENO_INFO_FILE = "@format {this.TWAS.BASE_DIR}/gtex_gwas_phenotypes_metadata.tsv"
+# LD blocks
+[TWAS.LD_BLOCKS]
+BASE_DIR = "@format {this.TWAS.BASE_DIR}/ld_blocks"
+1000G_GENOTYPE_DIR = "@format {this.TWAS.LD_BLOCKS.BASE_DIR}/reference_panel_1000G"
+GTEX_V8_GENOTYPE_DIR = "@format {this.TWAS.LD_BLOCKS.BASE_DIR}/reference_panel_gtex_v8"
+# Predictions models
+[TWAS.PREDICTION_MODELS]
+BASE_DIR = "@format {this.TWAS.BASE_DIR}/prediction_models"
+## Mashr models
+MASHR = "@format {this.TWAS.PREDICTION_MODELS.BASE_DIR}/mashr"
+MASHR_PREFIX = "mashr_"
 
 # UK Biobank Settings
 [UK_BIOBANK]
 BASE_DIR = "@format {this.DATA_DIR}/uk_biobank"
-
 
 CODINGS_DIR = "@format {this.UK_BIOBANK.BASE_DIR}/codings"
 CODING_3_FILE = "@format {this.UK_BIOBANK.CODINGS_DIR}/config3.tsv"
 CODING_6_FILE = "@format {this.UK_BIOBANK.CODINGS_DIR}/config6.tsv"
 UKBCODE_TO_EFO_MAP_FILE = "@format {this.UK_BIOBANK.BASE_DIR}/UK_Biobank_master_file.tsv"
 
+# Result Settings
+[RESULTS]
+BASE_DIR = "@format {this.RESULT_DIR}"
+GLS = "@format {this.RESULTS.BASE_DIR}/gls"
+
+[TWAS__A]
+test = "test"
