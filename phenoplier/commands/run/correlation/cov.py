@@ -1,14 +1,19 @@
 import gc
 import sqlite3
 from pathlib import Path
+from enum import Enum
+from typing import Annotated
 
 import pandas as pd
 import numpy as np
 import typer
 from tqdm import tqdm
+from rich import print
 
 from phenoplier.config import settings as conf
 from phenoplier.entity import Gene
+from phenoplier.commands.utils import load_settings_files
+
 
 def get_reference_panel_file(directory: Path, file_pattern: str) -> Path:
     files = list(directory.glob(f"*{file_pattern}*.parquet"))
@@ -33,27 +38,44 @@ def compute_snps_cov(snps_df, reference_panel_dir, variants_ids_with_genotype, c
     return covariance(snps_genotypes, cov_dtype)
 
 
+class RefPanel(str, Enum):
+    _1000g = "1000g"
+    gtex_v8 = "gtex_v8"
+
+
+class EqtlModel(str, Enum):
+    mashr = "mashr"
+    elastic_net = "elastic_net"
+
+
+class MatrixDtype(str, Enum):
+    f32 = "float32"
+    f64 = "float64"
+
+
 def cov(
-        reference_panel: str = typer.Option(..., help="Reference panel such as 1000G or GTEX_V8"),
-        eqtl_model: str = typer.Option(..., help="Prediction models such as MASHR or ELASTIC_NET"),
-        covariance_matrix_dtype: str = typer.Option("float64",
-                                                    help="The numpy dtype used for the covariance matrix, either float64 or float32")
+        reference_panel: Annotated[RefPanel, typer.Option("--reference-panel", "-r", help="Reference panel such as 1000G or GTEX_V8")],
+        eqtl_model: Annotated[EqtlModel, typer.Option("--eqtl-model", "-m", help="Prediction models such as MASHR or ELASTIC_NET")],
+        covariance_matrix_dtype: Annotated[MatrixDtype, typer.Option("--covariance-matrix-dtype", "-t", help="The numpy dtype used for the covariance matrix.")] = "float64",
+        project_dir: Annotated[
+            Path, typer.Option("--project-dir", "-p", help="Project directory")] = conf.CURRENT_DIR,
 ):
     """
     Computes the covariance for each chromosome of all variants present in prediction models.
     """
+    # Check project directory
+    load_settings_files(project_dir)
+    print(conf.TWAS.LD_BLOCKS.BASE_DIR)
 
-    assert reference_panel is not None and len(reference_panel) > 0, "A reference panel must be given"
-    print(f"Reference panel: {reference_panel}")
-
-    reference_panel_dir = conf.PHENOMEXCAN["LD_BLOCKS"][f"{reference_panel}_GENOTYPE_DIR"]
+    # Check reference panel folder
+    reference_panel_dir = conf.TWAS["LD_BLOCKS"][f"{reference_panel.upper()}_GENOTYPE_DIR"]
+    if not reference_panel_dir.exists():
+        raise typer.BadParameter(f"Reference panel folder does not exist: {str(reference_panel_dir)}")
     print(f"Using reference panel folder: {str(reference_panel_dir)}")
-    assert reference_panel_dir.exists(), "Reference panel folder does not exist"
-
-    assert eqtl_model is not None and len(eqtl_model) > 0, "A prediction/eQTL model must be given"
-    eqtl_model_files_prefix = conf.PHENOMEXCAN["PREDICTION_MODELS"][f"{eqtl_model}_PREFIX"]
+    # Process eQTL model input
+    eqtl_model_files_prefix = conf.TWAS["PREDICTION_MODELS"][f"{eqtl_model}_PREFIX"]
     print(f"Using eQTL model: {eqtl_model} / {eqtl_model_files_prefix}")
-
+    # Set up output directory
     output_dir_base = (
             conf.RESULTS["GLS"]
             / "gene_corrs"
@@ -72,8 +94,12 @@ def cov(
     cov_dtype = cov_dtype_dict.get(covariance_matrix_dtype, np.float64)
     print(f"Covariance matrix dtype used: {str(cov_dtype)}")
 
-    mashr_models_db_files = list(conf.PHENOMEXCAN["PREDICTION_MODELS"][eqtl_model].glob("*.db"))
-    assert len(mashr_models_db_files) == 49
+    mashr_models_db_files = list(conf.TWAS["PREDICTION_MODELS"][eqtl_model].glob("*.db"))
+    # Check number of MASHR models
+    NUM_MAX_FILES = 49
+    if len(mashr_models_db_files) != NUM_MAX_FILES:
+        raise ValueError(f"Number of MASHR models is not {NUM_MAX_FILES}: {len(mashr_models_db_files)}")
+    
 
     all_variants_ids = []
 
@@ -130,7 +156,8 @@ def cov(
     variants_ld_block_df["chr"] = variants_ld_block_df["chr"].apply(lambda x: int(x[3:]))
     variants_ld_block_df["position"] = variants_ld_block_df["position"].astype(int)
 
-    output_file_name_template = conf.PHENOMEXCAN["LD_BLOCKS"]["GENE_CORRS_FILE_NAME_TEMPLATES"]["SNPS_COVARIANCE"]
+    # output_file_name_template = conf.TWAS["LD_BLOCKS"]["GENE_CORRS_FILE_NAME_TEMPLATES"]["SNPS_COVARIANCE"]
+    output_file_name_template = Path(conf.TWAS["LD_BLOCKS"]) / "test_cov"
     output_file = output_dir_base / output_file_name_template.format(prefix="", suffix="")
     print(f"Output file: {output_file}")
 
