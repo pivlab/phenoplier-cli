@@ -15,6 +15,14 @@ INTERNAL_SETTINGS_FILENAME = "internal_settings.toml"
 USER_SETTINGS_FILENAME = "user_settings.toml"
 SETTINGS_FILES = [INTERNAL_SETTINGS_FILENAME, USER_SETTINGS_FILENAME]
 
+
+env = os.getenv("ENV_FOR_DYNACONF")
+env_settings = []
+if env == "dev":
+    env_settings = ["phenoplier/templates/internal_settings.toml", "phenoplier/templates/user_settings.toml"]
+elif env == "test":
+    env_settings = ["test/settings/internal_settings.toml", "test/settings/user_settings.toml"]
+
 # The environment variables name supersede these settings
 # Prefix the environment variables with `$_PACKAGE_NAME` to automatically load them
 # E.g. `export {$_PACKAGE_NAME}_FOO=bar` will load `FOO=bar` in the settings
@@ -22,8 +30,7 @@ SETTINGS_FILES = [INTERNAL_SETTINGS_FILENAME, USER_SETTINGS_FILENAME]
 settings = Dynaconf(
     envvar_prefix="PHENOPLIER",
     # TODO: Append the curr_dir settings to override the default settings
-    settings_files=["test/settings/internal_settings.toml", "test/settings/user_settings.toml"]
-    if os.getenv("ENV_FOR_DYNACONF") == "test" else [".cache/internal_settings.toml", ".cache/user_settings.toml"],
+    settings_files=env_settings,
 
     APP_NAME=_PACKAGE_NAME,
     APP_VERSION=_PACKAGE_VERSION,
