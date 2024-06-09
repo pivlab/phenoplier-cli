@@ -39,13 +39,13 @@ def compute_snps_cov(snps_df, reference_panel_dir, variants_ids_with_genotype, c
 
 
 class RefPanel(str, Enum):
-    _1000g = "1000g"
-    gtex_v8 = "gtex_v8"
+    _1000g = "1000G"
+    gtex_v8 = "GTEX_V8"
 
 
 class EqtlModel(str, Enum):
-    mashr = "mashr"
-    elastic_net = "elastic_net"
+    mashr = "MASHR"
+    elastic_net = "ELASTIC_NET"
 
 
 class MatrixDtype(str, Enum):
@@ -65,10 +65,12 @@ def cov(
     """
     # Check project directory
     load_settings_files(project_dir)
-    print(conf.TWAS.LD_BLOCKS.BASE_DIR)
+    reference_panel = reference_panel.value
+    eqtl_model = eqtl_model.value
+    covariance_matrix_dtype = covariance_matrix_dtype.value
 
     # Check reference panel folder
-    reference_panel_dir = conf.TWAS["LD_BLOCKS"][f"{reference_panel.upper()}_GENOTYPE_DIR"]
+    reference_panel_dir = Path(conf.TWAS["LD_BLOCKS"][f"{reference_panel}_GENOTYPE_DIR"])
     if not reference_panel_dir.exists():
         raise typer.BadParameter(f"Reference panel folder does not exist: {str(reference_panel_dir)}")
     print(f"Using reference panel folder: {str(reference_panel_dir)}")
@@ -77,7 +79,7 @@ def cov(
     print(f"Using eQTL model: {eqtl_model} / {eqtl_model_files_prefix}")
     # Set up output directory
     output_dir_base = (
-            conf.RESULTS["GLS"]
+            Path(conf.RESULTS["GLS"])
             / "gene_corrs"
             / "reference_panels"
             / reference_panel.lower()
@@ -94,7 +96,7 @@ def cov(
     cov_dtype = cov_dtype_dict.get(covariance_matrix_dtype, np.float64)
     print(f"Covariance matrix dtype used: {str(cov_dtype)}")
 
-    mashr_models_db_files = list(conf.TWAS["PREDICTION_MODELS"][eqtl_model].glob("*.db"))
+    mashr_models_db_files = list(Path(conf.TWAS["PREDICTION_MODELS"][eqtl_model]).glob("*.db"))
     # Check number of MASHR models
     NUM_MAX_FILES = 49
     if len(mashr_models_db_files) != NUM_MAX_FILES:
@@ -117,7 +119,7 @@ def cov(
     all_gene_snps = pd.concat(all_variants_ids, ignore_index=True)
     all_snps_in_models = set(all_gene_snps["varID"].unique())
 
-    multiplier_z = pd.read_pickle(conf.MULTIPLIER["MODEL_Z_MATRIX_FILE"])
+    multiplier_z = pd.read_pickle(conf.GENE_MODULE_MODEL["MODEL_Z_MATRIX_FILE"])
     variants_metadata = pd.read_parquet(get_reference_panel_file(reference_panel_dir, "_metadata"), columns=["id"])
     variants_ids_with_genotype = set(variants_metadata["id"])
 
@@ -130,7 +132,7 @@ def cov(
     genes_in_z = [
         Gene(name=gene_name).ensembl_id
         for gene_name in multiplier_z.index
-        if gene_name in Gene.GENE_NAME_TO_ID_MAP
+        if gene_name in Gene.GENE_NAME_TO_ID_MAP()
     ]
     genes_in_z = set(genes_in_z)
     all_gene_snps = all_gene_snps[all_gene_snps["gene"].isin(genes_in_z)]
@@ -157,7 +159,8 @@ def cov(
     variants_ld_block_df["position"] = variants_ld_block_df["position"].astype(int)
 
     # output_file_name_template = conf.TWAS["LD_BLOCKS"]["GENE_CORRS_FILE_NAME_TEMPLATES"]["SNPS_COVARIANCE"]
-    output_file_name_template = Path(conf.TWAS["LD_BLOCKS"]) / "test_cov"
+    # TODO: Ask Milton what is "GENE_CORRS_FILE_NAME_TEMPLATES"
+    output_file_name_template = f"{conf.TWAS["LD_BLOCKS"]["BASE_DIR"]}/test/"
     output_file = output_dir_base / output_file_name_template.format(prefix="", suffix="")
     print(f"Output file: {output_file}")
 
@@ -180,3 +183,14 @@ def cov(
             store.flush()
 
             gc.collect()
+
+    # Ad-hot tests
+    _tmp = variants_ld_block_df[variants_ld_block_df["chr"] == 1]
+    assert _tmp.shape[0] > 0
+    n_expected = len(set(_tmp["varID"]).intersection(variants_ids_with_genotype))
+    assert n_expected > 0
+    
+    with pd.HDFStore(output_file, mode="r") as store:
+        df = store["chr1"]
+        assert df.shape == (n_expected, n_expected)
+        assert not df.isna().any().any()

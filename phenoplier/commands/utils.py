@@ -1,5 +1,7 @@
+import os
 import shutil
 from pathlib import Path
+from enum import Enum
 from typing import List, Callable
 from functools import wraps
 from pathlib import Path
@@ -7,6 +9,26 @@ from pathlib import Path
 import typer
 
 from phenoplier.config import settings, SETTINGS_FILES
+
+
+class EnvMode(str, Enum):
+    dev = "dev"
+    test = "test"
+    prod = "prod"
+
+
+def get_env_mode() -> EnvMode:
+    env_mode = os.getenv("ENV_FOR_DYNACONF")
+    try:
+        return EnvMode(env_mode)
+    except ValueError:
+        raise typer.BadParameter(
+            f"Invalid environment mode: {env_mode}. Please set the ENV_FOR_DYNACONF environment variable to one of {list(EnvMode.__members__.keys())}"
+        )
+
+
+def is_in_dev_mode() -> bool:
+    return get_env_mode() == EnvMode.dev
 
 
 def remove_settings_files(directory: Path) -> None:
@@ -45,6 +67,8 @@ def load_settings_files(directory: Path, more_files: List[Path] = []) -> None:
     :param more_files: A list of settings files other than the default ones to load. Those files should be also in
     the same directory as the default settings file.
     """
+    if is_in_dev_mode():  # In dev mode, the settings are loaded from the environment
+        return
 
     # Check if the directory exists
     if not directory.exists():
