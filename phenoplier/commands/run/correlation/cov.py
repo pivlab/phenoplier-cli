@@ -1,7 +1,6 @@
 import gc
 import sqlite3
 from pathlib import Path
-from enum import Enum
 from typing import Annotated
 
 import pandas as pd
@@ -13,6 +12,7 @@ from rich import print
 from phenoplier.config import settings as conf
 from phenoplier.entity import Gene
 from phenoplier.commands.utils import load_settings_files
+from phenoplier.commands.enums import MatrixDtype, RefPanel, EqtlModel
 
 
 def get_reference_panel_file(directory: Path, file_pattern: str) -> Path:
@@ -38,27 +38,11 @@ def compute_snps_cov(snps_df, reference_panel_dir, variants_ids_with_genotype, c
     return covariance(snps_genotypes, cov_dtype)
 
 
-class RefPanel(str, Enum):
-    _1000g = "1000G"
-    gtex_v8 = "GTEX_V8"
-
-
-class EqtlModel(str, Enum):
-    mashr = "MASHR"
-    elastic_net = "ELASTIC_NET"
-
-
-class MatrixDtype(str, Enum):
-    f32 = "float32"
-    f64 = "float64"
-
-
 def cov(
         reference_panel: Annotated[RefPanel, typer.Option("--reference-panel", "-r", help="Reference panel such as 1000G or GTEX_V8")],
         eqtl_model: Annotated[EqtlModel, typer.Option("--eqtl-model", "-m", help="Prediction models such as MASHR or ELASTIC_NET")],
         covariance_matrix_dtype: Annotated[MatrixDtype, typer.Option("--covariance-matrix-dtype", "-t", help="The numpy dtype used for the covariance matrix.")] = "float64",
-        project_dir: Annotated[
-            Path, typer.Option("--project-dir", "-p", help="Project directory")] = conf.CURRENT_DIR,
+        project_dir: Annotated[Path, typer.Option("--project-dir", "-p", help="Project directory")] = conf.CURRENT_DIR,
 ):
     """
     Computes the covariance for each chromosome of all variants present in prediction models.
