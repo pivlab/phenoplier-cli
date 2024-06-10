@@ -1,5 +1,7 @@
 import traceback
 import warnings
+from typing import Annotated
+from pathlib import Path
 
 import typer
 import pickle
@@ -9,30 +11,43 @@ import numpy as np
 
 from phenoplier.config import settings as conf
 from phenoplier.entity import Gene
+from phenoplier.commands.utils import load_settings_files
+from phenoplier.commands.enums import Cohort, RefPanel, EqtlModel
 
 def correlate(
-        cohort_name: str = typer.Option(..., help="Cohort name (e.g., UK_BIOBANK)"),
-        reference_panel: str = typer.Option(..., help="Reference panel such as 1000G or GTEX_V8"),
-        eqtl_model: str = typer.Option(..., help="Prediction/eQTL model such as MASHR or ELASTIC_NET"),
-        smultixcan_condition_number: int = typer.Option(30, help="S-MultiXcan condition number"),
-        chromosome: int = typer.Option(..., help="Chromosome number (1-22)"),
-        compute_correlations_within_distance: bool = typer.Option(False, help="Compute correlations within distance"),
-        debug_mode: bool = typer.Option(False, help="Debug mode")
+        cohort_name: Annotated[Cohort, typer.Option("--cohort-name", "-c", help="Cohort name")],
+        reference_panel: Annotated[RefPanel, typer.Option("--reference-panel", "-r", help="Reference panel such as 1000G or GTEX_V8")],
+        eqtl_model: Annotated[EqtlModel, typer.Option("--eqtl-model", "-m", help="Prediction models such as MASHR or ELASTIC_NET")],
+        chromosome: Annotated[int, typer.Option("--chromosome", "-chr", help="Chromosome number (1-22)")],
+        smultixcan_condition_number: Annotated[int, typer.Option("--smultixcan-condition-number", "-n", help="S-MultiXcan condition number")] = 30,
+        project_dir: Annotated[Path, typer.Option("--project-dir", "-p", help="Project directory")] = conf.CURRENT_DIR,
+        compute_correlations_within_distance: Annotated[bool, typer.Option("--compute-correlations-within-distance", "-w", help="Compute correlations within distance")] = False,
+        debug_mode: Annotated[bool, typer.Option("--debug", "-d", help="Run with debug mode")] = False,
 ):
     """
     Computes predicted expression correlations between all genes in the MultiPLIER models.
     """
 
+    load_settings_files(project_dir)
     warnings.filterwarnings("error")
 
-    assert cohort_name and reference_panel and eqtl_model, "All input parameters must be provided"
-    assert 1 <= chromosome <= 22, "Chromosome must be between 1 and 22"
+    if not 1 <= chromosome <= 22:
+        raise ValueError("Chromosome number must be between 1 and 22")
 
     cohort_name = cohort_name.lower()
     eqtl_model_files_prefix = conf.PHENOMEXCAN["PREDICTION_MODELS"][f"{eqtl_model}_PREFIX"]
 
+    # Output messages
+    print(f"Cohort name: {cohort_name}")
+    print(f"Reference panel: {reference_panel}")
+    print(f"eQTL model: {eqtl_model}) / {eqtl_model_files_prefix}")
+    print(f"Chromosome: {chromosome}")
+    print(f"S-MultiXcan condition number: {smultixcan_condition_number}")
+    if compute_correlations_within_distance:
+        print("Compute correlations within distance")
+
     output_dir_base = (
-            conf.RESULTS["GLS"]
+            Path(conf.RESULTS["GLS"])
             / "gene_corrs"
             / "cohorts"
             / cohort_name
@@ -40,6 +55,7 @@ def correlate(
             / eqtl_model.lower()
     )
     output_dir_base.mkdir(parents=True, exist_ok=True)
+    print(f"Using output directory: {output_dir_base}")
 
     with open(output_dir_base / "gwas_variant_ids.pkl", "rb") as handle:
         gwas_variants_ids_set = pickle.load(handle)
