@@ -1,24 +1,32 @@
 from pathlib import Path
+from enum import Enum
+from typing import Annotated
+
 import pandas as pd
 
 import typer
 import pickle
 from phenoplier.config import settings as conf
 from phenoplier.entity import Gene
+from phenoplier.commands.utils import load_settings_files
+from phenoplier.commands.enums import Cohort, RefPanel, EqtlModel
 
 
 def preprocess(
-        cohort_name: str,
-        reference_panel: str,
-        eqtl_model: str,
-        spredixcan_folder: str,
-        gwas_file: str,
-        spredixcan_file_pattern: str,
-        smultixcan_file: str,
+        cohort_name: Annotated[Cohort, typer.Option("--cohort-name", "-c", help="Cohort name")],
+        gwas_file: Annotated[Path, typer.Option("--gwas-file", "-g", help="GWAS file")],
+        spredixcan_folder: Annotated[str, typer.Option("--spredixcan-folder", "-s", help="S-PrediXcan folder")],
+        spredixcan_file_pattern: Annotated[str, typer.Option("--spredixcan-file-pattern", "-n", help="S-PrediXcan file pattern")],
+        smultixcan_file: Annotated[str, typer.Option("--smultixcan-file", "-t", help="S-MultiXcan file")],
+        reference_panel: Annotated[RefPanel, typer.Option("--reference-panel", "-r", help="Reference panel such as 1000G or GTEX_V8")],
+        eqtl_model: Annotated[EqtlModel, typer.Option("--eqtl-model", "-m", help="Prediction models such as MASHR or ELASTIC_NET")],
+        project_dir: Annotated[Path, typer.Option("--project-dir", "-p", help="Project directory")] = conf.CURRENT_DIR,
 ):
     """
     Compiles information about the GWAS and TWAS for a particular cohort. For example, the set of GWAS variants, variance of predicted expression of genes, etc.
     """
+
+    load_settings_files(project_dir)
 
     # Cohort name processing
     cohort_name = cohort_name.lower()
@@ -28,7 +36,7 @@ def preprocess(
     typer.echo(f"Reference panel: {reference_panel}")
 
     # GWAS file processing
-    gwas_file_path = Path(gwas_file).resolve()
+    gwas_file_path = gwas_file.resolve()
     if not gwas_file_path.exists():
         raise typer.BadParameter(f"GWAS file does not exist: {gwas_file_path}")
     typer.echo(f"GWAS file path: {gwas_file_path}")
@@ -54,7 +62,7 @@ def preprocess(
     typer.echo(f"eQTL model: {eqtl_model}")
 
     output_dir_base = (
-            conf.RESULTS["GLS"]
+            Path(conf.RESULTS["GLS"])
             / "gene_corrs"
             / "cohorts"
             / cohort_name
