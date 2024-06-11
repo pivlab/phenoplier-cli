@@ -1,3 +1,6 @@
+from pathlib import Path
+from typing import Annotated
+
 import typer
 import pandas as pd
 import numpy as np
@@ -6,10 +9,12 @@ import matplotlib.pyplot as plt
 
 from phenoplier.config import settings as conf
 from phenoplier.entity import Gene
+from phenoplier.commands.enums import Cohort, RefPanel, EqtlModel
 from phenoplier.correlations import (
     check_pos_def,
     adjust_non_pos_def,
 )
+
 
 def validate_inputs(cohort_name, reference_panel, eqtl_model):
     assert cohort_name is not None and len(cohort_name) > 0, "A cohort name must be given"
@@ -45,17 +50,18 @@ def plot_distribution_and_heatmap(full_corr_matrix):
 
 
 def postprocess(
-        cohort_name: str = typer.Option(..., help="Cohort name, e.g., UK_BIOBANK"),
-        reference_panel: str = typer.Option(..., help="Reference panel, e.g., 1000G or GTEX_V8"),
-        eqtl_model: str = typer.Option(..., help="Prediction/eQTL model, e.g., MASHR or ELASTIC_NET"),
+        cohort_name: Annotated[Cohort, typer.Option("--cohort-name", "-c", help="Cohort name")],
+        reference_panel: Annotated[RefPanel, typer.Option("--reference-panel", "-r", help="Reference panel such as 1000G or GTEX_V8")],
+        eqtl_model: Annotated[EqtlModel, typer.Option("--eqtl-model", "-m", help="Prediction models such as MASHR or ELASTIC_NET")],
+        plot_output_dir: Annotated[Path, typer.Option("--plot-output-dir", "-o", help="Output directory for plots")] = None,
 ):
     """
     Reads all gene correlations across all chromosomes and computes a single correlation matrix by assembling a big correlation matrix with all genes.
     """
-    cohort_name, reference_panel, eqtl_model = validate_inputs(cohort_name, reference_panel, eqtl_model)
+    cohort_name = cohort_name.value
 
     output_dir_base = (
-            conf.RESULTS["GLS"]
+            Path(conf.RESULTS["GLS"])
             / "gene_corrs"
             / "cohorts"
             / cohort_name
@@ -102,6 +108,7 @@ def postprocess(
             full_corr_matrix.loc[corr_data.index, corr_data.columns] = corr_data
 
     assert np.all(full_corr_matrix.to_numpy().diagonal() == 1.0)
+    # full_corr_matrix.to_csv('./full_corr_matrix.csv', index=False, encoding='utf-8')
 
     is_pos_def = check_pos_def(full_corr_matrix)
     if not is_pos_def:
@@ -110,7 +117,7 @@ def postprocess(
         assert check_pos_def(full_corr_matrix), "Could not adjust full gene correlation matrix"
 
     output_file = output_dir_base / "gene_corrs-symbols.pkl"
-    gene_corrs = full_corr_matrix.rename(index=Gene.GENE_ID_TO_NAME_MAP, columns=Gene.GENE_ID_TO_NAME_MAP)
+    gene_corrs = full_corr_matrix.rename(index=Gene.GENE_ID_TO_NAME_MAP(), columns=Gene.GENE_ID_TO_NAME_MAP())
     gene_corrs.to_pickle(output_file)
 
     typer.echo("Computation of gene correlations completed successfully.")
