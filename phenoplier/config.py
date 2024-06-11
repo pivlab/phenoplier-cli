@@ -18,10 +18,11 @@ SETTINGS_FILES = [INTERNAL_SETTINGS_FILENAME, USER_SETTINGS_FILENAME]
 
 env = os.getenv("ENV_FOR_DYNACONF")
 env_settings = []
-if env == "dev":
-    env_settings = ["phenoplier/templates/internal_settings.toml", "phenoplier/templates/user_settings.toml"]
-elif env == "test":
-    env_settings = ["test/settings/internal_settings.toml", "test/settings/user_settings.toml"]
+if env == "dev" or env == "test":
+    settings_dir = Path(__file__).resolve().parent / "templates"
+    env_settings = [settings_dir / "internal_settings.toml", settings_dir / "user_settings.toml"]
+# elif env == "test":
+#     env_settings = ["test/settings/internal_settings.toml", "test/settings/user_settings.toml"]
 
 # The environment variables name supersede these settings
 # Prefix the environment variables with `$_PACKAGE_NAME` to automatically load them

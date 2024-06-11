@@ -1,11 +1,11 @@
 from pathlib import Path
-from enum import Enum
 from typing import Annotated
 
 import pandas as pd
-
 import typer
 import pickle
+from rich import print
+
 from phenoplier.config import settings as conf
 from phenoplier.entity import Gene
 from phenoplier.commands.utils import load_settings_files
@@ -13,14 +13,14 @@ from phenoplier.commands.enums import Cohort, RefPanel, EqtlModel
 
 
 def preprocess(
-        cohort_name: Annotated[Cohort, typer.Option("--cohort-name", "-c", help="Cohort name")],
-        gwas_file: Annotated[Path, typer.Option("--gwas-file", "-g", help="GWAS file")],
-        spredixcan_folder: Annotated[str, typer.Option("--spredixcan-folder", "-s", help="S-PrediXcan folder")],
-        spredixcan_file_pattern: Annotated[str, typer.Option("--spredixcan-file-pattern", "-n", help="S-PrediXcan file pattern")],
-        smultixcan_file: Annotated[str, typer.Option("--smultixcan-file", "-t", help="S-MultiXcan file")],
-        reference_panel: Annotated[RefPanel, typer.Option("--reference-panel", "-r", help="Reference panel such as 1000G or GTEX_V8")],
-        eqtl_model: Annotated[EqtlModel, typer.Option("--eqtl-model", "-m", help="Prediction models such as MASHR or ELASTIC_NET")],
-        project_dir: Annotated[Path, typer.Option("--project-dir", "-p", help="Project directory")] = conf.CURRENT_DIR,
+        cohort_name:                Annotated[Cohort, typer.Option("--cohort-name", "-c", help="Cohort name")],
+        gwas_file:                  Annotated[Path, typer.Option("--gwas-file", "-g", help="GWAS file")],
+        spredixcan_folder:          Annotated[Path, typer.Option("--spredixcan-folder", "-s", help="S-PrediXcan folder")],
+        spredixcan_file_pattern:    Annotated[str, typer.Option("--spredixcan-file-pattern", "-n", help="S-PrediXcan file pattern")],
+        smultixcan_file:            Annotated[Path, typer.Option("--smultixcan-file", "-f", help="S-MultiXcan file")],
+        reference_panel:            Annotated[RefPanel, typer.Option("--reference-panel", "-r", help="Reference panel such as 1000G or GTEX_V8")],
+        eqtl_model:                 Annotated[EqtlModel, typer.Option("--eqtl-model", "-m", help="Prediction models such as MASHR or ELASTIC_NET")],
+        project_dir:                Annotated[Path, typer.Option("--project-dir", "-p", help="Project directory")] = conf.CURRENT_DIR,
 ):
     """
     Compiles information about the GWAS and TWAS for a particular cohort. For example, the set of GWAS variants, variance of predicted expression of genes, etc.
@@ -42,7 +42,7 @@ def preprocess(
     typer.echo(f"GWAS file path: {gwas_file_path}")
 
     # S-PrediXcan folder processing
-    spredixcan_folder_path = Path(spredixcan_folder).resolve()
+    spredixcan_folder_path = spredixcan_folder.resolve()
     if not spredixcan_folder_path.exists():
         raise typer.BadParameter(f"S-PrediXcan folder does not exist: {spredixcan_folder_path}")
     typer.echo(f"S-PrediXcan folder path: {spredixcan_folder_path}")
@@ -53,12 +53,13 @@ def preprocess(
     typer.echo(f"S-PrediXcan file template: {spredixcan_file_pattern}")
 
     # S-MultiXcan file processing
-    smultixcan_file_path = Path(smultixcan_file).resolve()
+    smultixcan_file_path = smultixcan_file.resolve()
     if not smultixcan_file_path.exists():
         raise typer.BadParameter(f"S-MultiXcan result file does not exist: {smultixcan_file_path}")
     typer.echo(f"S-MultiXcan file path: {smultixcan_file_path}")
 
     # EQTL model processing
+    eqtl_model = eqtl_model.value
     typer.echo(f"eQTL model: {eqtl_model}")
 
     output_dir_base = (
@@ -73,7 +74,7 @@ def preprocess(
     typer.echo(f"Using output dir base: {output_dir_base}")
 
     # Load MultiPLIER Z genes
-    multiplier_z_genes = pd.read_pickle(conf.MULTIPLIER["MODEL_Z_MATRIX_FILE"]).index.tolist()
+    multiplier_z_genes = pd.read_pickle(conf.GENE_MODULE_MODEL["MODEL_Z_MATRIX_FILE"]).index.tolist()
     assert len(multiplier_z_genes) == len(set(multiplier_z_genes))
 
     # GWAS data processing
@@ -87,7 +88,18 @@ def preprocess(
         pickle.dump(gwas_variants_ids_set, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     # TWAS data processing
-    prediction_model_tissues = conf.PHENOMEXCAN["PREDICTION_MODELS"][f"{eqtl_model}_TISSUES"].split(" ")
+    # Define the directory containing the prediction model tissue files
+    prediction_model_tissues_dir = Path(conf.TWAS["PREDICTION_MODELS"][f"{eqtl_model}"])
+    # Define the prefix to be removed from the file names
+    prefix = conf.TWAS["PREDICTION_MODELS"][f"{eqtl_model}_PREFIX"]
+    # Extract tissue names by removing the prefix and the ".db" extension, then join them with spaces
+    prediction_model_tissues = []
+    for tissue_file in prediction_model_tissues_dir.glob("*.db"):
+        tissue_name = tissue_file.name.replace(prefix, "").replace(".db", "")
+        prediction_model_tissues.append(tissue_name)
+    # Join all tissue names into a single space-separated string
+    # prediction_model_tissues = " ".join(tissue_names)
+    print(prediction_model_tissues)
 
     smultixcan_results = pd.read_csv(
         smultixcan_file_path, sep="\t", usecols=["gene", "gene_name", "pvalue", "n", "n_indep"]
@@ -95,7 +107,7 @@ def preprocess(
 
     common_genes = set(multiplier_z_genes).intersection(set(smultixcan_results["gene_name"]))
     multiplier_gene_obj = {gene_name: Gene(name=gene_name) for gene_name in common_genes if
-                           gene_name in Gene.GENE_NAME_TO_ID_MAP}
+                           gene_name in Gene.GENE_NAME_TO_ID_MAP()}
 
     genes_info = pd.DataFrame({
         "name": [g.name for g in multiplier_gene_obj.values()],
@@ -114,6 +126,7 @@ def preprocess(
 
     spredixcan_result_files = {t: spredixcan_folder_path / spredixcan_file_pattern.format(tissue=t) for t in
                                prediction_model_tissues}
+    print(spredixcan_result_files)
     spredixcan_dfs = pd.concat([
         pd.read_csv(f, usecols=["gene", "zscore", "pvalue", "n_snps_used", "n_snps_in_model"]).dropna(
             subset=["gene", "zscore", "pvalue"]).assign(tissue=t)
@@ -126,7 +139,7 @@ def preprocess(
     spredixcan_genes_models = spredixcan_dfs.groupby("gene_id")["tissue"].apply(lambda x: frozenset(x.tolist()))
     spredixcan_genes_models = spredixcan_genes_models.to_frame().reset_index()
     spredixcan_genes_models = spredixcan_genes_models.assign(
-        gene_name=spredixcan_genes_models["gene_id"].apply(lambda g: Gene.GENE_ID_TO_NAME_MAP[g]))
+        gene_name=spredixcan_genes_models["gene_id"].apply(lambda g: Gene.GENE_ID_TO_NAME_MAP()[g]))
     spredixcan_genes_models = spredixcan_genes_models[["gene_id", "gene_name", "tissue"]].set_index("gene_id")
     spredixcan_genes_models = spredixcan_genes_models.assign(n_tissues=spredixcan_genes_models["tissue"].apply(len))
     spredixcan_genes_models.to_pickle(output_dir_base / "gene_tissues.pkl")

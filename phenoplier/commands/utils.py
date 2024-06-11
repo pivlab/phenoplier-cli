@@ -31,6 +31,10 @@ def is_in_dev_mode() -> bool:
     return get_env_mode() == EnvMode.dev
 
 
+def is_in_test_mode() -> bool:
+    return get_env_mode() == EnvMode.test
+
+
 def remove_settings_files(directory: Path) -> None:
     for file_name in SETTINGS_FILES:
         settings_file = Path(directory) / file_name
@@ -67,7 +71,7 @@ def load_settings_files(directory: Path, more_files: List[Path] = []) -> None:
     :param more_files: A list of settings files other than the default ones to load. Those files should be also in
     the same directory as the default settings file.
     """
-    if is_in_dev_mode():  # In dev mode, the settings are loaded from the environment
+    if is_in_dev_mode() or is_in_test_mode():  # In dev/test mode, the settings are loaded from the environment
         return
 
     # Check if the directory exists
