@@ -677,7 +677,7 @@ class Gene(object):
         model_prefix = conf.TWAS["PREDICTION_MODELS"][f"{model_type}_PREFIX"]
 
         tissue_weights_file = (
-                conf.TWAS["PREDICTION_MODELS"][model_type]
+                Path(conf.TWAS["PREDICTION_MODELS"][model_type])
                 / f"{model_prefix}{tissue}.db"
         )
 
@@ -776,7 +776,7 @@ class Gene(object):
                 3. A dictionary with SNPs ids in keys and positions as values.
         """
         input_dir = (
-                conf.RESULTS["GLS"]
+                Path(conf.RESULTS["GLS"])
                 / "gene_corrs"
                 / "reference_panels"
                 / reference_panel.lower()
@@ -806,7 +806,7 @@ class Gene(object):
         model_prefix = conf.TWAS["PREDICTION_MODELS"][f"{model_type}_PREFIX"]
 
         tissue_snps_var_file = (
-                conf.TWAS["PREDICTION_MODELS"][model_type]
+                Path(conf.TWAS["PREDICTION_MODELS"][model_type])
                 / f"{model_prefix}{tissue}.txt.gz"
         )
 
