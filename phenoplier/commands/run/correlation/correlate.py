@@ -14,28 +14,31 @@ from phenoplier.entity import Gene
 from phenoplier.commands.utils import load_settings_files
 from phenoplier.commands.enums import Cohort, RefPanel, EqtlModel
 
+
 def correlate(
-        cohort_name: Annotated[Cohort, typer.Option("--cohort-name", "-c", help="Cohort name")],
-        reference_panel: Annotated[RefPanel, typer.Option("--reference-panel", "-r", help="Reference panel such as 1000G or GTEX_V8")],
-        eqtl_model: Annotated[EqtlModel, typer.Option("--eqtl-model", "-m", help="Prediction models such as MASHR or ELASTIC_NET")],
-        chromosome: Annotated[int, typer.Option("--chromosome", "-chr", help="Chromosome number (1-22)")],
-        smultixcan_condition_number: Annotated[int, typer.Option("--smultixcan-condition-number", "-n", help="S-MultiXcan condition number")] = 30,
-        project_dir: Annotated[Path, typer.Option("--project-dir", "-p", help="Project directory")] = conf.CURRENT_DIR,
-        compute_correlations_within_distance: Annotated[bool, typer.Option("--compute-correlations-within-distance", "-w", help="Compute correlations within distance")] = False,
-        debug_mode: Annotated[bool, typer.Option("--debug", "-d", help="Run with debug mode")] = False,
+        cohort_name:                    Annotated[Cohort, typer.Option("--cohort-name", "-c", help="Cohort name")],
+        reference_panel:                Annotated[RefPanel, typer.Option("--reference-panel", "-r", help="Reference panel such as 1000G or GTEX_V8")],
+        eqtl_model:                     Annotated[EqtlModel, typer.Option("--eqtl-model", "-m", help="Prediction models such as MASHR or ELASTIC_NET")],
+        chromosome:                     Annotated[int, typer.Option("--chromosome", "-s", help="Chromosome number (1-22)")],
+        smultixcan_condition_number:    Annotated[int, typer.Option("--smultixcan-condition-number", "-n", help="S-MultiXcan condition number")] = 30,
+        project_dir:                    Annotated[Path, typer.Option("--project-dir", "-p", help="Project directory")] = conf.CURRENT_DIR,
+        compute_within_distance:        Annotated[bool, typer.Option("--compute-correlations-within-distance", "-w", help="Compute correlations within distance")] = False,
+        debug_mode:                     Annotated[bool, typer.Option("--debug", "-d", help="Run with debug mode")] = False,
 ):
     """
     Computes predicted expression correlations between all genes in the MultiPLIER models.
     """
 
     load_settings_files(project_dir)
+    cohort_name = cohort_name.lower()
+    eqtl_model = eqtl_model.value
     warnings.filterwarnings("error")
 
     if not 1 <= chromosome <= 22:
         raise ValueError("Chromosome number must be between 1 and 22")
 
     cohort_name = cohort_name.lower()
-    eqtl_model_files_prefix = conf.PHENOMEXCAN["PREDICTION_MODELS"][f"{eqtl_model}_PREFIX"]
+    eqtl_model_files_prefix = conf.TWAS["PREDICTION_MODELS"][f"{eqtl_model}_PREFIX"]
 
     # Output messages
     print(f"Cohort name: {cohort_name}")
@@ -43,7 +46,7 @@ def correlate(
     print(f"eQTL model: {eqtl_model}) / {eqtl_model_files_prefix}")
     print(f"Chromosome: {chromosome}")
     print(f"S-MultiXcan condition number: {smultixcan_condition_number}")
-    if compute_correlations_within_distance:
+    if compute_within_distance:
         print("Compute correlations within distance")
 
     output_dir_base = (
@@ -99,7 +102,7 @@ def correlate(
                         condition_number=smultixcan_condition_number,
                         reference_panel=reference_panel,
                         model_type=eqtl_model,
-                        use_within_distance=compute_correlations_within_distance,
+                        use_within_distance=compute_within_distance,
                     )
 
                     if r is None:
