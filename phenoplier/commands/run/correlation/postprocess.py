@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Annotated
 
 import typer
+from rich import print
 import pandas as pd
 import numpy as np
 import seaborn as sns
@@ -23,7 +24,7 @@ def validate_inputs(cohort_name, reference_panel, eqtl_model):
     return cohort_name.lower(), reference_panel, eqtl_model
 
 
-def plot_distribution_and_heatmap(full_corr_matrix):
+def plot_distribution_and_heatmap(full_corr_matrix, output_dir: Path):
     full_corr_matrix_flat = full_corr_matrix.mask(
         np.triu(np.ones(full_corr_matrix.shape)).astype(bool)
     ).stack()
@@ -69,10 +70,10 @@ def postprocess(
             / eqtl_model.lower()
     )
     output_dir_base.mkdir(parents=True, exist_ok=True)
-    typer.echo(f"Using output dir base: {output_dir_base}")
+    print(f"Using output dir base: {output_dir_base}")
 
     input_dir = output_dir_base / "by_chr"
-    typer.echo(f"Gene correlations input dir: {input_dir}")
+    print(f"Gene correlations input dir: {input_dir}")
     assert input_dir.exists()
 
     all_gene_corr_files = sorted(
@@ -96,23 +97,23 @@ def postprocess(
     )
 
     for chr_corr_file in all_gene_corr_files:
-        typer.echo(f"Processing {chr_corr_file.name}...")
+        print(f"Processing {chr_corr_file.name}...")
         corr_data = pd.read_pickle(chr_corr_file)
         full_corr_matrix.loc[corr_data.index, corr_data.columns] = corr_data
 
         is_pos_def = check_pos_def(corr_data)
         if not is_pos_def:
-            typer.echo("Fixing non-positive definite matrix...")
+            print("Fixing non-positive definite matrix...")
             corr_data = adjust_non_pos_def(corr_data)
             assert check_pos_def(corr_data), "Could not adjust gene correlation matrix"
             full_corr_matrix.loc[corr_data.index, corr_data.columns] = corr_data
 
-    assert np.all(full_corr_matrix.to_numpy().diagonal() == 1.0)
-    # full_corr_matrix.to_csv('./full_corr_matrix.csv', index=False, encoding='utf-8')
+    print("Checking if diagonal elements are zero...")
+    assert np.all(np.isclose(full_corr_matrix.to_numpy().diagonal(), 1.0))
 
     is_pos_def = check_pos_def(full_corr_matrix)
     if not is_pos_def:
-        typer.echo("Fixing non-positive definite full correlation matrix...")
+        print("Fixing non-positive definite full correlation matrix...")
         full_corr_matrix = adjust_non_pos_def(full_corr_matrix)
         assert check_pos_def(full_corr_matrix), "Could not adjust full gene correlation matrix"
 
@@ -120,7 +121,7 @@ def postprocess(
     gene_corrs = full_corr_matrix.rename(index=Gene.GENE_ID_TO_NAME_MAP(), columns=Gene.GENE_ID_TO_NAME_MAP())
     gene_corrs.to_pickle(output_file)
 
-    typer.echo("Computation of gene correlations completed successfully.")
+    print("Computation of gene correlations completed successfully.")
 
     plot_distribution_and_heatmap(full_corr_matrix)
 
