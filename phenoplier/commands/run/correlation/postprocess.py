@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 from phenoplier.config import settings as conf
 from phenoplier.entity import Gene
 from phenoplier.commands.enums import Cohort, RefPanel, EqtlModel
+from phenoplier.commands.utils import load_settings_files
 from phenoplier.correlations import (
     check_pos_def,
     adjust_non_pos_def,
@@ -55,10 +56,12 @@ def postprocess(
         reference_panel: Annotated[RefPanel, typer.Option("--reference-panel", "-r", help="Reference panel such as 1000G or GTEX_V8")],
         eqtl_model: Annotated[EqtlModel, typer.Option("--eqtl-model", "-m", help="Prediction models such as MASHR or ELASTIC_NET")],
         plot_output_dir: Annotated[Path, typer.Option("--plot-output-dir", "-o", help="Output directory for plots")] = None,
+        project_dir: Annotated[Path, typer.Option("--project-dir", "-p", help="Project directory")] = conf.CURRENT_DIR,
 ):
     """
     Reads all gene correlations across all chromosomes and computes a single correlation matrix by assembling a big correlation matrix with all genes.
     """
+    load_settings_files(project_dir)
     cohort_name = cohort_name.value
 
     output_dir_base = (
