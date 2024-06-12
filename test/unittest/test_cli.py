@@ -1,3 +1,5 @@
+import os
+os.environ["ENV_FOR_DYNACONF"] = "test_conf"
 import random
 import shutil
 from pathlib import Path
