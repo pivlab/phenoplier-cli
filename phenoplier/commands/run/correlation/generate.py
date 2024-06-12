@@ -1,4 +1,6 @@
 from concurrent.futures import ProcessPoolExecutor, as_completed
+from typing import Annotated
+from pathlib import Path
 
 import typer
 import pandas as pd
@@ -8,14 +10,17 @@ from tqdm import tqdm
 
 from phenoplier.config import settings as conf
 from phenoplier.gls import GLSPhenoplier
+from phenoplier.commands.enums import Cohort, RefPanel, EqtlModel
+from phenoplier.commands.utils import load_settings_files
 
 
 def generate(
-    cohort_name: str = typer.Option(..., help="Cohort name, e.g., UK_BIOBANK"),
-    reference_panel: str = typer.Option(..., help="Reference panel, e.g., 1000G or GTEX_V8"),
-    eqtl_model: str = typer.Option(..., help="Prediction/eQTL model, e.g., MASHR or ELASTIC_NET"),
-    lv_code: str = typer.Option(..., help="The code of the latent variable (LV) to compute the correlation matrix for"),
-    lv_percentile: float = typer.Option(None, help="A number from 0.0 to 1.0 indicating the top percentile of the genes in the LV to keep")
+    cohort_name:        Annotated[Cohort, typer.Option("--cohort-name", "-c", help="Cohort name")],
+    reference_panel:    Annotated[RefPanel, typer.Option("--reference-panel", "-r", help="Reference panel such as 1000G or GTEX_V8")],
+    eqtl_model:         Annotated[EqtlModel, typer.Option("--eqtl-model", "-m", help="Prediction models such as MASHR or ELASTIC_NET")],
+    lv_code:            Annotated[int, typer.Option("--lv-code", "-l", min=1, help="The code of the latent variable (LV) to compute the correlation matrix for")],
+    lv_percentile:      Annotated[float, typer.Option("--lv-percentile", "-e", min=0.0, max=1.0, help="A number from 0.0 to 1.0 indicating the top percentile of the genes in the LV to keep")] = 0.05,
+    project_dir:        Annotated[Path, typer.Option("--project-dir", "-p", help="Project directory")] = conf.CURRENT_DIR,
 ):
     """
     Computes an LV-specific correlation matrix by using the top genes in that LV only.
@@ -30,6 +35,8 @@ def generate(
         return cohort_name.lower(), reference_panel.lower(), eqtl_model.lower(), lv_code, lv_percentile
 
     cohort_name, reference_panel, eqtl_model, lv_code, lv_percentile = validate_inputs(cohort_name, reference_panel, eqtl_model, lv_code, lv_percentile)
+
+    load_settings_files(project_dir)
 
     OUTPUT_DIR_BASE = conf.RESULTS["GLS"] / "gene_corrs" / "cohorts" / cohort_name / reference_panel / eqtl_model
     gene_corrs_dict = {f.name: pd.read_pickle(f) for f in OUTPUT_DIR_BASE.glob("gene_corrs-symbols*.pkl")}
