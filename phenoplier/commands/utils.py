@@ -14,6 +14,7 @@ from phenoplier.config import settings, SETTINGS_FILES
 class EnvMode(str, Enum):
     dev = "dev"
     test = "test"
+    test_conf = "test_conf"  # Used for testing the configuration loading
     prod = "prod"
 
 
