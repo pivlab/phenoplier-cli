@@ -142,9 +142,7 @@ def cov(
     variants_ld_block_df["chr"] = variants_ld_block_df["chr"].apply(lambda x: int(x[3:]))
     variants_ld_block_df["position"] = variants_ld_block_df["position"].astype(int)
 
-    # output_file_name_template = conf.TWAS["LD_BLOCKS"]["GENE_CORRS_FILE_NAME_TEMPLATES"]["SNPS_COVARIANCE"]
-    # TODO: Ask Milton what is "GENE_CORRS_FILE_NAME_TEMPLATES"
-    output_file_name_template = f"{conf.TWAS["LD_BLOCKS"]["BASE_DIR"]}/test/"
+    output_file_name_template = f"{conf.TWAS["LD_BLOCKS"]["OUTPUT_FILE_NAME"]}"
     output_file = output_dir_base / output_file_name_template.format(prefix="", suffix="")
     print(f"Output file: {output_file}")
 
