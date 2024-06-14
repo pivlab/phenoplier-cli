@@ -8,7 +8,7 @@ from rich import print
 
 from phenoplier.config import settings as conf
 from phenoplier.entity import Gene
-from phenoplier.commands.utils import load_settings_files
+from phenoplier.commands.utils import load_settings_files, get_model_tissue_names
 from phenoplier.commands.enums import Cohort, RefPanel, EqtlModel
 
 
@@ -87,19 +87,8 @@ def preprocess(
     with open(output_dir_base / "gwas_variant_ids.pkl", "wb") as handle:
         pickle.dump(gwas_variants_ids_set, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-    # TWAS data processing
-    # Define the directory containing the prediction model tissue files
-    prediction_model_tissues_dir = Path(conf.TWAS["PREDICTION_MODELS"][f"{eqtl_model}"])
-    # Define the prefix to be removed from the file names
-    prefix = conf.TWAS["PREDICTION_MODELS"][f"{eqtl_model}_PREFIX"]
-    # Extract tissue names by removing the prefix and the ".db" extension, then join them with spaces
-    prediction_model_tissues = []
-    for tissue_file in prediction_model_tissues_dir.glob("*.db"):
-        tissue_name = tissue_file.name.replace(prefix, "").replace(".db", "")
-        prediction_model_tissues.append(tissue_name)
-    # Join all tissue names into a single space-separated string
-    # prediction_model_tissues = " ".join(tissue_names)
-    print(prediction_model_tissues)
+    # Obtain tissue information
+    prediction_model_tissues = get_model_tissue_names(eqtl_model)
 
     smultixcan_results = pd.read_csv(
         smultixcan_file_path, sep="\t", usecols=["gene", "gene_name", "pvalue", "n", "n_indep"]

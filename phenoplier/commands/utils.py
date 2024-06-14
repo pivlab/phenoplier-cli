@@ -8,7 +8,8 @@ from pathlib import Path
 
 import typer
 
-from phenoplier.config import settings, SETTINGS_FILES
+from phenoplier.config import SETTINGS_FILES
+from phenoplier.config import settings as conf
 
 
 class EnvMode(str, Enum):
@@ -59,7 +60,7 @@ def create_settings_files(directory: Path) -> None:
         if settings_file.exists():
             typer.echo(f"Config file {str(file_name)} already exists at {directory}")
         else:
-            template_file = Path(settings.TEMPLATE_DIR) / file_name
+            template_file = Path(conf.TEMPLATE_DIR) / file_name
             shutil.copy2(template_file, settings_file)
             print(f"Config file {str(file_name)} created at {directory}")
 
@@ -84,7 +85,7 @@ def load_settings_files(directory: Path, more_files: List[Path] = []) -> None:
     for file_name in SETTINGS_FILES:
         settings_file = directory / file_name
         if settings_file.exists():
-            settings.load_file(settings_file)
+            conf.load_file(settings_file)
             print(f"Config file {str(file_name)} loaded from {directory}")
         else:
             raise typer.BadParameter(f"Config file {str(file_name)} does not exist at {directory}.")
@@ -94,7 +95,7 @@ def load_settings_files(directory: Path, more_files: List[Path] = []) -> None:
         if not file.exists():
             raise typer.BadParameter(f"Config file {str(file)} does not exist at {directory}.")
         settings_file = directory / file
-        settings.load_file(settings_file)
+        conf.settings.load_file(settings_file)
         print(f"Additional config file {str(file)} loaded from {directory}")
 
 
@@ -110,3 +111,17 @@ def load_settings_files_deco(directory: Path, more_files: List[Path] = []) -> Ca
         return wrapper
 
     return decorator
+
+
+def get_model_tissue_names(eqtl_model: str) -> List[str]:
+    # TWAS data processing
+    # Define the directory containing the prediction model tissue files
+    prediction_model_tissues_dir = Path(conf.TWAS["PREDICTION_MODELS"][f"{eqtl_model}"])
+    # Define the prefix to be removed from the file names
+    prefix = conf.TWAS["PREDICTION_MODELS"][f"{eqtl_model}_PREFIX"]
+    # Extract tissue names by removing the prefix and the ".db" extension, then join them with spaces
+    prediction_model_tissues = []
+    for tissue_file in prediction_model_tissues_dir.glob("*.db"):
+        tissue_name = tissue_file.name.replace(prefix, "").replace(".db", "")
+        prediction_model_tissues.append(tissue_name)
+    return prediction_model_tissues

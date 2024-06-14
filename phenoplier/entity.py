@@ -13,6 +13,7 @@ import pandas as pd
 
 from phenoplier.config import settings as conf
 from phenoplier.cache import read_data
+from phenoplier.commands.utils import get_model_tissue_names
 
 
 class Study(Enum):
@@ -1087,9 +1088,7 @@ class Gene(object):
         if tissues is not None and len(tissues) > 0:
             return tissues
 
-        all_tissues = conf.TWAS["PREDICTION_MODELS"][
-            f"{model_type}_TISSUES"
-        ].split(" ")
+        all_tissues = get_model_tissue_names(model_type)
 
         return tuple(sorted(all_tissues))
 
