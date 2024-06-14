@@ -16,8 +16,10 @@ from phenoplier.commands.enums import MatrixDtype, RefPanel, EqtlModel
 
 
 def get_reference_panel_file(directory: Path, file_pattern: str) -> Path:
+    print(f"Looking for reference panel file in {str(directory)} with pattern {file_pattern}")
     files = list(directory.glob(f"*{file_pattern}*.parquet"))
-    assert len(files) == 1, f"More than one file was found: {files}"
+    if len(files) != 1:
+        raise ValueError(f"Only ONE reference panel file is expected, but {len(files)} were found: {files}")
     return files[0]
 
 

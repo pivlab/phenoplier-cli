@@ -11,8 +11,15 @@ with open(pacakge_toml_file) as f:
     _PACKAGE_VERSION = package_toml["tool"]["poetry"]["version"]
 
 # Config files
-USER_SETTINGS_FILENAME = "phenoplier_settings.toml"
-SETTINGS_FILES = [USER_SETTINGS_FILENAME]
+SETTINGS_FILES = ["phenoplier_settings.toml"]
+
+env = os.getenv("ENV_FOR_DYNACONF")
+env_settings = []
+if env == "dev" or env == "test":
+    settings_dir = Path(__file__).resolve().parent / "templates"
+    env_settings = [settings_dir / file for file in SETTINGS_FILES]
+# elif env == "test":
+#     env_settings = ["test/settings/internal_settings.toml", "test/settings/user_settings.toml"]
 
 # The environment variables name supersede these settings
 # Prefix the environment variables with `$_PACKAGE_NAME` to automatically load them
@@ -21,10 +28,7 @@ SETTINGS_FILES = [USER_SETTINGS_FILENAME]
 settings = Dynaconf(
     envvar_prefix="PHENOPLIER",
     # TODO: Append the curr_dir settings to override the default settings
-    # settings_files=["test/settings/phenoplier_settings.toml"]
-    # if os.getenv("ENV_FOR_DYNACONF") == "test" else [".cache/phenoplier_settings.toml"],
-    settings_files=["phenoplier/templates/phenoplier_settings.toml"]
-    if os.getenv("ENV_FOR_DYNACONF") == "test" else None,
+    settings_files=env_settings,
 
     APP_NAME=_PACKAGE_NAME,
     APP_VERSION=_PACKAGE_VERSION,
@@ -41,6 +45,8 @@ settings = Dynaconf(
     REPO_DIR=Path(__file__).resolve().parent.parent,
     # Directory contains the source code
     SRC_DIR=Path(__file__).resolve().parent,
+    # Directory contains the templates
+    TEMPLATE_DIR="@format {this.SRC_DIR}/templates/",
     # Directory contains the tests
     TEST_DIR="@format {this.REPO_DIR}/test/",
     # Directory to put test outputs
@@ -48,3 +54,6 @@ settings = Dynaconf(
     # Directory for cached data
     CACHE_DIR="@format {this.REPO_DIR}/.cache/",
 )
+
+# `envvar_prefix` = export envvars with `export DYNACONF_FOO=bar`.
+# `settings_files` = Load these files in the order.
