@@ -40,7 +40,6 @@ def read_data(filepath: Path, **kwargs) -> pd.DataFrame:
     file_extensions = "".join(filepath.suffixes)
     DATA_READERS = get_data_readers()
     DATA_FORMAT_READERS = get_data_format_readers()
-    filepath = str(filepath)
     if filepath in DATA_READERS:
         reading_function = DATA_READERS[filepath]
     elif file_extensions in DATA_FORMAT_READERS:
