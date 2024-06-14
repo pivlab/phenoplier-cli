@@ -115,7 +115,7 @@ def preprocess(
 
     spredixcan_result_files = {t: spredixcan_folder_path / spredixcan_file_pattern.format(tissue=t) for t in
                                prediction_model_tissues}
-    print(spredixcan_result_files)
+    # print(spredixcan_result_files)
     spredixcan_dfs = pd.concat([
         pd.read_csv(f, usecols=["gene", "zscore", "pvalue", "n_snps_used", "n_snps_in_model"]).dropna(
             subset=["gene", "zscore", "pvalue"]).assign(tissue=t)
