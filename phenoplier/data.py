@@ -489,7 +489,7 @@ class Downloader:
         )
 
     def download_predixcan_mashr_prediction_models(**kwargs):
-        output_folder = conf.TWAS["PREDICTION_MODELS"]["MASHR"]
+        output_folder = Path(conf.TWAS["PREDICTION_MODELS"]["MASHR"])
         if output_folder.exists():
             logger.warning(f"Output directory already exists ({output_folder}). Skipping.")
             return
@@ -501,7 +501,7 @@ class Downloader:
         ).resolve()
         output_tar_file_md5 = "87f3470bf2676043c748b684fb35fa7d"
 
-        if not Path(output_tar_file).exists() or not md5_matches(
+        if not output_tar_file.exists() or not md5_matches(
                 output_tar_file_md5, output_tar_file
         ):
             # download
