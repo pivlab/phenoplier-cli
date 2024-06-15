@@ -467,7 +467,7 @@ class Downloader:
         curl(
             "https://zenodo.org/records/11672024/files/snps_chr_blocks_cov.h5?download=1",
             output_file,
-            "0d7895b07665d5d3afab1ba26d445901",
+            "af77f23c0d04016a9db2beb7d2d28b07",
             logger=logger,
         )
 
