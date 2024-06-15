@@ -28,7 +28,6 @@ pytest-env = "^1.1"
 tqdm = "4.66.4"
 seaborn = "0.12.*"
 matplotlib = "3.6.*"
-tables = "3.7.*"
 
 [build-system]
 requires = ["poetry-core"]
