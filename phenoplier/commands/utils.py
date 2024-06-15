@@ -65,7 +65,7 @@ def create_settings_files(directory: Path) -> None:
             print(f"Config file {str(file_name)} created at {directory}")
 
 
-def load_settings_files(directory: Path, more_files: List[Path] = []) -> None:
+def load_settings_files(directory: Path, more_files: List[Path] = None) -> None:
     """
     Load the settings files from the specified directory. The expected side effect is that after this function is called,
     settings defined in the toml config files will be available as attributes of the settings object.
@@ -95,7 +95,7 @@ def load_settings_files(directory: Path, more_files: List[Path] = []) -> None:
         if not file.exists():
             raise typer.BadParameter(f"Config file {str(file)} does not exist at {directory}.")
         settings_file = directory / file
-        conf.settings.load_file(settings_file)
+        conf.load_file(settings_file)
         print(f"Additional config file {str(file)} loaded from {directory}")
 
 

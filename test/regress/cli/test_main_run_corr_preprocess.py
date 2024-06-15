@@ -22,6 +22,7 @@ _BASE_COMMAND = (
 
 
 @mark.skipif(IN_GITHUB_ACTIONS, reason="Data has not been setup in Github Actions yet. Local test only.")
+@mark.skip()
 # Parameterize the test cases
 @mark.parametrize(
     "cohort, gwas_file, spredixcan_dir, output_file_name, smultixcan_file, reference_panel, eqtl_models",

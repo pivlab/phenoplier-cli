@@ -1,9 +1,7 @@
 import os
-os.environ["ENV_FOR_DYNACONF"] = "test_conf"
 import random
 import shutil
 from pathlib import Path
-
 
 from pytest import mark, raises
 
@@ -29,10 +27,14 @@ def test_create_user_settings(directory):
     _TEST_OUTPUT_DIR / f"{random.getrandbits(128)}",
 ])
 def test_load_settings_files_on_non_existing_dir(directory):
-    with (raises(Exception)): load_settings_files(directory)
+    os.environ["ENV_FOR_DYNACONF"] = "test_conf"
+    with (raises(Exception)):
+        load_settings_files(directory)
+    os.environ["ENV_FOR_DYNACONF"] = "test"
 
 
 def test_load_settings_files():
+    os.environ["ENV_FOR_DYNACONF"] = "test_conf"
     # Create the settings files
     directory = Path(_TEST_OUTPUT_DIR, test_load_settings_files.__name__)
     remove_settings_files(directory)
@@ -57,3 +59,5 @@ def test_load_settings_files():
     finally:
         # Clean up
         shutil.rmtree(directory)
+        os.environ["ENV_FOR_DYNACONF"] = "test"
+
