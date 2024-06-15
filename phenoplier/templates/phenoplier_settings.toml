@@ -26,7 +26,7 @@ MODEL_B_MATRIX_FILE = "@format {this.GENE_MODULE_MODEL.BASE_DIR}/multiplier_mode
 MODEL_U_MATRIX_FILE = "@format {this.GENE_MODULE_MODEL.BASE_DIR}/multiplier_model_u.pkl"
 MODEL_U_AUC_MATRIX_FILE = "@format {this.GENE_MODULE_MODEL.BASE_DIR}/multiplier_model_u_auc.pkl"
 MODEL_METADATA_FILE = "@format {this.GENE_MODULE_MODEL.BASE_DIR}/multiplier_model_metadata.pkl"
-RECOUNT2_MODEL_FILE = "@format {this.GENE_MODULE_MODEL.BASE_DIR}/recount_PLIER_model.RDS"
+# RECOUNT2_MODEL_FILE = "@format {this.GENE_MODULE_MODEL.BASE_DIR}/recount_PLIER_model.RDS"
 BANCHEREAU_MCPCOUNTER_NEUTROPHIL_FILE = "@format {this.GENE_MODULE_MODEL.BASE_DIR}/Banchereau_MCPcounter_neutrophil_LV.tsv"
 
 # TWAS Settings
@@ -40,7 +40,7 @@ GENE_MAP_NAME_TO_ID = "@format {this.TWAS.GENES_METADATA_DIR}/genes_mapping_name
 TRAITS_FULLCODE_TO_EFO_MAP_FILE = "@format {this.TWAS.BASE_DIR}/phenomexcan_traits_fullcode_to_efo.tsv"
 # Gene association results
 GENE_ASSOC_DIR = "@format {this.TWAS.BASE_DIR}/gene_assoc"
-SPREDIXCAN_MASHR_ZSCORES_FOLDER = "@format {this.TWAS.GENE_ASSOC_DIR}/spredixcan"
+#SPREDIXCAN_MASHR_ZSCORES_FOLDER = "@format {this.TWAS.GENE_ASSOC_DIR}/spredixcan"
 SMULTIXCAN_MASHR_ZSCORES_FILE = "@format {this.TWAS.GENE_ASSOC_DIR}/smultixcan-mashr-zscores.pkl"
 SMULTIXCAN_EFO_PARTIAL_MASHR_ZSCORES_FILE = "@format {this.TWAS.GENE_ASSOC_DIR}/smultixcan-efo_partial-mashr-zscores.pkl"
 SMULTIXCAN_EFO_PARTIAL_MASHR_PVALUES_FILE = "@format {this.TWAS.GENE_ASSOC_DIR}/smultixcan-efo_partial-mashr-pvalues.pkl"
@@ -54,7 +54,7 @@ GTEX_GWAS_PHENO_INFO_FILE = "@format {this.TWAS.BASE_DIR}/gtex_gwas_phenotypes_m
 # LD blocks
 [TWAS.LD_BLOCKS]
 BASE_DIR = "@format {this.TWAS.BASE_DIR}/ld_blocks"
-1000G_GENOTYPE_DIR = "@format {this.TWAS.LD_BLOCKS.BASE_DIR}/reference_panel_1000G"
+#1000G_GENOTYPE_DIR = "@format {this.TWAS.LD_BLOCKS.BASE_DIR}/reference_panel_1000G"
 GTEX_V8_GENOTYPE_DIR = "@format {this.TWAS.LD_BLOCKS.BASE_DIR}/reference_panel_gtex_v8"
 OUTPUT_FILE_NAME = "snps_chr_blocks_cov.h5"
 # Predictions models

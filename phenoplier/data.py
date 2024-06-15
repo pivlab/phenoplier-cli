@@ -454,6 +454,23 @@ class Downloader:
             file_md5="ad8b9dfb4bfa550d4ac4b847265d64f0",
         )
 
+    def download_snps_covariance_1000g_mashr(eqtl_panel="mashr", **kwargs):
+        output_file = (
+                Path(conf.RESULTS["GLS"])
+                / "gene_corrs"
+                / "reference_panels"
+                / "1000g"
+                / eqtl_panel.lower()
+                / "snps_chr_blocks_cov.h5"
+        )
+
+        curl(
+            "https://zenodo.org/records/11672024/files/snps_chr_blocks_cov.h5?download=1",
+            output_file,
+            "0d7895b07665d5d3afab1ba26d445901",
+            logger=logger,
+        )
+
     def download_snps_covariance_gtex_mashr(eqtl_panel="mashr", **kwargs):
         output_file = (
                 conf.RESULTS["GLS"]
