@@ -33,6 +33,7 @@ jobs:
       #----------------------------------------------
       - name: Install dependencies
         run: |
+          chmod +x scripts/setup_env.sh
           ./scripts/setup_env.sh
 #      #----------------------------------------------
 #      #  -----  install & configure poetry  -----
