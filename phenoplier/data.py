@@ -473,7 +473,7 @@ class Downloader:
 
     def download_snps_covariance_gtex_mashr(eqtl_panel="mashr", **kwargs):
         output_file = (
-                conf.RESULTS["GLS"]
+                Path(conf.RESULTS["GLS"])
                 / "gene_corrs"
                 / "reference_panels"
                 / "gtex_v8"
@@ -482,7 +482,7 @@ class Downloader:
         )
 
         curl(
-            "https://upenn.box.com/shared/static/oqddbztt3ymhqezxtjmtrfcasus7r26s.h5",
+            "https://zenodo.org/records/11851741/files/snps_chr_blocks_cov.h5?download=1",
             output_file,
             "0d7895b07665d5d3afab1ba26d445901",
             logger=logger,
