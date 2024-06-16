@@ -24,6 +24,11 @@ jobs:
         with:
           python-version: '3.12'
       #----------------------------------------------
+      #       install PyTables
+      #----------------------------------------------
+      - name: Install PyTables
+        run: pip install tables==3.9.*
+      #----------------------------------------------
       #  -----  install & configure poetry  -----
       #----------------------------------------------
       - name: Install Poetry
