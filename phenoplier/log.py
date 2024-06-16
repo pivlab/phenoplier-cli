@@ -10,7 +10,7 @@ from phenoplier.config import settings as conf
 
 def _get_logger_config():
     """Reads the logging config file in YAML format."""
-    with open(conf.GENERAL["LOG_CONFIG_FILE"], "r") as f:
+    with open(conf.LOG_CONFIG_FILE, "r") as f:
         return yaml.safe_load(f.read())
 
 

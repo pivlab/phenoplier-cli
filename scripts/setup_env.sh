@@ -7,6 +7,8 @@ CONDA_ENV_NAME="phenoplier-cli-dev"
 # Create a minimal Conda environment
 conda env create -f ./environment.yml -n $CONDA_ENV_NAME
 # Activate the Conda environment to install dependencies using Poetry
+conda init bash
+source ~/.bashrc
 conda activate $CONDA_ENV_NAME
 
 # Install Python dependencies

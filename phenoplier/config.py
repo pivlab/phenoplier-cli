@@ -45,6 +45,8 @@ settings = Dynaconf(
     REPO_DIR=Path(__file__).resolve().parent.parent,
     # Directory contains the source code
     SRC_DIR=Path(__file__).resolve().parent,
+    # Path to the log configuration file
+    LOG_CONFIG_FILE="@format {this.SRC_DIR}/log_config.yaml",
     # Directory contains the templates
     TEMPLATE_DIR="@format {this.SRC_DIR}/templates/",
     # Directory contains the tests

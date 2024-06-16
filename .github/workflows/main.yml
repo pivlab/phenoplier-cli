@@ -34,23 +34,31 @@ jobs:
       - name: Install dependencies
         run: |
           chmod +x scripts/setup_env.sh
+          ./scripts/setup_env.sh
           conda init bash
           source ~/.bashrc
-          ./scripts/setup_env.sh
           conda activate phenoplier-cli-dev
           echo "Using conda environment: ${CONDA_DEFAULT_ENV}"
           poetry -V
+          phenoplier -v
       #----------------------------------------------
       #  -----  setup data  -----
       #----------------------------------------------
       - name: Setup data
         run: |
-          poetry run python -m phenoplier get test
+          conda init bash
+          source ~/.bashrc
+          conda activate phenoplier-cli-dev
+          export ENV_FOR_DYNACONF=test
+          phenoplier get test
       #----------------------------------------------
       #  -----  run tests  -----
       #----------------------------------------------
       - name: Run tests
         run: |
+          conda init bash
+          source ~/.bashrc
+          conda activate phenoplier-cli-dev
           export ENV_FOR_DYNACONF=test
           PYTHONPATH=. pytest -rs --color=yes test/
           # coverage report
