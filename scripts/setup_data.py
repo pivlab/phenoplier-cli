@@ -1,3 +1,5 @@
+import typer
+
 from phenoplier.data import Downloader
 
 
@@ -23,6 +25,7 @@ def setup_test_data():
         "download_gene_map_name_to_id",
         "download_biomart_genes_hg38",
         "download_multiplier_model_z_pkl",
+        "download_snps_covariance_gtex_mashr",
         "download_snps_covariance_1000g_mashr",
         "download_predixcan_mashr_prediction_models",
     ]
