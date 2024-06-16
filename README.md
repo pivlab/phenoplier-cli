@@ -94,7 +94,7 @@ Please adjust the option arguments according to your own data and file paths.
 To set up the development environment for this program, we provided a bootstrap script. Simply run this command at the root directory of the project:
 
 ```bash
-. ./scripts/setup_dev.sh
+. ./scripts/setup_env.sh
 ```
 
 This script will use Conda to create a new virtual environment named "phenoplier-cli", with Poetry inside for Python package management.
