@@ -34,45 +34,22 @@ jobs:
       - name: Install dependencies
         run: |
           chmod +x scripts/setup_env.sh
+          conda init bash
+          source ~/.bashrc
           ./scripts/setup_env.sh
-#      #----------------------------------------------
-#      #  -----  install & configure poetry  -----
-#      #----------------------------------------------
-#      - name: Install Poetry
-#        uses: snok/install-poetry@v1
-#        with:
-#          virtualenvs-create: true
-#          virtualenvs-in-project: true
-#          installer-parallel: true
-#
-#      #----------------------------------------------
-#      #       load cached venv if cache exists
-#      #----------------------------------------------
-#      - name: Load cached venv
-#        id: cached-poetry-dependencies
-#        uses: actions/cache@v3
-#        with:
-#          path: .venv
-#          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
-#      #----------------------------------------------
-#      # install dependencies if cache does not exist
-#      #----------------------------------------------
-#      - name: Install dependencies
-#        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-#        run: poetry install --no-interaction --no-root
-#      #----------------------------------------------
-#      # install your root project, if required
-#      #----------------------------------------------
-#      - name: Install project
-#        run: poetry install --no-interaction
+          conda activate phenoplier-cli-dev
+          echo "Using conda environment: ${CONDA_DEFAULT_ENV}"
       #----------------------------------------------
-      #              run test suite
+      #  -----  setup data  -----
+      #----------------------------------------------
+      - name: Setup data
+        run: |
+          python3 scripts/setup_data.py
+      #----------------------------------------------
+      #  -----  run tests  -----
       #----------------------------------------------
       - name: Run tests
         run: |
           export ENV_FOR_DYNACONF=test
-          conda env list
-          python3 scripts/setup_data.py
           PYTHONPATH=. pytest -rs --color=yes test/
-          # source .venv/bin/activate
           # coverage report
