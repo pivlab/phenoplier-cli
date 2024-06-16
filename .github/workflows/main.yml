@@ -39,12 +39,13 @@ jobs:
           ./scripts/setup_env.sh
           conda activate phenoplier-cli-dev
           echo "Using conda environment: ${CONDA_DEFAULT_ENV}"
+          poetry -V
       #----------------------------------------------
       #  -----  setup data  -----
       #----------------------------------------------
       - name: Setup data
         run: |
-          python3 scripts/setup_data.py
+          poetry run python -m phenoplier get test
       #----------------------------------------------
       #  -----  run tests  -----
       #----------------------------------------------

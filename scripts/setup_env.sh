@@ -11,7 +11,7 @@ conda activate $CONDA_ENV_NAME
 
 # Install Python dependencies
 poetry init
-poetry install --no-root
+poetry install
 
 # Deactivate the Conda environment
 conda deactivate
