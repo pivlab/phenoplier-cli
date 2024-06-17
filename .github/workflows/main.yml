@@ -59,6 +59,7 @@ jobs:
       - name: Setup data
         run: |
           export ENV_FOR_DYNACONF=test
+          source .venv/bin/activate
           phenoplier get test_data
       #----------------------------------------------
       #              run test suite
@@ -67,6 +68,5 @@ jobs:
         run: |
           export ENV_FOR_DYNACONF=test
           source .venv/bin/activate
-          python3 scripts/setup_data.py
           PYTHONPATH=. pytest -rs --color=yes test/
           # coverage report
