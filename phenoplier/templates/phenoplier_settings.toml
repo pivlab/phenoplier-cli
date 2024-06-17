@@ -1,4 +1,5 @@
 # Core Settings
+# Base working directory for the project, where data, results, and software are stored
 ROOT_DIR = "/tmp/phenoplier"
 # Directory stores input data
 DATA_DIR = "@format {this.ROOT_DIR}/data"
@@ -66,7 +67,6 @@ MASHR_PREFIX = "mashr_"
 # UK Biobank Settings
 [UK_BIOBANK]
 BASE_DIR = "@format {this.DATA_DIR}/uk_biobank"
-
 CODINGS_DIR = "@format {this.UK_BIOBANK.BASE_DIR}/codings"
 CODING_3_FILE = "@format {this.UK_BIOBANK.CODINGS_DIR}/config3.tsv"
 CODING_6_FILE = "@format {this.UK_BIOBANK.CODINGS_DIR}/config6.tsv"
