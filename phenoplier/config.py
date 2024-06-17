@@ -13,13 +13,17 @@ with open(pacakge_toml_file) as f:
 # Config files
 SETTINGS_FILES = ["phenoplier_settings.toml"]
 
+# If in test or dev environment, load the settings from the templates folder, instead of the user
+# "init"ed project folder to simplify setup process
 env = os.getenv("ENV_FOR_DYNACONF")
 env_settings = []
 if env == "dev" or env == "test":
     settings_dir = Path(__file__).resolve().parent / "templates"
     env_settings = [settings_dir / file for file in SETTINGS_FILES]
-# elif env == "test":
-#     env_settings = ["test/settings/internal_settings.toml", "test/settings/user_settings.toml"]
+
+# Initialize setting for NumExpr
+num_cores = os.cpu_count()
+os.environ["NUMEXPR_MAX_THREADS"] = f"{num_cores // 2}"
 
 # The environment variables name supersede these settings
 # Prefix the environment variables with `$_PACKAGE_NAME` to automatically load them
@@ -56,6 +60,3 @@ settings = Dynaconf(
     # Directory for cached data
     CACHE_DIR="@format {this.REPO_DIR}/.cache/",
 )
-
-# `envvar_prefix` = export envvars with `export DYNACONF_FOO=bar`.
-# `settings_files` = Load these files in the order.
