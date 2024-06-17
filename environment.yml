@@ -3,6 +3,5 @@ channels:
   - conda-forge
 dependencies:
   - poetry=1.8.*
-  - pytables=3.9.*
   - conda-lock=2.5.*
 
