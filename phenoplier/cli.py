@@ -9,7 +9,7 @@ from typer.core import TyperGroup
 from click import Context
 
 from phenoplier.commands.utils import create_settings_files
-from phenoplier.commands.get import download
+from phenoplier.commands.get import get
 from phenoplier.commands.regression import regression
 from phenoplier.config import settings
 from phenoplier.cli_constants import CLI, INIT
@@ -54,7 +54,7 @@ cmd_group_run.add_typer(cmd_group_gene_corr, name="gene-corr")
 cmd_group_run.command()(regression)
 # Add the command group "run" to the main program
 app.add_typer(cmd_group_run, name="run")
-app.command()(download)
+app.command()(get)
 
 # Callbacks in Typer allows us to create "--" options for the main program/command
 def version_callback(value: bool) -> None:
