@@ -50,7 +50,7 @@ jobs:
           source ~/.bashrc
           conda activate phenoplier-cli-dev
           export ENV_FOR_DYNACONF=test
-          phenoplier get test
+          phenoplier get test_data
       #----------------------------------------------
       #  -----  run tests  -----
       #----------------------------------------------

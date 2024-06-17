@@ -1,13 +1,16 @@
 from enum import Enum
+from pathlib import Path
 from typing import Annotated
 import typer
 from phenoplier.data import Downloader
+from phenoplier.commands.utils import load_settings_files
+from phenoplier.cli_constants import CLI, INIT
+from phenoplier.config import settings as conf
 
 
 class DownloadAction(str, Enum):
-    test = "test"
-    dev = "dev"
-    full = "full"
+    test_data = "test_data"
+    full_data = "full_data"
 
 
 test_actions = [
@@ -26,11 +29,19 @@ test_actions = [
 ]
 
 ActionMap = {
-    DownloadAction.test: test_actions,
+    DownloadAction.test_data: test_actions,
+    DownloadAction.full_data: test_actions,
 }
 
 
-def get(mode: Annotated[DownloadAction, typer.Argument()]):
+def get(
+    mode: Annotated[DownloadAction, typer.Argument()],
+    project_dir: Annotated[str, typer.Option("--project-dir", "-p", help=INIT["project_dir"])] = conf.CURRENT_DIR
+):
+    """
+    Download necessary data for running PhenoPLIER's pipelines.
+    """
+    load_settings_files(project_dir)
     downloader = Downloader()
     actions = ActionMap.get(mode)
     downloader.setup_data(actions=actions)
