@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-    paths-ignore:
-      - 'doc/**'
   pull_request:
     types: [opened, synchronize, reopened, labeled]
     branches:
@@ -26,41 +24,49 @@ jobs:
         with:
           python-version: '3.12'
       #----------------------------------------------
-      #       install Conda
+      #  -----  install & configure poetry  -----
       #----------------------------------------------
-      - name: Setup Miniconda
-        uses: conda-incubator/setup-miniconda@v3.0.4
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
+
       #----------------------------------------------
-      #  -----  install dependencies  -----
+      #       load cached venv if cache exists
+      #----------------------------------------------
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v3
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+      #----------------------------------------------
+      # install dependencies if cache does not exist
       #----------------------------------------------
       - name: Install dependencies
-        run: |
-          chmod +x scripts/setup_env.sh
-          ./scripts/setup_env.sh
-          conda init bash
-          source ~/.bashrc
-          conda activate phenoplier-cli-dev
-          echo "Using conda environment: ${CONDA_DEFAULT_ENV}"
-          poetry -V
-          phenoplier -v
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction --no-root
       #----------------------------------------------
-      #  -----  setup data  -----
+      # install your root project, if required
+      #----------------------------------------------
+      - name: Install project
+        run: poetry install --no-interaction
+      #----------------------------------------------
+      #              setup data
       #----------------------------------------------
       - name: Setup data
         run: |
-          conda init bash
-          source ~/.bashrc
-          conda activate phenoplier-cli-dev
           export ENV_FOR_DYNACONF=test
           phenoplier get test_data
       #----------------------------------------------
-      #  -----  run tests  -----
+      #              run test suite
       #----------------------------------------------
       - name: Run tests
         run: |
-          conda init bash
-          source ~/.bashrc
-          conda activate phenoplier-cli-dev
           export ENV_FOR_DYNACONF=test
+          source .venv/bin/activate
+          python3 scripts/setup_data.py
           PYTHONPATH=. pytest -rs --color=yes test/
           # coverage report
