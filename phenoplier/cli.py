@@ -12,7 +12,7 @@ from phenoplier.commands.util.utils import create_settings_files
 from phenoplier.commands.get import get
 from phenoplier.commands.run.regression import regression
 from phenoplier.config import settings
-from phenoplier.cli_constants import CLI, INIT
+from phenoplier.constants.cli import CLI, INIT
 from phenoplier.commands.run.correlation.cov import cov
 from phenoplier.commands.run.correlation.preprocess import preprocess
 from phenoplier.commands.run.correlation.correlate import correlate

@@ -4,7 +4,7 @@ from typing import Annotated
 import typer
 from phenoplier.data import Downloader
 from phenoplier.commands.util.utils import load_settings_files
-from phenoplier.cli_constants import INIT
+from phenoplier.constants.cli import INIT
 from phenoplier.config import settings as conf
 
 
