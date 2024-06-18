@@ -33,6 +33,7 @@ def preprocess(
     typer.echo(f"Cohort name: {cohort_name}")
 
     # Reference panel processing
+    reference_panel = reference_panel.lower()
     typer.echo(f"Reference panel: {reference_panel}")
 
     # GWAS file processing
