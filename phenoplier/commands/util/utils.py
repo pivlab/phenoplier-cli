@@ -1,6 +1,9 @@
+"""
+This module contains utility functions used by the CLI commands.
+"""
+
 import os
 import shutil
-from pathlib import Path
 from enum import Enum
 from typing import List, Callable
 from functools import wraps

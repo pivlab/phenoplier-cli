@@ -1,3 +1,7 @@
+"""
+This module is a sub-command of the main CLI. It downloads necessary data for running PhenoPLIER's pipelines.
+"""
+
 from enum import Enum
 from pathlib import Path
 from typing import Annotated

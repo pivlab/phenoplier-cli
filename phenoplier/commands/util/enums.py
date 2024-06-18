@@ -1,3 +1,7 @@
+"""
+This module contains enums used by the CLI commands.
+"""
+
 from enum import Enum
 
 

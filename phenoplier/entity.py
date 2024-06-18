@@ -1,6 +1,7 @@
 """
 Classes to ease access to attributes of common entities like Trait and Gene.
 """
+
 from abc import ABCMeta, abstractmethod
 from enum import Enum, auto
 import re

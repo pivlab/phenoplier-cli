@@ -1,6 +1,7 @@
 """
 Implementation of Generalized Least Squares (GLS) model.
 """
+
 from pathlib import Path
 from functools import lru_cache
 

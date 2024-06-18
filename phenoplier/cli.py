@@ -1,6 +1,7 @@
 """
 This module provides the command line interface for Phenoplier.
 """
+
 from typing import Annotated
 from pathlib import Path
 

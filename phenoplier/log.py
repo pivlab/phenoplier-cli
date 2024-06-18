@@ -1,6 +1,7 @@
 """
 Provides logging functions.
 """
+
 import logging
 import logging.config
 import yaml

@@ -1,10 +1,10 @@
 """
 It sets up the file/folder structure by downloading the necessary files.
 """
+
 import sys
 import subprocess
 import tarfile
-import argparse
 from collections import defaultdict
 from pathlib import Path
 

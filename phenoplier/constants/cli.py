@@ -1,4 +1,7 @@
-from types import MappingProxyType as ImmutableDict
+"""
+This module contains constants for the CLI commands. Mostly, it contains help messages for the CLI arguments.
+"""
+
 from enum import Enum
 
 from phenoplier.commands.util.enums import CovarOptions
@@ -6,6 +9,7 @@ from phenoplier.commands.util.enums import CovarOptions
 
 class Regression_Defaults(Enum):
     COVARS = "gene_size gene_size_log gene_density gene_density_log"
+
 
 # Const help messages for the "run regression" command
 class Regression_Args(Enum):
@@ -45,13 +49,16 @@ class Regression_Args(Enum):
         "With --batch-id, it allows to distribute computation of each LV-trait pair across a set of batches."
     )
 
+
 # Const help messages for the "run" command
 class Run_Args(Enum):
     REGRESSION = Regression_Args
 
+
 # Const help messages for common arguments
 class Common_Args(Enum):
     PROJECT_DIR = "Path to output the initialized project files. Default to current directory."
+
 
 # Const help messages for the main CLI arguments
 class Cli(Enum):

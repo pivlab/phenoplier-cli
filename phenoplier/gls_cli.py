@@ -1,6 +1,7 @@
 """
 Implementation of a command line tool to run the GLS on S-MultiXcan results.
 """
+
 from pathlib import Path
 import sys
 import argparse

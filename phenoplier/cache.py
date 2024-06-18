@@ -3,7 +3,9 @@ Provides functions to read frequently used files (which are cached) and returns
 pandas.DataFrame objects.
 """
 from pathlib import Path
+
 import pandas as pd
+
 from phenoplier.readers import get_data_readers, get_data_format_readers
 from phenoplier.config import settings
 

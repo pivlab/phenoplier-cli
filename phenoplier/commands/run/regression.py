@@ -1,3 +1,7 @@
+"""
+This module contains the CLI command to run the LV-trait regression.
+"""
+
 import sys
 import logging
 from typing import Optional, Annotated, List

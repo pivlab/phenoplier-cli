@@ -1,6 +1,16 @@
-import tempfile
+"""
+This module defines the configuration settings for Phenoplier.
+
+The "settings" object initialized in this module contains runtime or non-user-specific settings essential for the
+software's operation before loading user-specific settings.
+
+User-specific settings for each project are defined externally in the "phenoplier_settings.toml" file.
+"""
+
 import os
+import tempfile
 from pathlib import Path
+
 from dynaconf import Dynaconf
 from tomlkit import parse
 
@@ -31,9 +41,9 @@ os.environ["NUMEXPR_MAX_THREADS"] = f"{num_cores // 2}"
 
 settings = Dynaconf(
     envvar_prefix="PHENOPLIER",
-    # TODO: Append the curr_dir settings to override the default settings
     settings_files=env_settings,
 
+    # Application metadata
     APP_NAME=_PACKAGE_NAME,
     APP_VERSION=_PACKAGE_VERSION,
     CURRENT_DIR=os.getcwd(),
