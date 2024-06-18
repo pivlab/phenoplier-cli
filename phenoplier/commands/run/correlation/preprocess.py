@@ -12,6 +12,8 @@ from phenoplier.commands.util.enums import Cohort, RefPanel, EqtlModel
 from phenoplier.constants.cli import Corr_Preprocess_Args as Args
 
 
+
+# Todo: Validate reference_panel, check if folder exists. Or change it to a path argument?
 def preprocess(
         cohort_name:                Annotated[Cohort, Args.COHORT_NAME.value],
         gwas_file:                  Annotated[Path, Args.GWAS_FILE.value],

@@ -44,8 +44,8 @@ def compute_snps_cov(snps_df, reference_panel_dir, variants_ids_with_genotype, c
 def cov(
         reference_panel:            Annotated[RefPanel, Args.REFERENCE_PANEL.value],
         eqtl_model:                 Annotated[EqtlModel, Args.EQTL_MODEL.value],
-        covariance_matrix_dtype:    Annotated[MatrixDtype, Args.COVARIANCE_MATRIX_DTYPE.value],
-        project_dir:                Annotated[Path, Args.PROJECT_DIR.value],
+        covariance_matrix_dtype:    Annotated[MatrixDtype, Args.COVARIANCE_MATRIX_DTYPE.value] = MatrixDtype.f64,
+        project_dir:                Annotated[Path, Args.PROJECT_DIR.value] = conf.CURRENT_DIR,
 ):
     """
     Computes the covariance for each chromosome of all variants present in prediction models.

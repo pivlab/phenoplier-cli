@@ -20,7 +20,7 @@ def correlate(
         reference_panel:                Annotated[RefPanel, Args.REFERENCE_PANEL.value],
         eqtl_model:                     Annotated[EqtlModel, Args.EQTL_MODEL.value],
         chromosome:                     Annotated[int, Args.CHROMOSOME.value],
-        smultixcan_condition_number:    Annotated[int, Args.SMULTIXCAN_CONDITION_NUMBER.value],
+        smultixcan_condition_number:    Annotated[int, Args.SMULTIXCAN_CONDITION_NUMBER.value] = 30,
         compute_within_distance:        Annotated[bool, Args.COMPUTE_WITHIN_DISTANCE.value] = False,
         debug_mode:                     Annotated[bool, Args.DEBUG_MODE.value] = False,
         project_dir:                    Annotated[Path, Args.PROJECT_DIR.value] = conf.CURRENT_DIR,
