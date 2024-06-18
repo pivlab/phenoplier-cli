@@ -55,8 +55,8 @@ def postprocess(
         cohort_name: Annotated[Cohort, Args.COHORT_NAME.value],
         reference_panel: Annotated[RefPanel, Args.REFERENCE_PANEL.value],
         eqtl_model: Annotated[EqtlModel, Args.EQTL_MODEL.value],
-        plot_output_dir: Annotated[Path, Args.PLOT_OUTPUT_DIR] = None,
-        project_dir: Annotated[Path, Args.PROJECT_DIR] = conf.CURRENT_DIR,
+        plot_output_dir: Annotated[Path, Args.PLOT_OUTPUT_DIR.value] = None,
+        project_dir: Annotated[Path, Args.PROJECT_DIR.value] = conf.CURRENT_DIR,
 ):
     """
     Reads all gene correlations across all chromosomes and computes a single correlation matrix by assembling a big correlation matrix with all genes.

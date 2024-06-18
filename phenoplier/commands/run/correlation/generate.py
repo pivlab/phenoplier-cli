@@ -61,8 +61,8 @@ def generate(
     reference_panel:    Annotated[RefPanel, Args.REFERENCE_PANEL.value],
     eqtl_model:         Annotated[EqtlModel, Args.EQTL_MODEL.value],
     lv_code:            Annotated[int, Args.LV_CODE.value],
-    lv_percentile:      Annotated[float, Args.LV_PERCENTILE] = 0.05,
-    project_dir:        Annotated[Path, Args.PROJECT_DIR] = conf.CURRENT_DIR,
+    lv_percentile:      Annotated[float, Args.LV_PERCENTILE.value] = 0.05,
+    project_dir:        Annotated[Path, Args.PROJECT_DIR.value] = conf.CURRENT_DIR,
 ):
     """
     Computes an LV-specific correlation matrix by using the top genes in that LV only.

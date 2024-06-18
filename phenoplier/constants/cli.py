@@ -64,8 +64,9 @@ class Corr_Generate_Args(Enum):
     EQTL_MODEL = Common_Args.EQTL_MODEL.value
     LV_CODE = typer.Option("--lv-code", "-l",
                            help="The code of the latent variable (LV) to compute the correlation matrix for.")
-    LV_PERCENTILE = typer.Option("--lv-percentile", "-e",
-                                 help="A number from 0.0 to 1.0 indicating the top percentile of the genes in the LV to keep.")
+    LV_PERCENTILE = typer.Option("--lv-percentile", "-e", min=0.0, max=1.0,
+                                 help="A number from 0.0 to 1.0 indicating the top percentile of the genes in the LV "
+                                      "to keep")
     PROJECT_DIR = Common_Args.PROJECT_DIR.value
 
 

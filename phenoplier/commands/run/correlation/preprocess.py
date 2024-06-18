@@ -20,7 +20,7 @@ def preprocess(
         smultixcan_file:            Annotated[Path, Args.SMULTIXCAN_FILE.value],
         reference_panel:            Annotated[RefPanel, Args.REFERENCE_PANEL.value],
         eqtl_model:                 Annotated[EqtlModel, Args.EQTL_MODEL.value],
-        project_dir:                Annotated[Path, Args.PROJECT_DIR] = conf.CURRENT_DIR,
+        project_dir:                Annotated[Path, Args.PROJECT_DIR.value] = conf.CURRENT_DIR,
 ):
     """
     Compiles information about the GWAS and TWAS for a particular cohort. For example, the set of GWAS variants, variance of predicted expression of genes, etc.
