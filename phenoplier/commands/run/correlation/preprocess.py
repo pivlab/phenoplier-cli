@@ -9,17 +9,18 @@ from phenoplier.config import settings as conf
 from phenoplier.entity import Gene
 from phenoplier.commands.util.utils import load_settings_files, get_model_tissue_names
 from phenoplier.commands.util.enums import Cohort, RefPanel, EqtlModel
+from phenoplier.constants.cli import Corr_Preprocess_Args as Args
 
 
 def preprocess(
-        cohort_name:                Annotated[Cohort, typer.Option("--cohort-name", "-c", help="Cohort name")],
-        gwas_file:                  Annotated[Path, typer.Option("--gwas-file", "-g", help="GWAS file")],
-        spredixcan_folder:          Annotated[Path, typer.Option("--spredixcan-folder", "-s", help="S-PrediXcan folder")],
-        spredixcan_file_pattern:    Annotated[str, typer.Option("--spredixcan-file-pattern", "-n", help="S-PrediXcan file pattern")],
-        smultixcan_file:            Annotated[Path, typer.Option("--smultixcan-file", "-f", help="S-MultiXcan file")],
-        reference_panel:            Annotated[RefPanel, typer.Option("--reference-panel", "-r", help="Reference panel such as 1000G or GTEX_V8")],
-        eqtl_model:                 Annotated[EqtlModel, typer.Option("--eqtl-model", "-m", help="Prediction models such as MASHR or ELASTIC_NET")],
-        project_dir:                Annotated[Path, typer.Option("--project-dir", "-p", help="Project directory")] = conf.CURRENT_DIR,
+        cohort_name:                Annotated[Cohort, Args.COHORT_NAME.value],
+        gwas_file:                  Annotated[Path, Args.GWAS_FILE.value],
+        spredixcan_folder:          Annotated[Path, Args.SPREDIXCAN_FOLDER.value],
+        spredixcan_file_pattern:    Annotated[str, Args.SPREDIXCAN_FILE_PATTERN.value],
+        smultixcan_file:            Annotated[Path, Args.SMULTIXCAN_FILE.value],
+        reference_panel:            Annotated[RefPanel, Args.REFERENCE_PANEL.value],
+        eqtl_model:                 Annotated[EqtlModel, Args.EQTL_MODEL.value],
+        project_dir:                Annotated[Path, Args.PROJECT_DIR] = conf.CURRENT_DIR,
 ):
     """
     Compiles information about the GWAS and TWAS for a particular cohort. For example, the set of GWAS variants, variance of predicted expression of genes, etc.

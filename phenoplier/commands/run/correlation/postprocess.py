@@ -1,7 +1,6 @@
 from pathlib import Path
 from typing import Annotated
 
-import typer
 from rich import print
 import pandas as pd
 import numpy as np
@@ -11,6 +10,7 @@ import matplotlib.pyplot as plt
 from phenoplier.config import settings as conf
 from phenoplier.entity import Gene
 from phenoplier.commands.util.enums import Cohort, RefPanel, EqtlModel
+from phenoplier.constants.cli import Corr_Postprocess_Args as Args
 from phenoplier.commands.util.utils import load_settings_files
 from phenoplier.correlations import (
     check_pos_def,
@@ -52,11 +52,11 @@ def plot_distribution_and_heatmap(full_corr_matrix, output_dir: Path):
 
 
 def postprocess(
-        cohort_name: Annotated[Cohort, typer.Option("--cohort-name", "-c", help="Cohort name")],
-        reference_panel: Annotated[RefPanel, typer.Option("--reference-panel", "-r", help="Reference panel such as 1000G or GTEX_V8")],
-        eqtl_model: Annotated[EqtlModel, typer.Option("--eqtl-model", "-m", help="Prediction models such as MASHR or ELASTIC_NET")],
-        plot_output_dir: Annotated[Path, typer.Option("--plot-output-dir", "-o", help="Output directory for plots")] = None,
-        project_dir: Annotated[Path, typer.Option("--project-dir", "-p", help="Project directory")] = conf.CURRENT_DIR,
+        cohort_name: Annotated[Cohort, Args.COHORT_NAME.value],
+        reference_panel: Annotated[RefPanel, Args.REFERENCE_PANEL.value],
+        eqtl_model: Annotated[EqtlModel, Args.EQTL_MODEL.value],
+        plot_output_dir: Annotated[Path, Args.PLOT_OUTPUT_DIR] = None,
+        project_dir: Annotated[Path, Args.PROJECT_DIR] = conf.CURRENT_DIR,
 ):
     """
     Reads all gene correlations across all chromosomes and computes a single correlation matrix by assembling a big correlation matrix with all genes.

@@ -13,6 +13,7 @@ from phenoplier.config import settings as conf
 from phenoplier.entity import Gene
 from phenoplier.commands.util.utils import load_settings_files
 from phenoplier.commands.util.enums import MatrixDtype, RefPanel, EqtlModel
+from phenoplier.constants.cli import Corr_Cov_Args as Args
 
 
 def get_reference_panel_file(directory: Path, file_pattern: str) -> Path:
@@ -41,10 +42,10 @@ def compute_snps_cov(snps_df, reference_panel_dir, variants_ids_with_genotype, c
 
 
 def cov(
-        reference_panel: Annotated[RefPanel, typer.Option("--reference-panel", "-r", help="Reference panel such as 1000G or GTEX_V8")],
-        eqtl_model: Annotated[EqtlModel, typer.Option("--eqtl-model", "-m", help="Prediction models such as MASHR or ELASTIC_NET")],
-        covariance_matrix_dtype: Annotated[MatrixDtype, typer.Option("--covariance-matrix-dtype", "-t", help="The numpy dtype used for the covariance matrix.")] = "float64",
-        project_dir: Annotated[Path, typer.Option("--project-dir", "-p", help="Project directory")] = conf.CURRENT_DIR,
+        reference_panel:            Annotated[RefPanel, Args.REFERENCE_PANEL.value],
+        eqtl_model:                 Annotated[EqtlModel, Args.EQTL_MODEL.value],
+        covariance_matrix_dtype:    Annotated[MatrixDtype, Args.COVARIANCE_MATRIX_DTYPE.value],
+        project_dir:                Annotated[Path, Args.PROJECT_DIR.value],
 ):
     """
     Computes the covariance for each chromosome of all variants present in prediction models.

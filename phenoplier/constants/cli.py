@@ -71,11 +71,51 @@ class Cli(Enum):
 
 
 class Corr_Correlate_Args(Enum):
-    PROJECT_DIR = Common_Args.PROJECT_DIR.value
-    COHORT_NAME = typer.Option("--cohort-name", "-c", help="Name of the cohort to use, such as 1000G or GTEX_V8.")
+    COHORT_NAME = Common_Args.COHORT_NAME.value
     REFERENCE_PANEL = Common_Args.REFERENCE_PANEL.value
     EQTL_MODEL = Common_Args.EQTL_MODEL.value
     CHROMOSOME = typer.Option("--chromosome", "-s", help="Chromosome number (1-22).")
     SMULTIXCAN_CONDITION_NUMBER = typer.Option("--smultixcan-condition-number", "-n", help="S-MultiXcan condition number.")
     COMPUTE_WITHIN_DISTANCE = typer.Option("--compute-correlations-within-distance", "-w", help="Compute correlations within distance.")
     DEBUG_MODE = typer.Option("--debug", "-d", help="Run with debug mode.")
+    PROJECT_DIR = Common_Args.PROJECT_DIR.value
+
+
+class Corr_Cov_Args(Enum):
+    REFERENCE_PANEL = Common_Args.REFERENCE_PANEL.value
+    EQTL_MODEL = Common_Args.EQTL_MODEL.value
+    COVARIANCE_MATRIX_DTYPE = typer.Option("--covariance-matrix-dtype", "-t", help="The numpy dtype used for the covariance matrix.")
+    PROJECT_DIR = Common_Args.PROJECT_DIR.value
+
+class Corr_Filter_Args(Enum):
+    COHORT_NAME = Common_Args.COHORT_NAME.value
+    REFERENCE_PANEL = Common_Args.REFERENCE_PANEL.value
+    EQTL_MODEL = Common_Args.EQTL_MODEL.value
+    DISTANCES = typer.Option("--distances", "-d", help="List of distances to generate correlation matrices for.")
+    PROJECT_DIR = Common_Args.PROJECT_DIR.value
+
+class Corr_Generate_Args(Enum):
+    COHORT_NAME = Common_Args.COHORT_NAME.value
+    REFERENCE_PANEL = Common_Args.REFERENCE_PANEL.value
+    EQTL_MODEL = Common_Args.EQTL_MODEL.value
+    LV_CODE = typer.Option("--lv-code", "-l", help="The code of the latent variable (LV) to compute the correlation matrix for.")
+    LV_PERCENTILE = typer.Option("--lv-percentile", "-e", help="A number from 0.0 to 1.0 indicating the top percentile of the genes in the LV to keep.")
+    PROJECT_DIR = Common_Args.PROJECT_DIR.value
+
+
+class Corr_Postprocess_Args(Enum):
+    COHORT_NAME = Common_Args.COHORT_NAME.value
+    REFERENCE_PANEL = Common_Args.REFERENCE_PANEL.value
+    EQTL_MODEL = Common_Args.EQTL_MODEL.value
+    PLOT_OUTPUT_DIR = typer.Option("--plot-output-dir", "-o", help="Output directory for plots.")
+    PROJECT_DIR = Common_Args.PROJECT_DIR.value
+
+class Corr_Preprocess_Args(Enum):
+    COHORT_NAME = Common_Args.COHORT_NAME.value
+    GWAS_FILE = typer.Option("--gwas-file", "-g", help="GWAS file.")
+    SPREDIXCAN_FOLDER = typer.Option("--spredixcan-folder", "-s", help="S-PrediXcan folder.")
+    SPREDIXCAN_FILE_PATTERN = typer.Option("--spredixcan-file-pattern", "-n", help="S-PrediXcan file pattern.")
+    SMULTIXCAN_FILE = typer.Option("--smultixcan-file", "-f", help="S-MultiXcan file.")
+    REFERENCE_PANEL = Common_Args.REFERENCE_PANEL.value
+    EQTL_MODEL = Common_Args.EQTL_MODEL.value
+    PROJECT_DIR = Common_Args.PROJECT_DIR.value

@@ -1,7 +1,6 @@
-from typing import Annotated
+from typing import Annotated, List
 from pathlib import Path
 
-import typer
 import pandas as pd
 import numpy as np
 from rich import print
@@ -9,6 +8,7 @@ from rich import print
 from phenoplier.config import settings as conf
 from phenoplier.entity import Gene
 from phenoplier.commands.util.enums import Cohort, RefPanel, EqtlModel
+from phenoplier.constants.cli import Corr_Filter_Args as Args
 from phenoplier.commands.util.utils import load_settings_files
 from phenoplier.correlations import (
     check_pos_def,
@@ -16,11 +16,11 @@ from phenoplier.correlations import (
 )
 
 def filter(
-        cohort_name: Annotated[Cohort, typer.Option("--cohort-name", "-c", help="Cohort name")],
-        reference_panel: Annotated[RefPanel, typer.Option("--reference-panel", "-r", help="Reference panel such as 1000G or GTEX_V8")],
-        eqtl_model: Annotated[EqtlModel, typer.Option("--eqtl-model", "-m", help="Prediction models such as MASHR or ELASTIC_NET")],
-        distances: list[float] = typer.Option([10, 5, 2], help="List of distances to generate correlation matrices for"),
-        project_dir: Annotated[Path, typer.Option("--project-dir", "-p", help="Project directory")] = conf.CURRENT_DIR,
+        cohort_name:        Annotated[Cohort, Args.COHORT_NAME.value],
+        reference_panel:    Annotated[RefPanel, Args.REFERENCE_PANEL.value],
+        eqtl_model:         Annotated[EqtlModel, Args.EQTL_MODEL.value],
+        distances:          Annotated[List[float], Args.DISTANCES.value] = [10, 5, 2],
+        project_dir:        Annotated[Path, Args.PROJECT_DIR.value] = conf.CURRENT_DIR,
 ):
     """
     Reads the correlation matrix generated and creates new matrices with different "within distances" across genes.

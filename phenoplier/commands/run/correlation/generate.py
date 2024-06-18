@@ -11,6 +11,7 @@ from tqdm import tqdm
 from phenoplier.config import settings as conf
 from phenoplier.gls import GLSPhenoplier
 from phenoplier.commands.util.enums import Cohort, RefPanel, EqtlModel
+from phenoplier.constants.cli import Corr_Generate_Args as Args
 from phenoplier.commands.util.utils import load_settings_files
 
 
@@ -56,12 +57,12 @@ def compute_chol_inv(lv_code, gene_corrs_dict, multiplier_z, OUTPUT_DIR_BASE, re
 
 
 def generate(
-    cohort_name:        Annotated[Cohort, typer.Option("--cohort-name", "-c", help="Cohort name")],
-    reference_panel:    Annotated[RefPanel, typer.Option("--reference-panel", "-r", help="Reference panel such as 1000G or GTEX_V8")],
-    eqtl_model:         Annotated[EqtlModel, typer.Option("--eqtl-model", "-m", help="Prediction models such as MASHR or ELASTIC_NET")],
-    lv_code:            Annotated[int, typer.Option("--lv-code", "-l", min=1, help="The code of the latent variable (LV) to compute the correlation matrix for")],
-    lv_percentile:      Annotated[float, typer.Option("--lv-percentile", "-e", min=0.0, max=1.0, help="A number from 0.0 to 1.0 indicating the top percentile of the genes in the LV to keep")] = 0.05,
-    project_dir:        Annotated[Path, typer.Option("--project-dir", "-p", help="Project directory")] = conf.CURRENT_DIR,
+    cohort_name:        Annotated[Cohort, Args.COHORT_NAME.value],
+    reference_panel:    Annotated[RefPanel, Args.REFERENCE_PANEL.value],
+    eqtl_model:         Annotated[EqtlModel, Args.EQTL_MODEL.value],
+    lv_code:            Annotated[int, Args.LV_CODE.value],
+    lv_percentile:      Annotated[float, Args.LV_PERCENTILE] = 0.05,
+    project_dir:        Annotated[Path, Args.PROJECT_DIR] = conf.CURRENT_DIR,
 ):
     """
     Computes an LV-specific correlation matrix by using the top genes in that LV only.
