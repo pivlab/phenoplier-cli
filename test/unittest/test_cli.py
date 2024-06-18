@@ -6,7 +6,7 @@ from pathlib import Path
 from pytest import mark, raises
 
 import phenoplier.config
-from phenoplier.commands.utils import load_settings_files, create_settings_files, remove_settings_files
+from phenoplier.commands.util.utils import load_settings_files, create_settings_files, remove_settings_files
 
 _TEST_OUTPUT_DIR = phenoplier.config.settings.TEST_OUTPUT_DIR / "unittest"
 

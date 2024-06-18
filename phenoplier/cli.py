@@ -8,9 +8,9 @@ import typer
 from typer.core import TyperGroup
 from click import Context
 
-from phenoplier.commands.utils import create_settings_files
+from phenoplier.commands.util.utils import create_settings_files
 from phenoplier.commands.get import get
-from phenoplier.commands.regression import regression
+from phenoplier.commands.run.regression import regression
 from phenoplier.config import settings
 from phenoplier.cli_constants import CLI, INIT
 from phenoplier.commands.run.correlation.cov import cov

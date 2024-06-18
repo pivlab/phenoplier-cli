@@ -11,7 +11,7 @@ import numpy as np
 from phenoplier.gls import GLSPhenoplier
 from phenoplier.config import settings, SETTINGS_FILES
 from phenoplier.cli_constants import RUN_GLS_ARGS, RUN_GLS_DEFAULTS
-from phenoplier.commands.utils import load_settings_files
+from phenoplier.commands.util.utils import load_settings_files
 
 LOG_FORMAT = "%(levelname)s: %(message)s"
 

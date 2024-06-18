@@ -11,8 +11,8 @@ import numpy as np
 
 from phenoplier.config import settings as conf
 from phenoplier.entity import Gene
-from phenoplier.commands.utils import load_settings_files
-from phenoplier.commands.enums import Cohort, RefPanel, EqtlModel
+from phenoplier.commands.util.utils import load_settings_files
+from phenoplier.commands.util.enums import Cohort, RefPanel, EqtlModel
 
 
 def correlate(

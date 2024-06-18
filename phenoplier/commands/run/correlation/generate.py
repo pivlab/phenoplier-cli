@@ -10,8 +10,8 @@ from tqdm import tqdm
 
 from phenoplier.config import settings as conf
 from phenoplier.gls import GLSPhenoplier
-from phenoplier.commands.enums import Cohort, RefPanel, EqtlModel
-from phenoplier.commands.utils import load_settings_files
+from phenoplier.commands.util.enums import Cohort, RefPanel, EqtlModel
+from phenoplier.commands.util.utils import load_settings_files
 
 
 def exists_df(output_dir, base_filename):

@@ -13,7 +13,7 @@ import pandas as pd
 
 from phenoplier.config import settings as conf
 from phenoplier.cache import read_data
-from phenoplier.commands.utils import get_model_tissue_names
+from phenoplier.commands.util.utils import get_model_tissue_names
 
 
 class Study(Enum):

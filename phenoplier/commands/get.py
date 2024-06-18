@@ -3,8 +3,8 @@ from pathlib import Path
 from typing import Annotated
 import typer
 from phenoplier.data import Downloader
-from phenoplier.commands.utils import load_settings_files
-from phenoplier.cli_constants import CLI, INIT
+from phenoplier.commands.util.utils import load_settings_files
+from phenoplier.cli_constants import INIT
 from phenoplier.config import settings as conf
 
 

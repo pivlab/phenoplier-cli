@@ -11,8 +11,8 @@ from rich import print
 
 from phenoplier.config import settings as conf
 from phenoplier.entity import Gene
-from phenoplier.commands.utils import load_settings_files
-from phenoplier.commands.enums import MatrixDtype, RefPanel, EqtlModel
+from phenoplier.commands.util.utils import load_settings_files
+from phenoplier.commands.util.enums import MatrixDtype, RefPanel, EqtlModel
 
 
 def get_reference_panel_file(directory: Path, file_pattern: str) -> Path:

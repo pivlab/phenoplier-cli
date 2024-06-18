@@ -8,8 +8,8 @@ from rich import print
 
 from phenoplier.config import settings as conf
 from phenoplier.entity import Gene
-from phenoplier.commands.enums import Cohort, RefPanel, EqtlModel
-from phenoplier.commands.utils import load_settings_files
+from phenoplier.commands.util.enums import Cohort, RefPanel, EqtlModel
+from phenoplier.commands.util.utils import load_settings_files
 from phenoplier.correlations import (
     check_pos_def,
     adjust_non_pos_def,
