@@ -3,8 +3,11 @@ This module contains constants for the CLI commands. Mostly, it contains help me
 """
 
 from enum import Enum
+from typing import Annotated, List
 
-from phenoplier.commands.util.enums import CovarOptions
+import typer
+
+from phenoplier.commands.util.enums import CovarOptions, Cohort
 
 
 class Regression_Defaults(Enum):
@@ -57,10 +60,22 @@ class Run_Args(Enum):
 
 # Const help messages for common arguments
 class Common_Args(Enum):
-    PROJECT_DIR = "Path to output the initialized project files. Default to current directory."
-
+    PROJECT_DIR = typer.Option("--project-dir", "-p", help="Path to output the initialized project files. Default to current directory.")
+    COHORT_NAME = typer.Option("--cohort-name", "-c", help="Name of the cohort to use, such as 1000G or GTEX_V8.")
+    REFERENCE_PANEL = typer.Option("--reference-panel", "-r", help="Name of the reference panel to use, such as MASHR or ELASTIC_NET.")
+    EQTL_MODEL = typer.Option("--eqtl-model", "-m", help="Prediction models such as MASHR or ELASTIC_NET.")
 
 # Const help messages for the main CLI arguments
 class Cli(Enum):
     VERSION = "Print out the app's version."
 
+
+class Corr_Correlate_Args(Enum):
+    PROJECT_DIR = Common_Args.PROJECT_DIR.value
+    COHORT_NAME = typer.Option("--cohort-name", "-c", help="Name of the cohort to use, such as 1000G or GTEX_V8.")
+    REFERENCE_PANEL = Common_Args.REFERENCE_PANEL.value
+    EQTL_MODEL = Common_Args.EQTL_MODEL.value
+    CHROMOSOME = typer.Option("--chromosome", "-s", help="Chromosome number (1-22).")
+    SMULTIXCAN_CONDITION_NUMBER = typer.Option("--smultixcan-condition-number", "-n", help="S-MultiXcan condition number.")
+    COMPUTE_WITHIN_DISTANCE = typer.Option("--compute-correlations-within-distance", "-w", help="Compute correlations within distance.")
+    DEBUG_MODE = typer.Option("--debug", "-d", help="Run with debug mode.")

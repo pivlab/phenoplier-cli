@@ -107,7 +107,7 @@ def main(
 # TODO: Add a prompt to ask the user if they want to overwrite the existing settings file
 @app.command()
 def init(
-        project_dir: Annotated[Path, typer.Option("--project-dir", "-p", help=Common_Args.PROJECT_DIR.value)] = settings.CURRENT_DIR
+        project_dir: Annotated[Path, Common_Args.PROJECT_DIR.value] = settings.CURRENT_DIR
 ):
     """
     Initialize settings file and necessary data in the specified directory.

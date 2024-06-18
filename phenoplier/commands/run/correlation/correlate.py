@@ -2,6 +2,7 @@ import traceback
 import warnings
 from typing import Annotated
 from pathlib import Path
+from enum import Enum
 
 import typer
 import pickle
@@ -13,17 +14,18 @@ from phenoplier.config import settings as conf
 from phenoplier.entity import Gene
 from phenoplier.commands.util.utils import load_settings_files
 from phenoplier.commands.util.enums import Cohort, RefPanel, EqtlModel
+from phenoplier.constants.cli import Corr_Correlate_Args as Args
 
 
 def correlate(
-        cohort_name:                    Annotated[Cohort, typer.Option("--cohort-name", "-c", help="Cohort name")],
-        reference_panel:                Annotated[RefPanel, typer.Option("--reference-panel", "-r", help="Reference panel such as 1000G or GTEX_V8")],
-        eqtl_model:                     Annotated[EqtlModel, typer.Option("--eqtl-model", "-m", help="Prediction models such as MASHR or ELASTIC_NET")],
-        chromosome:                     Annotated[int, typer.Option("--chromosome", "-s", help="Chromosome number (1-22)")],
-        smultixcan_condition_number:    Annotated[int, typer.Option("--smultixcan-condition-number", "-n", help="S-MultiXcan condition number")] = 30,
-        project_dir:                    Annotated[Path, typer.Option("--project-dir", "-p", help="Project directory")] = conf.CURRENT_DIR,
-        compute_within_distance:        Annotated[bool, typer.Option("--compute-correlations-within-distance", "-w", help="Compute correlations within distance")] = False,
-        debug_mode:                     Annotated[bool, typer.Option("--debug", "-d", help="Run with debug mode")] = False,
+        cohort_name:                    Annotated[Cohort, Args.COHORT_NAME.value],
+        reference_panel:                Annotated[RefPanel, Args.REFERENCE_PANEL.value],
+        eqtl_model:                     Annotated[EqtlModel, Args.EQTL_MODEL.value],
+        chromosome:                     Annotated[int, Args.CHROMOSOME.value],
+        smultixcan_condition_number:    Annotated[int, Args.SMULTIXCAN_CONDITION_NUMBER.value],
+        project_dir:                    Annotated[Path, Args.PROJECT_DIR.value],
+        compute_within_distance:        Annotated[bool, Args.COMPUTE_WITHIN_DISTANCE.value] = False,
+        debug_mode:                     Annotated[bool, Args.DEBUG_MODE.value] = False,
 ):
     """
     Computes predicted expression correlations between all genes in the MultiPLIER models.

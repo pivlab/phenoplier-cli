@@ -40,7 +40,7 @@ ActionMap = {
 
 def get(
     mode: Annotated[DownloadAction, typer.Argument()],
-    project_dir: Annotated[Path, typer.Option("--project-dir", "-p", help=Common_Args.PROJECT_DIR.value)] = conf.CURRENT_DIR
+    project_dir: Annotated[Path, Common_Args.PROJECT_DIR.value] = conf.CURRENT_DIR
 ):
     """
     Download necessary data for running PhenoPLIER's pipelines.
