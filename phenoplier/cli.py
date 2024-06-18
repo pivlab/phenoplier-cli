@@ -12,7 +12,7 @@ from phenoplier.commands.util.utils import create_settings_files
 from phenoplier.commands.get import get
 from phenoplier.commands.run.regression import regression
 from phenoplier.config import settings
-from phenoplier.constants.cli import CLI, INIT
+from phenoplier.constants.cli import Common_Args, Cli
 from phenoplier.commands.run.correlation.cov import cov
 from phenoplier.commands.run.correlation.preprocess import preprocess
 from phenoplier.commands.run.correlation.correlate import correlate
@@ -66,7 +66,7 @@ def version_callback(value: bool) -> None:
 
 @app.callback()
 def main(
-        version: Annotated[bool, typer.Option("--version", "-v", help=CLI["version"], callback=version_callback)] = False
+        version: Annotated[bool, typer.Option("--version", "-v", help=Cli.VERSION.value, callback=version_callback)] = False,
         # verbose: bool = False,
         # debug: bool = False
 ) -> None:
@@ -106,7 +106,7 @@ def main(
 # TODO: Add a prompt to ask the user if they want to overwrite the existing settings file
 @app.command()
 def init(
-        project_dir: Annotated[Path, typer.Option("--project-dir", "-p", help=INIT["project_dir"])] = settings.CURRENT_DIR
+        project_dir: Annotated[Path, typer.Option("--project-dir", "-p", help=Common_Args.PROJECT_DIR.value)] = settings.CURRENT_DIR
 ):
     """
     Initialize settings file and necessary data in the specified directory.

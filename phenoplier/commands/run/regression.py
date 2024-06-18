@@ -10,7 +10,7 @@ import numpy as np
 
 from phenoplier.gls import GLSPhenoplier
 from phenoplier.config import settings, SETTINGS_FILES
-from phenoplier.constants.cli import RUN_GLS_ARGS, RUN_GLS_DEFAULTS
+from phenoplier.constants.cli import Regression_Args, Regression_Defaults
 from phenoplier.commands.util.utils import load_settings_files
 
 LOG_FORMAT = "%(levelname)s: %(message)s"
@@ -75,19 +75,19 @@ def check_config_files(dir: str) -> None:
 
 
 def regression(
-        input_file:             Annotated[Path, typer.Option("--input-file", "-i", help=RUN_GLS_ARGS["input_file"])],
-        output_file:            Annotated[Path, typer.Option("--output-file", "-o", help=RUN_GLS_ARGS["output_file"])],
-        project_dir:            Annotated[str, typer.Option("--project-dir", "-p", help=RUN_GLS_ARGS["project_dir"])] = settings.CURRENT_DIR,
-        model:                  Annotated[REGRESSION_MODEL, typer.Option("--model", help=RUN_GLS_ARGS["model"])] = REGRESSION_MODEL.gls,
-        gene_corr_file:         Annotated[Optional[Path], typer.Option("--gene-corr-file", "-f", help=RUN_GLS_ARGS["gene_corr_file"])] = None,
-        gene_corr_mode:         Annotated[GENE_CORREALATION_MODE, typer.Option("--gene-corr-mode", "-m", help=RUN_GLS_ARGS["debug_use_sub_corr"])] = GENE_CORREALATION_MODE.sub,
-        dup_genes_action:       Annotated[DUP_GENE_ACTIONS, typer.Option("--dup-genes-action", help=RUN_GLS_ARGS["dup_genes_action"])] = DUP_GENE_ACTIONS.keep_first,
-        covars:                 Annotated[Optional[str], typer.Option("--covars", "-c", help=RUN_GLS_ARGS["covars"])] = None,
-        cohort_metadata_dir:    Annotated[Optional[str], typer.Option("--cohort-name", "-n", help=RUN_GLS_ARGS["cohort_metadata_dir"])] = None,
-        lv_list:                Annotated[Optional[List[str]], typer.Option("--lv-list", help=RUN_GLS_ARGS["lv_list"])] = None,
-        lv_model_file:          Annotated[Optional[Path], typer.Option("--lv-model-file", help=RUN_GLS_ARGS["lv_model_file"])] = None,
-        batch_id:               Annotated[Optional[int], typer.Option("--batch-id", help=RUN_GLS_ARGS["batch_id"])] = None,
-        batch_n_splits:         Annotated[Optional[int], typer.Option("--batch-n-splits", help=RUN_GLS_ARGS["batch_n_splits"])] = None,
+        input_file:             Annotated[Path, typer.Option("--input-file", "-i", help=Regression_Args.INPUT_FILE.value)],
+        output_file:            Annotated[Path, typer.Option("--output-file", "-o", help=Regression_Args.OUTPUT_FILE.value)],
+        project_dir:            Annotated[str, typer.Option("--project-dir", "-p", help=Regression_Args.PROJECT_DIR.value)] = settings.CURRENT_DIR,
+        model:                  Annotated[REGRESSION_MODEL, typer.Option("--model", help=Regression_Args.MODEL.value)] = REGRESSION_MODEL.gls,
+        gene_corr_file:         Annotated[Optional[Path], typer.Option("--gene-corr-file", "-f", help=Regression_Args.GENE_CORR_FILE.value)] = None,
+        gene_corr_mode:         Annotated[GENE_CORREALATION_MODE, typer.Option("--gene-corr-mode", "-m", help=Regression_Args.DEBUG_USE_SUB_CORR.value)] = GENE_CORREALATION_MODE.sub,
+        dup_genes_action:       Annotated[DUP_GENE_ACTIONS, typer.Option("--dup-genes-action", help=Regression_Args.DUP_GENES_ACTION.value)] = DUP_GENE_ACTIONS.keep_first,
+        covars:                 Annotated[Optional[str], typer.Option("--covars", "-c", help=Regression_Args.COVARS.value)] = None,
+        cohort_metadata_dir:    Annotated[Optional[str], typer.Option("--cohort-name", "-n", help=Regression_Args.COHORT_METADATA_DIR.value)] = None,
+        lv_list:                Annotated[Optional[List[str]], typer.Option("--lv-list", help=Regression_Args.LV_LIST.value)] = None,
+        lv_model_file:          Annotated[Optional[Path], typer.Option("--lv-model-file", help=Regression_Args.LV_MODEL_FILE.value)] = None,
+        batch_id:               Annotated[Optional[int], typer.Option("--batch-id", help=Regression_Args.BATCH_ID.value)] = None,
+        batch_n_splits:         Annotated[Optional[int], typer.Option("--batch-n-splits", help=Regression_Args.BATCH_N_SPLITS.value)] = None,
 ) -> None:
     """
     Run the Generalized Least Squares (GLS) model by default. Note that you need to run "phenoplier init" first to set up the environment.
@@ -169,7 +169,7 @@ def regression(
 
     # Print out useful information
     covars_info = (
-        f"Using DEFAULT covariates: {RUN_GLS_DEFAULTS["covars"]}" if covars == "default"
+        f"Using DEFAULT covariates: {Regression_Defaults.COVARS.value}" if covars == "default"
         else f"Using covariates {covars}" if covars
         else f"Running {model} without covariates."
     )

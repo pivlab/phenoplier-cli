@@ -4,7 +4,7 @@ from typing import Annotated
 import typer
 from phenoplier.data import Downloader
 from phenoplier.commands.util.utils import load_settings_files
-from phenoplier.constants.cli import INIT
+from phenoplier.constants.cli import Common_Args
 from phenoplier.config import settings as conf
 
 
@@ -36,7 +36,7 @@ ActionMap = {
 
 def get(
     mode: Annotated[DownloadAction, typer.Argument()],
-    project_dir: Annotated[Path, typer.Option("--project-dir", "-p", help=INIT["project_dir"])] = conf.CURRENT_DIR
+    project_dir: Annotated[Path, typer.Option("--project-dir", "-p", help=Common_Args.PROJECT_DIR.value)] = conf.CURRENT_DIR
 ):
     """
     Download necessary data for running PhenoPLIER's pipelines.

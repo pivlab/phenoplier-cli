@@ -21,3 +21,16 @@ class EqtlModel(str, Enum):
 class MatrixDtype(str, Enum):
     f32 = "float32"
     f64 = "float64"
+
+
+class CovarOptions(Enum):
+    ALL = "all"
+    DEFAULT = "gene_size gene_size_log gene_density gene_density_log"
+    GENE_SIZE = "gene_size"
+    GENE_SIZE_LOG = "gene_size_log"
+    GENE_DENSITY = "gene_density"
+    GENE_DENSITY_LOG = "gene_density_log"
+    GENE_N_SNPS_USED = "gene_n_snps_used"
+    GENE_N_SNPS_USED_LOG = "gene_n_snps_used_log"
+    GENE_N_SNPS_USED_DENSITY = "gene_n_snps_used_density"
+    GENE_N_SNPS_USED_DENSITY_LOG = "gene_n_snps_used_density_log"
