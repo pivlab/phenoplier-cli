@@ -4,13 +4,15 @@ from typing import Annotated
 import pandas as pd
 import typer
 import pickle
+from rich import print
+from rich.panel import Panel
+from rich.text import Text
 
 from phenoplier.config import settings as conf
 from phenoplier.entity import Gene
 from phenoplier.commands.util.utils import load_settings_files, get_model_tissue_names
 from phenoplier.commands.util.enums import Cohort, RefPanel, EqtlModel
 from phenoplier.constants.cli import Corr_Preprocess_Args as Args
-
 
 
 # Todo: Validate reference_panel, check if folder exists. Or change it to a path argument?
@@ -30,40 +32,42 @@ def preprocess(
 
     load_settings_files(project_dir)
 
+    print(Text("[--- Info ---]", style="blue"))
+
     # Cohort name processing
     cohort_name = cohort_name.lower()
-    typer.echo(f"Cohort name: {cohort_name}")
+    print(f"Cohort name: {cohort_name}")
 
     # Reference panel processing
     reference_panel = reference_panel.lower()
-    typer.echo(f"Reference panel: {reference_panel}")
+    print(f"Reference panel: {reference_panel}")
 
     # GWAS file processing
     gwas_file_path = gwas_file.resolve()
     if not gwas_file_path.exists():
         raise typer.BadParameter(f"GWAS file does not exist: {gwas_file_path}")
-    typer.echo(f"GWAS file path: {gwas_file_path}")
+    print(f"GWAS file path: {gwas_file_path}")
 
     # S-PrediXcan folder processing
     spredixcan_folder_path = spredixcan_folder.resolve()
     if not spredixcan_folder_path.exists():
         raise typer.BadParameter(f"S-PrediXcan folder does not exist: {spredixcan_folder_path}")
-    typer.echo(f"S-PrediXcan folder path: {spredixcan_folder_path}")
+    print(f"S-PrediXcan folder path: {spredixcan_folder_path}")
 
     # S-PrediXcan file pattern processing
     if "{tissue}" not in spredixcan_file_pattern:
         raise typer.BadParameter("S-PrediXcan file pattern must have a '{tissue}' placeholder")
-    typer.echo(f"S-PrediXcan file template: {spredixcan_file_pattern}")
+    print(f"S-PrediXcan file template: {spredixcan_file_pattern}")
 
     # S-MultiXcan file processing
     smultixcan_file_path = smultixcan_file.resolve()
     if not smultixcan_file_path.exists():
         raise typer.BadParameter(f"S-MultiXcan result file does not exist: {smultixcan_file_path}")
-    typer.echo(f"S-MultiXcan file path: {smultixcan_file_path}")
+    print(f"S-MultiXcan file path: {smultixcan_file_path}")
 
     # EQTL model processing
     eqtl_model = eqtl_model.value
-    typer.echo(f"eQTL model: {eqtl_model}")
+    print(f"eQTL model: {eqtl_model}")
 
     output_dir_base = (
             Path(conf.RESULTS["GLS"])
@@ -74,13 +78,19 @@ def preprocess(
             / eqtl_model.lower()
     )
     output_dir_base.mkdir(parents=True, exist_ok=True)
-    typer.echo(f"Using output dir base: {output_dir_base}")
+    print(f"Using output dir base: {output_dir_base}")
 
+    # Data Loading
+    print(Text("[--- Data Loading ---]", style="blue"))
     # Load MultiPLIER Z genes
+    print(f"Loading MultiPLIER Z genes from: {conf.GENE_MODULE_MODEL['MODEL_Z_MATRIX_FILE']}")
     multiplier_z_genes = pd.read_pickle(conf.GENE_MODULE_MODEL["MODEL_Z_MATRIX_FILE"]).index.tolist()
-    assert len(multiplier_z_genes) == len(set(multiplier_z_genes))
+    if len(multiplier_z_genes) != len(set(multiplier_z_genes)):
+        raise ValueError("MultiPLIER Z genes have duplicates.")
+    print(f"Done. Number of MultiPLIER Z genes: {len(multiplier_z_genes)}")
 
     # GWAS data processing
+    print(f"Loading GWAS data from: {gwas_file_path}")
     gwas_data = pd.read_csv(
         gwas_file_path,
         sep="\t",
@@ -89,14 +99,19 @@ def preprocess(
     gwas_variants_ids_set = frozenset(gwas_data["panel_variant_id"])
     with open(output_dir_base / "gwas_variant_ids.pkl", "wb") as handle:
         pickle.dump(gwas_variants_ids_set, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    print("Done.")
 
     # Obtain tissue information
     prediction_model_tissues = get_model_tissue_names(eqtl_model)
-
+    print(f"Loading smultixcan file: {smultixcan_file_path}")
     smultixcan_results = pd.read_csv(
         smultixcan_file_path, sep="\t", usecols=["gene", "gene_name", "pvalue", "n", "n_indep"]
     ).dropna().assign(gene_id=lambda x: x["gene"].apply(lambda g: g.split(".")[0]))
+    print("Done.")
 
+    # Data Processing
+    print(Text("[--- Data Processing ---]", style="blue"))
+    print("Processing gene information...")
     common_genes = set(multiplier_z_genes).intersection(set(smultixcan_results["gene_name"]))
     multiplier_gene_obj = {gene_name: Gene(name=gene_name) for gene_name in common_genes if
                            gene_name in Gene.GENE_NAME_TO_ID_MAP()}
@@ -118,7 +133,9 @@ def preprocess(
 
     spredixcan_result_files = {t: spredixcan_folder_path / spredixcan_file_pattern.format(tissue=t) for t in
                                prediction_model_tissues}
-    # print(spredixcan_result_files)
+    print("Done.")
+
+    print("Loading S-PrediXcan results:")
     spredixcan_dfs = pd.concat([
         pd.read_csv(f, usecols=["gene", "zscore", "pvalue", "n_snps_used", "n_snps_in_model"]).dropna(
             subset=["gene", "zscore", "pvalue"]).assign(tissue=t)
@@ -170,6 +187,7 @@ def preprocess(
                 tissue_variances[tissue] = tissue_var
         return tissue_variances
 
+    print("Computing gene variances...")
     spredixcan_genes_tissues_variance = spredixcan_genes_models.apply(_get_gene_variances, axis=1)
     spredixcan_genes_models = spredixcan_genes_models.join(
         spredixcan_genes_tissues_variance.rename("tissues_variances"))
@@ -182,4 +200,6 @@ def preprocess(
         "n_snps_in_model_sum")
     spredixcan_genes_models = spredixcan_genes_models.join(spredixcan_genes_sum_of_n_snps_in_model)
 
-    spredixcan_genes_models.to_pickle(output_dir_base / "spredixcan_tissues_variances.pkl")
+    output_file = output_dir_base / "spredixcan_genes_models.pkl"
+    spredixcan_genes_models.to_pickle(output_file)
+    print(f"Done. Spreadixcan result saved in: {output_file}")
