@@ -5,7 +5,7 @@ import pandas as pd
 import typer
 import pickle
 from rich import print
-from rich.panel import Panel
+from rich.progress import Progress, SpinnerColumn, TextColumn
 from rich.text import Text
 
 from phenoplier.config import settings as conf
@@ -111,49 +111,61 @@ def preprocess(
 
     # Data Processing
     print(Text("[--- Data Processing ---]", style="blue"))
-    print("Processing gene information...")
-    common_genes = set(multiplier_z_genes).intersection(set(smultixcan_results["gene_name"]))
-    multiplier_gene_obj = {gene_name: Gene(name=gene_name) for gene_name in common_genes if
-                           gene_name in Gene.GENE_NAME_TO_ID_MAP()}
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+    ) as progress:
+        progress.add_task(description="Processing gene information...", total=None)
+        # Process gene information
+        common_genes = set(multiplier_z_genes).intersection(set(smultixcan_results["gene_name"]))
+        multiplier_gene_obj = {gene_name: Gene(name=gene_name) for gene_name in common_genes if
+                               gene_name in Gene.GENE_NAME_TO_ID_MAP()}
 
-    genes_info = pd.DataFrame({
-        "name": [g.name for g in multiplier_gene_obj.values()],
-        "id": [g.ensembl_id for g in multiplier_gene_obj.values()],
-        "chr": [g.chromosome for g in multiplier_gene_obj.values()],
-        "band": [g.band for g in multiplier_gene_obj.values()],
-        "start_position": [g.get_attribute("start_position") for g in multiplier_gene_obj.values()],
-        "end_position": [g.get_attribute("end_position") for g in multiplier_gene_obj.values()],
-    }).assign(gene_length=lambda x: x["end_position"] - x["start_position"]).dropna()
+        genes_info = pd.DataFrame({
+            "name": [g.name for g in multiplier_gene_obj.values()],
+            "id": [g.ensembl_id for g in multiplier_gene_obj.values()],
+            "chr": [g.chromosome for g in multiplier_gene_obj.values()],
+            "band": [g.band for g in multiplier_gene_obj.values()],
+            "start_position": [g.get_attribute("start_position") for g in multiplier_gene_obj.values()],
+            "end_position": [g.get_attribute("end_position") for g in multiplier_gene_obj.values()],
+        }).assign(gene_length=lambda x: x["end_position"] - x["start_position"]).dropna()
 
-    genes_info["chr"] = genes_info["chr"].apply(pd.to_numeric, downcast="integer")
-    genes_info["start_position"] = genes_info["start_position"].astype(int)
-    genes_info["end_position"] = genes_info["end_position"].astype(int)
-    genes_info["gene_length"] = genes_info["gene_length"].astype(int)
-    genes_info.to_pickle(output_dir_base / "genes_info.pkl")
+        genes_info["chr"] = genes_info["chr"].apply(pd.to_numeric, downcast="integer")
+        genes_info["start_position"] = genes_info["start_position"].astype(int)
+        genes_info["end_position"] = genes_info["end_position"].astype(int)
+        genes_info["gene_length"] = genes_info["gene_length"].astype(int)
+        output_file = output_dir_base / "genes_info.pkl"
+        genes_info.to_pickle(output_file)
 
-    spredixcan_result_files = {t: spredixcan_folder_path / spredixcan_file_pattern.format(tissue=t) for t in
-                               prediction_model_tissues}
-    print("Done.")
+        spredixcan_result_files = {t: spredixcan_folder_path / spredixcan_file_pattern.format(tissue=t) for t in
+                                   prediction_model_tissues}
+    print(f"Done. Gene information saved in: {output_file}")
 
-    print("Loading S-PrediXcan results...")
-    spredixcan_dfs = pd.concat([
-        pd.read_csv(f, usecols=["gene", "zscore", "pvalue", "n_snps_used", "n_snps_in_model"]).dropna(
-            subset=["gene", "zscore", "pvalue"]).assign(tissue=t)
-        for t, f in spredixcan_result_files.items()
-    ])
-    spredixcan_dfs = spredixcan_dfs.assign(gene_id=lambda x: x["gene"].apply(lambda g: g.split(".")[0]))
-    spredixcan_dfs = spredixcan_dfs[spredixcan_dfs["gene_id"].isin(set(genes_info["id"]))]
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+    ) as progress:
+        progress.add_task(description="Loading S-PrediXcan results...", total=None)
+        # Load S-PrediXcan results
+        spredixcan_dfs = pd.concat([
+            pd.read_csv(f, usecols=["gene", "zscore", "pvalue", "n_snps_used", "n_snps_in_model"]).dropna(
+                subset=["gene", "zscore", "pvalue"]).assign(tissue=t)
+            for t, f in spredixcan_result_files.items()
+        ])
+        spredixcan_dfs = spredixcan_dfs.assign(gene_id=lambda x: x["gene"].apply(lambda g: g.split(".")[0]))
+        spredixcan_dfs = spredixcan_dfs[spredixcan_dfs["gene_id"].isin(set(genes_info["id"]))]
 
-    spredixcan_genes_n_models = spredixcan_dfs.groupby("gene_id")["tissue"].nunique()
-    spredixcan_genes_models = spredixcan_dfs.groupby("gene_id")["tissue"].apply(lambda x: frozenset(x.tolist()))
-    spredixcan_genes_models = spredixcan_genes_models.to_frame().reset_index()
-    spredixcan_genes_models = spredixcan_genes_models.assign(
-        gene_name=spredixcan_genes_models["gene_id"].apply(lambda g: Gene.GENE_ID_TO_NAME_MAP()[g]))
-    spredixcan_genes_models = spredixcan_genes_models[["gene_id", "gene_name", "tissue"]].set_index("gene_id")
-    spredixcan_genes_models = spredixcan_genes_models.assign(n_tissues=spredixcan_genes_models["tissue"].apply(len))
-    spredixcan_genes_models.to_pickle(output_dir_base / "gene_tissues.pkl")
+        spredixcan_genes_n_models = spredixcan_dfs.groupby("gene_id")["tissue"].nunique()
+        spredixcan_genes_models = spredixcan_dfs.groupby("gene_id")["tissue"].apply(lambda x: frozenset(x.tolist()))
+        spredixcan_genes_models = spredixcan_genes_models.to_frame().reset_index()
+        spredixcan_genes_models = spredixcan_genes_models.assign(
+            gene_name=spredixcan_genes_models["gene_id"].apply(lambda g: Gene.GENE_ID_TO_NAME_MAP()[g]))
+        spredixcan_genes_models = spredixcan_genes_models[["gene_id", "gene_name", "tissue"]].set_index("gene_id")
+        spredixcan_genes_models = spredixcan_genes_models.assign(n_tissues=spredixcan_genes_models["tissue"].apply(len))
+        spredixcan_genes_models.to_pickle(output_dir_base / "gene_tissues.pkl")
 
-    spredixcan_gene_obj = {gene_id: Gene(ensembl_id=gene_id) for gene_id in spredixcan_genes_models.index}
+        spredixcan_gene_obj = {gene_id: Gene(ensembl_id=gene_id) for gene_id in spredixcan_genes_models.index}
+    print("Done")
 
     def _get_gene_pc_variance(gene_row):
         gene_id = gene_row.name
@@ -167,9 +179,15 @@ def preprocess(
         )
         return s
 
-    spredixcan_genes_tissues_pc_variance = spredixcan_genes_models.apply(_get_gene_pc_variance, axis=1)
-    spredixcan_genes_models = spredixcan_genes_models.join(
-        spredixcan_genes_tissues_pc_variance.rename("tissues_pc_variances"))
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+    ) as progress:
+        progress.add_task(description="Computing gene PC variances (this step takes some time)...", total=None)
+        spredixcan_genes_tissues_pc_variance = spredixcan_genes_models.apply(_get_gene_pc_variance, axis=1)
+        spredixcan_genes_models = spredixcan_genes_models.join(
+            spredixcan_genes_tissues_pc_variance.rename("tissues_pc_variances"))
+    print("Done")
 
     def _get_gene_variances(gene_row):
         gene_id = gene_row.name
@@ -187,19 +205,23 @@ def preprocess(
                 tissue_variances[tissue] = tissue_var
         return tissue_variances
 
-    print("Computing gene variances...")
-    spredixcan_genes_tissues_variance = spredixcan_genes_models.apply(_get_gene_variances, axis=1)
-    spredixcan_genes_models = spredixcan_genes_models.join(
-        spredixcan_genes_tissues_variance.rename("tissues_variances"))
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+    ) as progress:
+        progress.add_task(description="Computing gene variances...", total=None)
+        spredixcan_genes_tissues_variance = spredixcan_genes_models.apply(_get_gene_variances, axis=1)
+        spredixcan_genes_models = spredixcan_genes_models.join(
+            spredixcan_genes_tissues_variance.rename("tissues_variances"))
 
-    spredixcan_genes_sum_of_n_snps_used = spredixcan_dfs.groupby("gene_id")["n_snps_used"].sum().rename(
-        "n_snps_used_sum")
-    spredixcan_genes_models = spredixcan_genes_models.join(spredixcan_genes_sum_of_n_snps_used)
+        spredixcan_genes_sum_of_n_snps_used = spredixcan_dfs.groupby("gene_id")["n_snps_used"].sum().rename(
+            "n_snps_used_sum")
+        spredixcan_genes_models = spredixcan_genes_models.join(spredixcan_genes_sum_of_n_snps_used)
 
-    spredixcan_genes_sum_of_n_snps_in_model = spredixcan_dfs.groupby("gene_id")["n_snps_in_model"].sum().rename(
-        "n_snps_in_model_sum")
-    spredixcan_genes_models = spredixcan_genes_models.join(spredixcan_genes_sum_of_n_snps_in_model)
+        spredixcan_genes_sum_of_n_snps_in_model = spredixcan_dfs.groupby("gene_id")["n_snps_in_model"].sum().rename(
+            "n_snps_in_model_sum")
+        spredixcan_genes_models = spredixcan_genes_models.join(spredixcan_genes_sum_of_n_snps_in_model)
 
-    output_file = output_dir_base / "spredixcan_genes_models.pkl"
-    spredixcan_genes_models.to_pickle(output_file)
-    print(f"Done. Spreadixcan result saved in: {output_file}")
+        output_file = output_dir_base / "spredixcan_genes_models.pkl"
+        spredixcan_genes_models.to_pickle(output_file)
+    print(f"Done. Spreadixcan genes models saved in: {output_file}")
