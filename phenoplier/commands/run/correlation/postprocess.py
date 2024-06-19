@@ -48,7 +48,8 @@ def plot_distribution_and_heatmap(full_corr_matrix, output_dir: Path):
         ax=ax,
     )
     ax.set_title("Gene correlations in all chromosomes")
-    plt.show()
+    # save the plot
+    plt.savefig(output_dir / "gene_corrs_heatmap.png")
 
 
 def postprocess(
@@ -126,6 +127,5 @@ def postprocess(
 
     print("Computation of gene correlations completed successfully.")
 
-    plot_distribution_and_heatmap(full_corr_matrix)
-
-
+    if plot_output_dir is not None:
+        plot_distribution_and_heatmap(full_corr_matrix)
