@@ -209,7 +209,7 @@ def preprocess(
         SpinnerColumn(),
         TextColumn("[progress.description]{task.description}"),
     ) as progress:
-        progress.add_task(description="Computing gene variances...", total=None)
+        progress.add_task(description="Computing gene variances (this step takes some time)...", total=None)
         spredixcan_genes_tissues_variance = spredixcan_genes_models.apply(_get_gene_variances, axis=1)
         spredixcan_genes_models = spredixcan_genes_models.join(
             spredixcan_genes_tissues_variance.rename("tissues_variances"))
