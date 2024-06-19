@@ -135,7 +135,7 @@ def preprocess(
                                prediction_model_tissues}
     print("Done.")
 
-    print("Loading S-PrediXcan results:")
+    print("Loading S-PrediXcan results...")
     spredixcan_dfs = pd.concat([
         pd.read_csv(f, usecols=["gene", "zscore", "pvalue", "n_snps_used", "n_snps_in_model"]).dropna(
             subset=["gene", "zscore", "pvalue"]).assign(tissue=t)
