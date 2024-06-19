@@ -54,7 +54,7 @@ GTEX_GWAS_PHENO_INFO_FILE = "@format {this.TWAS.BASE_DIR}/gtex_gwas_phenotypes_m
 # LD blocks
 [TWAS.LD_BLOCKS]
 BASE_DIR = "@format {this.TWAS.BASE_DIR}/ld_blocks"
-#1000G_GENOTYPE_DIR = "@format {this.TWAS.LD_BLOCKS.BASE_DIR}/reference_panel_1000G"
+1000G_GENOTYPE_DIR = "@format {this.TWAS.LD_BLOCKS.BASE_DIR}/reference_panel_1000G"
 GTEX_V8_GENOTYPE_DIR = "@format {this.TWAS.LD_BLOCKS.BASE_DIR}/reference_panel_gtex_v8"
 OUTPUT_FILE_NAME = "snps_chr_blocks_cov.h5"
 # Predictions models
