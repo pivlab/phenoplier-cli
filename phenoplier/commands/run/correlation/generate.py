@@ -34,6 +34,7 @@ def get_output_dir(gene_corr_filename, OUTPUT_DIR_BASE):
 
 
 def compute_chol_inv(lv_code, gene_corrs_dict, multiplier_z, OUTPUT_DIR_BASE, reference_panel, eqtl_model, lv_percentile):
+    # Todo: print complete message here
     for gene_corr_filename, gene_corrs in gene_corrs_dict.items():
         output_dir = get_output_dir(gene_corr_filename, OUTPUT_DIR_BASE)
         output_dir.mkdir(parents=True, exist_ok=True)
