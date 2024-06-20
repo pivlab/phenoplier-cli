@@ -121,6 +121,7 @@ def postprocess(
         full_corr_matrix = adjust_non_pos_def(full_corr_matrix)
         assert check_pos_def(full_corr_matrix), "Could not adjust full gene correlation matrix"
 
+    # TODO: Add output name to template, sharing across commands
     output_file = output_dir_base / "gene_corrs-symbols.pkl"
     gene_corrs = full_corr_matrix.rename(index=Gene.GENE_ID_TO_NAME_MAP(), columns=Gene.GENE_ID_TO_NAME_MAP())
     gene_corrs.to_pickle(output_file)
