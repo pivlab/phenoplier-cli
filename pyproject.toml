@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "phenoplier"
-version = "0.2.0"
+version = "0.2.1"
 description = ""
 authors = ["Milton Pividori", "Haoyu Zhang"]
 license = "BSD-2-Clause Plus Patent License"
