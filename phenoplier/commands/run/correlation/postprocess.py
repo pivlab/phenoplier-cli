@@ -125,7 +125,7 @@ def postprocess(
     gene_corrs = full_corr_matrix.rename(index=Gene.GENE_ID_TO_NAME_MAP(), columns=Gene.GENE_ID_TO_NAME_MAP())
     gene_corrs.to_pickle(output_file)
 
-    print("Computation of gene correlations completed successfully.")
+    print(f"Computation of gene correlations completed successfully. Output file: {output_file}")
 
     if plot_output_dir is not None:
         plot_distribution_and_heatmap(full_corr_matrix)

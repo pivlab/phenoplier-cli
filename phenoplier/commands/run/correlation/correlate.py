@@ -149,12 +149,12 @@ def correlate(
     try:
         chol_mat = np.linalg.cholesky(gene_corrs_df.to_numpy())
         cov_inv = np.linalg.inv(chol_mat)
-        print("Works!")
+        # print("Works!")
     except Exception as e:
         print(f"Cholesky decomposition failed: {str(e)}")
 
     try:
         cholsigmainv = np.linalg.cholesky(np.linalg.inv(gene_corrs_df.to_numpy())).T
-        print("Works!")
+        # print("Works!")
     except Exception as e:
         print(f"Cholesky decomposition failed (statsmodels.GLS): {str(e)}")
