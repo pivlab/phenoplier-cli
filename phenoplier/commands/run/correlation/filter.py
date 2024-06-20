@@ -67,10 +67,7 @@ def filter(
             gene_corrs_within_distance = adjust_non_pos_def(gene_corrs_within_distance)
             assert check_pos_def(gene_corrs_within_distance), "Could not adjust gene correlation matrix"
 
-        gene_corrs_within_distance.to_pickle(
-            output_dir_base / f"gene_corrs-symbols-within_distance_{int(full_distance)}mb.pkl"
-        )
-
+        # Show some stats
         genes_corrs_sum = gene_corrs_within_distance.sum()
         n_genes_included = genes_corrs_sum[genes_corrs_sum > 1.0].shape[0]
         genes_corrs_nonzero_sum = (gene_corrs_within_distance > 0.0).astype(int).sum().sum()
@@ -82,3 +79,8 @@ def filter(
             np.triu(np.ones(gene_corrs_within_distance.shape)).astype(bool)
         ).stack()
         print(corr_matrix_flat.describe().apply(str))
+
+        # Save the new matrix
+        output_file = output_dir_base / f"gene_corrs-symbols-within_distance_{int(full_distance)}mb.pkl"
+        gene_corrs_within_distance.to_pickle(output_file)
+        print(f"Done. Saved to {output_file}")
