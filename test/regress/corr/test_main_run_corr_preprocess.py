@@ -28,11 +28,11 @@ _BASE_COMMAND = (
     "cohort, gwas_file, spredixcan_dir, output_file_name, smultixcan_file, reference_panel, eqtl_models",
     [
         (
-                "1000g_eur",
-                "/media/haoyu/extradrive1/alpine_data/pivlab/data/phenoplier/results/gls/_previous_null_sims/final_imputed_gwas/random.pheno0.glm-imputed.txt.gz",
-                "/media/haoyu/extradrive1/alpine_data/pivlab/data/phenoplier/results/gls/_previous_null_sims/twas/spredixcan",
-                "random.pheno0-gtex_v8-mashr-{tissue}.csv",
-                "/media/haoyu/extradrive1/alpine_data/pivlab/data/phenoplier/results/gls/_previous_null_sims/twas/smultixcan/random.pheno0-gtex_v8-mashr-smultixcan.txt",
+                "phenomexcan_rapid_gwas",
+                "/media/haoyu/extradrive1/alpine_data/pivlab/data/phenoplier/data/phenomexcan/gwas_parsing/full/22617_7112.txt.gz",
+                "/media/haoyu/extradrive1/alpine_data/pivlab/data/phenoplier/data/phenomexcan/gene_assoc/spredixcan/rapid_gwas_project/22617_7112",
+                "22617_7112-gtex_v8-{tissue}-2018_10.csv",
+                "/media/haoyu/extradrive1/alpine_data/pivlab/data/phenoplier/data/phenomexcan/gene_assoc/smultixcan/rapid_gwas_project/smultixcan_22617_7112_ccn30.tsv.gz",
                 "GTEX_V8",
                 "MASHR"
         ),
