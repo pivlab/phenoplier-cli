@@ -1,64 +1,42 @@
-## Introduction
-This is a command-line interface (CLI) for the [PhenoPLIER](https://github.com/haoyu-zc/phenoplier?tab=readme-ov-file) project. PhenoPLIER is a flexible computational framework that combines gene-trait and gene-drug associations with gene modules expressed in specific contexts. This CLI program aims to provide a more user-friendly interface for users to interact with the PhenoPLIER project and integrate it into their own computational pipelines.
+BSD-2-Clause Plus Patent License
 
-## Installation & Usage
-Please refer to our Wiki page for the insturctions: [Tutorial](https://github.com/pivlab/phenoplier-cli/wiki)
+Copyright (c) 2024, Contributors & the Pividori Laboratory at the University of Colorado
 
-## Development Environment Setup
-To set up the development environment for this program, we provided a bootstrap script. Simply run this command at the root directory of the project:
+Redistribution and use in source and binary forms, with or without modification, are permitted
+provided that the following conditions are met:
 
-```bash
-. ./scripts/setup_env.sh
-```
+1. Redistributions of source code must retain the above copyright notice, this list of conditions
+   and the following disclaimer.
 
-This script will use Conda to create a new virtual environment named "phenoplier-cli", with Poetry inside for Python package management.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions
+   and the following disclaimer in the documentation and/or other materials provided with the
+   distribution.
 
-If no errors occur, you can activate the environment by running the following command:
+Subject to the terms and conditions of this license, each copyright holder and contributor hereby
+grants to those receiving rights under this license a perpetual, worldwide, non-exclusive,
+no-charge, royalty-free, irrevocable (except for failure to satisfy the conditions of this license)
+patent license to make, have made, use, offer to sell, sell, import, and otherwise transfer this
+software, where such license applies only to those patent claims, already acquired or hereafter
+acquired, licensable by such copyright holder or contributor that are necessarily infringed by:
 
-```bash
-conda activate phenoplier-cli-dev
-```
+(a) their Contribution(s) (the licensed copyrights of copyright holders and non-copyrightable
+    additions of contributors, in source or binary form) alone; or
 
-Then check if the environment is set up correctly by running the following command:
+(b) combination of their Contribution(s) with the work of authorship to which such Contribution(s)
+    was added by such copyright holder or contributor, if, at the time the Contribution is added,
+    such addition causes such combination to be necessarily infringed. The patent license shall not
+    apply to any other combinations which include the Contribution.
 
-```bash
-poetry run python -m phenoplier -v
-```
+Except as expressly stated above, no rights or licenses from any copyright holder or contributor is
+granted under this license, whether expressly, by implication, estoppel or otherwise.
 
-You should see the version of the program printed out.
+DISCLAIMER
 
-## Package Publishing
-This project is managed by Poetry. To publish the package to PyPI. Poetry supports the use of PyPI and private repositories for package discovery and publishing. During this development phase, we will TestPyPI to publish the package.
-
-First we need to save the credentials for the TestPyPI repository. Run the following command:
-```bash
-# Add the TestPyPI repository
-poetry config repositories.test-pypi https://test.pypi.org/legacy/
-# Add the TestPyPI token
-poetry config pypi-token.test-pypi <Your_Test_PyPI_Token>
-```
-
-Then we can build and publish the package to TestPyPI by running the following command:
-```bash
-poetry build
-poetry publish -r test-pypi
-```
-
-After the package is published, you can install using the pip command. Note that, for testing purposes, you may want to create a new virtual environment to install the package. Thus, instead of installing the package globally by running the above command, you can create a new virtual environment and install the package there:
-```bash
-python3 -m venv /tmp/phenoplier-env
-source /tmp/phenoplier-env/bin/activate
-python3 -m pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple phenoplier
-```
-(The --extra-index-url option is used to specify the default PyPI repository for dependencies, as packages such as and pandas are not available on TestPyPI.)
-
-Check if the package is installed correctly by running the following command:
-```bash
-phenoplier -v
-```
-
-## Testing
-In the root directory of the project, run the following command:
-```bash
-PYTHONPATH=. pytest -rs --color=yes test/
-```
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
