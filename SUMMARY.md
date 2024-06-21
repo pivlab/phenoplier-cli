@@ -1,6 +1,6 @@
 # Table of contents
 
-* [LICENSE](README.md)
+* [LICENSE](LICENSE)
 * [README](<README (1).md>)
 * [doc](doc/README.md)
   * [Project Configuration](doc/project-configuration.md)
