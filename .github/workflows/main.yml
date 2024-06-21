@@ -2,6 +2,9 @@ name: Continuous Integration
 
 on:
   push:
+    paths-ignore:
+      - 'doc/**'
+      - 'README.md'
     branches:
       - main
   pull_request:
