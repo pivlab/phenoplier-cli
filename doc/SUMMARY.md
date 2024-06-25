@@ -21,6 +21,15 @@
 * [5. Create Within-distance Matrices](gene-gene-correlation-matrix-computation/5.-create-within-distance-matrices.md)
 * [6. Generatec Correlation Matrices Per LV](gene-gene-correlation-matrix-computation/6.-generatec-correlation-matrices-per-lv.md)
 
+## Testing
+
+* [Run Provided Testing Suites](testing/run-provided-testing-suites.md)
+
+## Development
+
+* [Environment Setup](development/environment-setup.md)
+* [Package Publishing](development/package-publishing.md)
+
 ## FAQ
 
 * [Page 1](faq/page-1.md)
