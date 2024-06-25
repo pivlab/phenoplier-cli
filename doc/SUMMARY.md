@@ -15,3 +15,7 @@
 ## Gene-Gene Correlation Matrix Computation
 
 * [Gene‐Gene Correlation](gene-gene-correlation-matrix-computation/gene-gene-correlation.md)
+
+## FAQ
+
+* [Page 1](faq/page-1.md)
