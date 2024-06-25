@@ -1,6 +1,6 @@
 # Data Preparation
 
-You need to get the required data ready before using this software. You can use the built-in `get` command to do so:
+Before using this software, you need to prepare the required data. You can use the built-in `get` command to do this:
 
 ```bash
 $ phenoplier get -h
@@ -20,4 +20,4 @@ Usage: phenoplier get [OPTIONS] MODE:{test_data|full_data}
 ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
 ```
 
-Run `phenoplier get full_data` and wait for it to complete. After, all preparation works are done! Feel free to check which pipeline you are interested in and give it a try.
+Run the command `phenoplier get full_data` and wait for it to complete. Once this process is finished, you will have all the necessary data prepared. The final step before actually running our pipelines is to learn how to create and customize project configurations to fit your needs.
