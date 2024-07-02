@@ -15,8 +15,10 @@ from phenoplier.config import settings as conf
 class DownloadAction(str, Enum):
     test_data = "test_data"
     full_data = "full_data"
+    demo_data = "demo_data"
 
 
+# Todo: add demo mode, differentiate between test and full data
 test_actions = [
     "download_phenomexcan_rapid_gwas_pheno_info",
     "download_phenomexcan_rapid_gwas_data_dict_file",
@@ -35,6 +37,7 @@ test_actions = [
 ActionMap = {
     DownloadAction.test_data: test_actions,
     DownloadAction.full_data: test_actions,
+    DownloadAction.demo_data: test_actions,
 }
 
 
