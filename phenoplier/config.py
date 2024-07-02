@@ -12,13 +12,9 @@ import tempfile
 from pathlib import Path
 
 from dynaconf import Dynaconf
-from tomlkit import parse
+from phenoplier import __version__ as app_version
+from phenoplier import __name__ as app_name 
 
-pacakge_toml_file = Path(__file__).parent.parent.resolve() / "pyproject.toml"
-with open(pacakge_toml_file) as f:
-    package_toml = parse(f.read())
-    _PACKAGE_NAME = package_toml["tool"]["poetry"]["name"]
-    _PACKAGE_VERSION = package_toml["tool"]["poetry"]["version"]
 
 # Config files
 SETTINGS_FILES = ["phenoplier_settings.toml"]
@@ -36,16 +32,16 @@ num_cores = os.cpu_count()
 os.environ["NUMEXPR_MAX_THREADS"] = f"{num_cores // 2}"
 
 # The environment variables name supersede these settings
-# Prefix the environment variables with `$_PACKAGE_NAME` to automatically load them
-# E.g. `export {$_PACKAGE_NAME}_FOO=bar` will load `FOO=bar` in the settings
+# Prefix the environment variables with `$app_name` to automatically load them
+# E.g. `export {$app_name}_FOO=bar` will load `FOO=bar` in the settings
 
 settings = Dynaconf(
     envvar_prefix="PHENOPLIER",
     settings_files=env_settings,
 
     # Application metadata
-    APP_NAME=_PACKAGE_NAME,
-    APP_VERSION=_PACKAGE_VERSION,
+    APP_NAME=app_name,
+    APP_VERSION=app_version,
     CURRENT_DIR=os.getcwd(),
 
     # Specifies the main directory where all data and results generated are stored.
@@ -54,7 +50,7 @@ settings = Dynaconf(
     # defaults to the 'phenoplier' subfolder in the temporary directory of the
     # operating system (i.e. '/tmp/phenoplier' in Unix systems).
     #
-    ROOT_DIR=Path(tempfile.gettempdir(), _PACKAGE_NAME).resolve(),
+    ROOT_DIR=Path(tempfile.gettempdir(), app_name).resolve(),
     # Directory contains the git repository
     REPO_DIR=Path(__file__).resolve().parent.parent,
     # Directory contains the source code
@@ -66,7 +62,7 @@ settings = Dynaconf(
     # Directory contains the tests
     TEST_DIR="@format {this.REPO_DIR}/test/",
     # Directory to put test outputs
-    TEST_OUTPUT_DIR=Path("/tmp/" + _PACKAGE_NAME + "_test_output/").resolve(),
+    TEST_OUTPUT_DIR=Path("/tmp/" + app_name + "_test_output/").resolve(),
     # Directory for cached data
     CACHE_DIR="@format {this.REPO_DIR}/.cache/",
 )
