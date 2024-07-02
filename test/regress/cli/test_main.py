@@ -1,21 +1,18 @@
-from typer.testing import CliRunner
-from pytest import mark
 from pathlib import Path
+
+from pytest import mark
 from tomlkit import parse
+from typer.testing import CliRunner
+
 from phenoplier import cli
+from phenoplier import __name__, __version__
 
 runner = CliRunner()
-# Get package metadata
-pacakge_toml_file = Path(__file__).parent.parent.parent.parent.resolve() / "pyproject.toml"
-with open(pacakge_toml_file) as f:
-    package_toml = parse(f.read())
-    _PACKAGE_NAME = package_toml["tool"]["poetry"]["name"]
-    _PACKAGE_VERSION = package_toml["tool"]["poetry"]["version"]
 
 
 @mark.parametrize("options, expected_output", [
     (["--help", "-h"], "Phenopliler CLI"),
-    (["--version", "-v"], f"{_PACKAGE_NAME} v{_PACKAGE_VERSION}\n"),
+    (["--version", "-v"], f"{__name__} v{__version__}\n"),
 ])
 def test_options(options, expected_output):
     for i in range(len(options)):
