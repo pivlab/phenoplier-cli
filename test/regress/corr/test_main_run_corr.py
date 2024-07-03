@@ -18,6 +18,7 @@ _BASE_COMMAND_NAME = "run gene-corr"
     ([f"{_BASE_COMMAND_NAME} generate --help", f"{_BASE_COMMAND_NAME} generate -h"], ""),
 ])
 def test_options(options, expected_output):
+    """Check that the help message is displayed when the help flag is passed."""
     for i in range(len(options)):
         result = runner.invoke(cli.app, options[i])
         assert result.exit_code == 0

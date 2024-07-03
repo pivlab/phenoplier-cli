@@ -46,6 +46,7 @@ def cov(
         eqtl_model:                 Annotated[EqtlModel, Args.EQTL_MODEL.value],
         covariance_matrix_dtype:    Annotated[MatrixDtype, Args.COVARIANCE_MATRIX_DTYPE.value] = MatrixDtype.f64,
         project_dir:                Annotated[Path, Args.PROJECT_DIR.value] = conf.CURRENT_DIR,
+        output_dir:                 Annotated[Path, Args.OUTPUT_DIR.value] = None,
 ):
     """
     Computes the covariance for each chromosome of all variants present in prediction models.
@@ -64,14 +65,18 @@ def cov(
     # Process eQTL model input
     eqtl_model_files_prefix = conf.TWAS["PREDICTION_MODELS"][f"{eqtl_model}_PREFIX"]
     print(f"Using eQTL model: {eqtl_model} / {eqtl_model_files_prefix}")
+
     # Set up output directory
-    output_dir_base = (
-            Path(conf.RESULTS["GLS"])
-            / "gene_corrs"
-            / "reference_panels"
-            / reference_panel.lower()
-            / eqtl_model.lower()
-    )
+    if output_dir is None:
+        output_dir_base = (
+                Path(conf.RESULTS["GLS"])
+                / "gene_corrs"
+                / "reference_panels"
+                / reference_panel.lower()
+                / eqtl_model.lower()
+        )
+    else:
+        output_dir_base = output_dir
     output_dir_base.mkdir(parents=True, exist_ok=True)
     print(f"Using output dir base: {output_dir_base}")
 

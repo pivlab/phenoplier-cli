@@ -62,7 +62,16 @@ settings = Dynaconf(
     # Directory contains the tests
     TEST_DIR="@format {this.REPO_DIR}/test/",
     # Directory to put test outputs
-    TEST_OUTPUT_DIR=Path("/tmp/" + app_name + "_test_output/").resolve(),
+    TEST_OUTPUT_DIR=Path(tempfile.gettempdir()) / f"{app_name}_test_temp",
     # Directory for cached data
     CACHE_DIR="@format {this.REPO_DIR}/.cache/",
 )
+
+
+# # Update settings for testing
+# if env == "test":
+#     settings.update(
+#         {
+#             "ROOT_DIR": Path(tempfile.gettempdir()) / f"{app_name}_test"
+#         }
+#     )
