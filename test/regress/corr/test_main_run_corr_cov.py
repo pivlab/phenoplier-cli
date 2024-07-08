@@ -8,7 +8,7 @@ from pytest import mark
 from phenoplier.config import settings as conf
 from phenoplier import cli
 from test.utils import get_test_output_dir
-from test.utils import compare_files_md5
+from test.utils import compare_hdf5_files
 
 runner = CliRunner()
 IN_GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
@@ -58,5 +58,5 @@ def test_cli_command(reference_panel, eqtl_model, output_dir):
 
     assert outfile.exists(), f"Output file {outfile} does not exist"
     # use h5diff to compare generated file with reference file
-    diff_result = subprocess.run(["h5diff", outfile, "/tmp/phenoplier/results/gls/gene_corrs/reference_panels/1000g/mashr/snps_chr_blocks_cov.h5"] )
-    assert diff_result.stdout is None and diff_result.stdout is None
+    ref_file = Path("/tmp/phenoplier/results/gls/gene_corrs/reference_panels/1000g/mashr/snps_chr_blocks_cov.h5")
+    assert compare_hdf5_files(outfile, ref_file), f"Output file {outfile} is not equal to reference file {ref_file}"
