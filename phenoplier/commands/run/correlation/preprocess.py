@@ -25,6 +25,7 @@ def preprocess(
         reference_panel:            Annotated[RefPanel, Args.REFERENCE_PANEL.value],
         eqtl_model:                 Annotated[EqtlModel, Args.EQTL_MODEL.value],
         project_dir:                Annotated[Path, Args.PROJECT_DIR.value] = conf.CURRENT_DIR,
+        output_dir: Annotated[Path, Args.OUTPUT_DIR.value] = None,
 ):
     """
     Compiles information about the GWAS and TWAS for a particular cohort. For example, the set of GWAS variants, variance of predicted expression of genes, etc.
@@ -69,14 +70,17 @@ def preprocess(
     eqtl_model = eqtl_model.value
     print(f"eQTL model: {eqtl_model}")
 
-    output_dir_base = (
-            Path(conf.RESULTS["GLS"])
-            / "gene_corrs"
-            / "cohorts"
-            / cohort_name
-            / reference_panel.lower()
-            / eqtl_model.lower()
-    )
+    if output_dir is None:
+        output_dir_base = (
+                Path(conf.RESULTS["GLS"])
+                / "gene_corrs"
+                / "cohorts"
+                / cohort_name
+                / reference_panel.lower()
+                / eqtl_model.lower()
+        )
+    else:
+        output_dir_base = output_dir
     output_dir_base.mkdir(parents=True, exist_ok=True)
     print(f"Using output dir base: {output_dir_base}")
 

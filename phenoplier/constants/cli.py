@@ -88,6 +88,7 @@ class Corr_Preprocess_Args(Enum):
     REFERENCE_PANEL = Common_Args.REFERENCE_PANEL.value
     EQTL_MODEL = Common_Args.EQTL_MODEL.value
     PROJECT_DIR = Common_Args.PROJECT_DIR.value
+    OUTPUT_DIR = typer.Option("--output-dir", "-o", help="Output directory for the output results. This argument supersedes the project configuration.")
 
 
 class Regression_Args(Enum):

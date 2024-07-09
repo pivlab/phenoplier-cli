@@ -4,8 +4,6 @@ import subprocess
 import hashlib
 from pathlib import Path
 
-import pandas as pd
-
 from phenoplier.config import settings as conf
 
 # Get the root dir of the test suite of the repository
@@ -28,7 +26,7 @@ def get_test_output_dir(test_filepath: Path) -> Path:
     return output_dir
 
 
-def calculate_md5(file_path, chunk_size=8192):
+def _calculate_md5(file_path: Path, chunk_size: int = 8192) -> str:
     """
     Calculate the MD5 hash of a file.
     """
@@ -39,17 +37,14 @@ def calculate_md5(file_path, chunk_size=8192):
     return md5.hexdigest()
 
 
-def compare_files_md5(file1, file2):
+def compare_files_md5(file1: Path, file2: Path) -> bool:
     """
     Compare two files to check if they are the same using MD5 hash.
     """
-    md5_file1 = calculate_md5(file1)
-    md5_file2 = calculate_md5(file2)
+    md5_file1 = _calculate_md5(file1)
+    md5_file2 = _calculate_md5(file2)
 
-    if md5_file1 == md5_file2:
-        return True, "Files are identical"
-    else:
-        return False, "Files are different"
+    return md5_file1 == md5_file2
 
 
 def _run_h5diff(file1: Path, file2: Path, args: str = "-r") -> tuple[bool, str]:
