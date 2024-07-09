@@ -32,13 +32,16 @@ test_actions = [
     "download_snps_covariance_gtex_mashr",
     "download_snps_covariance_1000g_mashr",
     "download_predixcan_mashr_prediction_models",
+]
+
+full_actions = test_actions + [
     "download_smultixcan_results",
 ]
 
 ActionMap = {
     DownloadAction.test_data: test_actions,
-    DownloadAction.full_data: test_actions,
-    DownloadAction.demo_data: test_actions,
+    DownloadAction.full_data: full_actions,
+    # DownloadAction.demo_data: test_actions,
 }
 
 
