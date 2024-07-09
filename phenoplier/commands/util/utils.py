@@ -24,12 +24,11 @@ class EnvMode(str, Enum):
 
 def get_env_mode() -> EnvMode:
     env_mode = os.getenv("ENV_FOR_DYNACONF")
-    try:
+    # Default to production mode
+    if env_mode is None:
+        return EnvMode.prod
+    else:
         return EnvMode(env_mode)
-    except ValueError:
-        raise typer.BadParameter(
-            f"Invalid environment mode: {env_mode}. Please set the ENV_FOR_DYNACONF environment variable to one of {list(EnvMode.__members__.keys())}"
-        )
 
 
 def is_in_dev_mode() -> bool:
