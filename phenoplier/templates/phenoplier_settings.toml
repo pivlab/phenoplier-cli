@@ -41,6 +41,10 @@ TRAITS_FULLCODE_TO_EFO_MAP_FILE = "@format {this.TWAS.BASE_DIR}/phenomexcan_trai
 # Gene association results
 GENE_ASSOC_DIR = "@format {this.TWAS.BASE_DIR}/gene_assoc"
 #SPREDIXCAN_MASHR_ZSCORES_FOLDER = "@format {this.TWAS.GENE_ASSOC_DIR}/spredixcan"
+# S-MultiXcan
+SMULTIXCAN_DATA_BASE_DIR = "@format {this.DATA_DIR}/smultixcan"
+SMULTIXCAN_DATA_RAPID_GWAS = "@format {this.TWAS.SMULTIXCAN_DATA_BASE_DIR}/rapid_gwas"
+SMULTIXCAN_DATA_GTEX_GWAS = "@format {this.TWAS.SMULTIXCAN_DATA_BASE_DIR}/gtex_gwas"
 SMULTIXCAN_MASHR_ZSCORES_FILE = "@format {this.TWAS.GENE_ASSOC_DIR}/smultixcan-mashr-zscores.pkl"
 SMULTIXCAN_EFO_PARTIAL_MASHR_ZSCORES_FILE = "@format {this.TWAS.GENE_ASSOC_DIR}/smultixcan-efo_partial-mashr-zscores.pkl"
 SMULTIXCAN_EFO_PARTIAL_MASHR_PVALUES_FILE = "@format {this.TWAS.GENE_ASSOC_DIR}/smultixcan-efo_partial-mashr-pvalues.pkl"

@@ -197,3 +197,22 @@ def read_log_file_and_check_line_exists(log_file: str, expected_prefixes: list):
     for expected_l in expected_prefixes:
         if not _line_exists(expected_l):
             raise ValueError(f"Line '{expected_l}' not found in {str(log_file)}")
+
+
+def get_sha1(filepath, blocksize=65536):
+    hasher = hashlib.sha1()
+    with open(filepath, 'rb') as afile:
+        buf = afile.read(blocksize)
+        while len(buf) > 0:
+            hasher.update(buf)
+            buf = afile.read(blocksize)
+    return hasher.hexdigest()
+
+
+def run_command(command, raise_on_error=True):
+    r = run(command, shell=True)
+
+    if raise_on_error and r.returncode != 0:
+        raise Exception(f'Command "{command}" failed with code {r.returncode}')
+
+    return r

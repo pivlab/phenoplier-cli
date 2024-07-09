@@ -32,6 +32,7 @@ test_actions = [
     "download_snps_covariance_gtex_mashr",
     "download_snps_covariance_1000g_mashr",
     "download_predixcan_mashr_prediction_models",
+    "download_smultixcan_results",
 ]
 
 ActionMap = {

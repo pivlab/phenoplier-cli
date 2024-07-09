@@ -3,14 +3,21 @@ It sets up the file/folder structure by downloading the necessary files.
 """
 
 import sys
+import os
+import tempfile
 import subprocess
 import tarfile
 from collections import defaultdict
 from pathlib import Path
+from typing import Dict
+
+import pandas as pd
 
 from phenoplier.config import settings as conf
 from phenoplier.utils import curl, md5_matches
+from phenoplier.commands.util.utils import load_settings_files
 from phenoplier.log import get_logger
+from phenoplier.utils import get_sha1, run_command
 
 logger = get_logger("setup")
 
@@ -70,6 +77,94 @@ class Downloader:
         },
         "full": {},  # empty means all actions/methods
     }
+
+
+    def download_smultixcan_results(**kwargs):
+        def _download_pheno(pheno, output_file):
+            print('downloading... ', end='', flush=True)
+
+            wget_command = f'wget -q {pheno.box_share_url} -O {output_file}'
+            run_command(wget_command)
+
+            if not os.path.isfile(output_file):
+                print('not downloaded')
+                return False
+
+            exp_hash = pheno.file_sha1
+            curr_hash = get_sha1(output_file)
+
+            if exp_hash == curr_hash:
+                print('hash ok... ', end='', flush=True)
+            else:
+                print('hash do not match')
+                return False
+
+            return True
+
+        def _download_raw_results(results_dir: Dict, pheno_info_url, extract=False, extract_and_delete=False):
+            pheno_main_source_map = {
+                'Rapid GWAS Project': 'RapidGWASProject',
+                'GTEX GWAS': 'GTEX_GWAS',
+            }
+
+            if 'RapidGWASProject' in results_dir:
+                os.makedirs(results_dir['RapidGWASProject'], exist_ok=True)
+
+            if 'GTEX_GWAS' in results_dir:
+                os.makedirs(results_dir['GTEX_GWAS'], exist_ok=True)
+
+            # download pheno info file
+            pheno_info_file = os.path.join(tempfile.mkdtemp(), 'pheno_info.xlsx')
+            wget_command = f'wget -q {pheno_info_url} -O {pheno_info_file}'
+            run_command(wget_command)
+
+            pheno_info = pd.read_excel(pheno_info_file)
+            n_success = 0
+            for pheno in pheno_info.itertuples():
+                print(f'{pheno.file_name}: ', end='', flush=True)
+
+                output_dir = results_dir[pheno_main_source_map[pheno.main_source]]
+                output_file = os.path.join(output_dir, pheno.file_name)
+
+                if os.path.isfile(output_file):
+                    if get_sha1(output_file) == pheno.file_sha1:
+                        print('already downloaded... ', end='', flush=True)
+                    else:
+                        print('hash do not match, downloading... ', end='', flush=True)
+                        # os.remove(output_file)
+                        if not _download_pheno(pheno, output_file):
+                            continue
+                else:
+                    if not _download_pheno(pheno, output_file):
+                        continue
+
+                if extract or extract_and_delete:
+                    print('uncompressing... ', end='', flush=True)
+                    tar_command = f'tar -xf {output_file} -C {output_dir}'
+                    run_command(tar_command)
+
+                    if extract_and_delete:
+                        os.remove(output_file)
+
+                n_success += 1
+
+                print('done')
+
+            if pheno_info.shape[0] == n_success:
+                print(f'DONE: {n_success} files downloaded')
+            else:
+                print(f'WARNING: {n_success} downloaded, {pheno_info.shape[0] - n_success} failed.')
+
+        result_dir = {
+            'RapidGWASProject': conf.TWAS.SMULTIXCAN_DATA_RAPID_GWAS,
+            'GTEX_GWAS': conf.TWAS.SMULTIXCAN_DATA_GTEX_GWAS,
+        }
+        print(f"Downloading SMulTiXcan results to {conf.TWAS.SMULTIXCAN_DATA_BASE_DIR}...")
+        _download_raw_results(
+            result_dir,
+            'https://uchicago.box.com/shared/static/v72fmxm521dvtx238nsoghwadp89fmoa.xlsx',
+        )
+        print(f"Downloaded SMulTiXcan results to {conf.TWAS.SMULTIXCAN_DATA_BASE_DIR}")
 
     def download_phenomexcan_unified_pheno_info(**kwargs):
         output_file = conf.TWAS["UNIFIED_PHENO_INFO_FILE"]
