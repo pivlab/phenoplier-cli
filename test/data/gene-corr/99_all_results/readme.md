@@ -1,0 +1,1 @@
+This folder contains results from running phenoplier on the rapid gwas data

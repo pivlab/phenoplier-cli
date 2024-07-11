@@ -4,6 +4,8 @@ import subprocess
 import hashlib
 from pathlib import Path
 
+import pandas as pd
+
 from phenoplier.config import settings as conf
 
 # Get the root dir of the test suite of the repository
@@ -73,3 +75,12 @@ def compare_hdf5_files(file1: Path, file2: Path) -> bool:
 
     return _run_h5diff(file1, file2)[0]
 
+
+def compare_dataframes(df1: pd.DataFrame, df2: pd.DataFrame) -> bool:
+    """
+    Compare two dataframes and return True if they are identical.
+
+    :param df1: First dataframe.
+    :param df2: Second dataframe.
+    """
+    return df1.equals(df2)

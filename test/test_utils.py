@@ -41,8 +41,8 @@ def test_compare_hdf5_files0():
     diff_data = np.arange(100).reshape(10, 10) + 1
     # Create an HDF5 file
     with h5py.File(str(existing_file1), 'w') as h5file1, \
-         h5py.File(str(existing_file2), 'w') as h5file2, \
-         h5py.File(str(diff_file), 'w') as h5file_diff:
+            h5py.File(str(existing_file2), 'w') as h5file2, \
+            h5py.File(str(diff_file), 'w') as h5file_diff:
         # Create a dataset in the file
         h5file1.create_dataset('dataset1', data=data)
         # Only file1 exists
@@ -56,3 +56,5 @@ def test_compare_hdf5_files0():
     # Compare the different files
     assert compare_hdf5_files(existing_file1, diff_file) is False
     assert compare_hdf5_files(existing_file2, diff_file) is False
+
+

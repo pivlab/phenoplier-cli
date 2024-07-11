@@ -1,11 +1,12 @@
 import os
+import pickle
 from pathlib import Path
 
 from typer.testing import CliRunner
 from pytest import mark
 from phenoplier import cli
 from phenoplier.config import settings as conf
-from test.utils import get_test_output_dir, compare_files_md5
+from test.utils import get_test_output_dir, compare_dataframes
 
 runner = CliRunner()
 IN_GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
@@ -25,8 +26,9 @@ _BASE_COMMAND = (
 )
 
 # Define the test output directory
+# Todo: organize test data dir the same way as test output dir
 output_dir_base = get_test_output_dir(Path(__file__))
-test_data_dir = Path(conf.TEST_DIR) / "data/gene-corr/"
+test_data_dir = Path(conf.TEST_DIR) / "data/gene-corr/99_all_results/mashr/"
 
 
 @mark.skipif(IN_GITHUB_ACTIONS, reason="Data has not been setup in Github Actions yet. Local test only.")
@@ -63,14 +65,18 @@ def test_cli_command(cohort, gwas_file, spredixcan_dir, output_file_name, smulti
 
     # Execute the command using runner.invoke
     result = runner.invoke(cli.app, command)
-
     # Assert the command ran successfully
     assert result.exit_code == 0, f"Command failed with exit code {result.exit_code}\nOutput: {result.stdout}"
-    gene_tissues = "gene-tissues.pkl"
+
+    gene_tissues = "gene_tissues.pkl"
     test_gene_tissues = output_dir / gene_tissues
     ref_gene_tissues = test_data_dir / gene_tissues
     # Assert the output files exist
     assert test_gene_tissues.exists(), f"gene-tissues.pkl not found in {output_dir}"
+    # Load the pickled dataframes
+    with open(test_gene_tissues, 'rb') as file:
+        df1 = pickle.load(file)
+    with open(ref_gene_tissues, 'rb') as file:
+        df2 = pickle.load(file)
     # Assert the output matches the expected output
-    assert compare_files_md5(test_gene_tissues, ref_gene_tissues), f"Output file {gene_tissues} does not match expected output"
-
+    assert compare_dataframes(df1, df2), f"Output file {gene_tissues} does not match expected output"
