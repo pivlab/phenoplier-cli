@@ -5,6 +5,7 @@ General utility functions.
 import re
 import hashlib
 import subprocess
+import pickle
 from pathlib import Path
 from subprocess import run
 from typing import Dict
@@ -216,3 +217,5 @@ def run_command(command, raise_on_error=True):
         raise Exception(f'Command "{command}" failed with code {r.returncode}')
 
     return r
+
+

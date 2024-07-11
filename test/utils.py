@@ -2,6 +2,7 @@
 import os
 import subprocess
 import hashlib
+import pickle
 from pathlib import Path
 
 import pandas as pd
@@ -84,3 +85,8 @@ def compare_dataframes(df1: pd.DataFrame, df2: pd.DataFrame) -> bool:
     :param df2: Second dataframe.
     """
     return df1.equals(df2)
+
+
+def load_pickle(filepath):
+    with open(filepath, 'rb') as file:
+        return pickle.load(file)

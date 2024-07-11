@@ -6,7 +6,7 @@ from typer.testing import CliRunner
 from pytest import mark
 from phenoplier import cli
 from phenoplier.config import settings as conf
-from test.utils import get_test_output_dir, compare_dataframes
+from test.utils import get_test_output_dir, compare_dataframes, load_pickle
 
 runner = CliRunner()
 IN_GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
@@ -68,15 +68,13 @@ def test_cli_command(cohort, gwas_file, spredixcan_dir, output_file_name, smulti
     # Assert the command ran successfully
     assert result.exit_code == 0, f"Command failed with exit code {result.exit_code}\nOutput: {result.stdout}"
 
-    gene_tissues = "gene_tissues.pkl"
-    test_gene_tissues = output_dir / gene_tissues
-    ref_gene_tissues = test_data_dir / gene_tissues
+    gene_tissues_filename = "gene_tissues.pkl"
+    test_gene_tissues = output_dir / gene_tissues_filename
+    ref_gene_tissues = test_data_dir / gene_tissues_filename
     # Assert the output files exist
     assert test_gene_tissues.exists(), f"gene-tissues.pkl not found in {output_dir}"
     # Load the pickled dataframes
-    with open(test_gene_tissues, 'rb') as file:
-        df1 = pickle.load(file)
-    with open(ref_gene_tissues, 'rb') as file:
-        df2 = pickle.load(file)
+    df1 = load_pickle(test_gene_tissues)
+    df2 = load_pickle(ref_gene_tissues)
     # Assert the output matches the expected output
-    assert compare_dataframes(df1, df2), f"Output file {gene_tissues} does not match expected output"
+    assert compare_dataframes(df1, df2), f"Output file {gene_tissues_filename} does not match expected output"
