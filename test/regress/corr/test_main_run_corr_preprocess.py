@@ -1,5 +1,4 @@
 import os
-import pickle
 from pathlib import Path
 
 from typer.testing import CliRunner
@@ -32,6 +31,7 @@ test_data_dir = Path(conf.TEST_DIR) / "data/gene-corr/99_all_results/mashr/"
 
 
 @mark.skipif(IN_GITHUB_ACTIONS, reason="Data has not been setup in Github Actions yet. Local test only.")
+@mark.skip_test_if_env('dev')
 # Parameterize the test cases
 @mark.parametrize(
     "cohort, gwas_file, spredixcan_dir, output_file_name, smultixcan_file, reference_panel, eqtl_models, output_dir",
