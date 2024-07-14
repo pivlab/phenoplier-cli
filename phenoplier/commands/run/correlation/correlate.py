@@ -24,6 +24,8 @@ def correlate(
         compute_within_distance:        Annotated[bool, Args.COMPUTE_WITHIN_DISTANCE.value] = False,
         debug_mode:                     Annotated[bool, Args.DEBUG_MODE.value] = False,
         project_dir:                    Annotated[Path, Args.PROJECT_DIR.value] = conf.CURRENT_DIR,
+        input_dir:                      Annotated[Path, Args.INPUT_DIR.value] = None,
+        output_dir:                     Annotated[Path, Args.OUTPUT_DIR.value] = None,
 ):
     """
     Computes predicted expression correlations between all genes in the MultiPLIER models.
@@ -49,23 +51,29 @@ def correlate(
     if compute_within_distance:
         print("Compute correlations within distance")
 
-    output_dir_base = (
-            Path(conf.RESULTS["GLS"])
-            / "gene_corrs"
-            / "cohorts"
-            / cohort_name
-            / reference_panel.lower()
-            / eqtl_model.lower()
-    )
+    if output_dir is None:
+        output_dir_base = (
+                Path(conf.RESULTS["GLS"])
+                / "gene_corrs"
+                / "cohorts"
+                / cohort_name
+                / reference_panel.lower()
+                / eqtl_model.lower()
+        )
+    else:
+        output_dir_base = output_dir
     output_dir_base.mkdir(parents=True, exist_ok=True)
     print(f"Using output directory: {output_dir_base}")
 
-    with open(output_dir_base / "gwas_variant_ids.pkl", "rb") as handle:
+    # Load previous matrix generation pipeline results
+    pre_results_dir = output_dir_base if input_dir is None else input_dir
+    with open(pre_results_dir / "gwas_variant_ids.pkl", "rb") as handle:
         gwas_variants_ids_set = pickle.load(handle)
 
-    spredixcan_genes_models = pd.read_pickle(output_dir_base / "gene_tissues.pkl")
-    genes_info = pd.read_pickle(output_dir_base / "genes_info.pkl")
+    spredixcan_genes_models = pd.read_pickle(pre_results_dir / "gene_tissues.pkl")
+    genes_info = pd.read_pickle(pre_results_dir / "genes_info.pkl")
 
+    # Prepare output
     output_dir = output_dir_base / "by_chr"
     output_dir.mkdir(exist_ok=True, parents=True)
     output_file = output_dir / f"gene_corrs-chr{chromosome}.pkl"

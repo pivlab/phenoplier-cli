@@ -40,6 +40,9 @@ class Corr_Correlate_Args(Enum):
                                            help="Compute correlations within distance.")
     DEBUG_MODE = typer.Option("--debug", "-d", help="Run with debug mode.")
     PROJECT_DIR = Common_Args.PROJECT_DIR.value
+    OUTPUT_DIR = typer.Option("--output-dir", "-o", help="Output directory for predicted expression correlations. "
+                                                         "This argument supersedes the project configuration.")
+    INPUT_DIR = typer.Option("--input-dir", "-i", help="Input data directory containing previous steps' results")
 
 
 class Corr_Cov_Args(Enum):
@@ -48,7 +51,8 @@ class Corr_Cov_Args(Enum):
     COVARIANCE_MATRIX_DTYPE = typer.Option("--covariance-matrix-dtype", "-t",
                                            help="The numpy dtype used for the covariance matrix.")
     PROJECT_DIR = Common_Args.PROJECT_DIR.value
-    OUTPUT_DIR = typer.Option("--output-dir", "-o", help="Output directory for the covariance matrix. This argument supersedes the project configuration.")
+    OUTPUT_DIR = typer.Option("--output-dir", "-o", help="Output directory for the covariance matrix. This argument "
+                                                         "supersedes the project configuration.")
 
 
 class Corr_Filter_Args(Enum):
