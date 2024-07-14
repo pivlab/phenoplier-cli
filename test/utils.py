@@ -6,6 +6,7 @@ import pickle
 from pathlib import Path
 
 import pandas as pd
+import numpy as np
 
 from phenoplier.config import settings as conf
 
@@ -77,7 +78,17 @@ def compare_hdf5_files(file1: Path, file2: Path) -> bool:
     return _run_h5diff(file1, file2)[0]
 
 
-def compare_dataframes(df1: pd.DataFrame, df2: pd.DataFrame) -> bool:
+def compare_dataframes_close(df1: pd.DataFrame, df2: pd.DataFrame) -> bool:
+    """
+    Compare two dataframes and return True if they are identical.
+
+    :param df1: First dataframe.
+    :param df2: Second dataframe.
+    """
+    return np.isclose(df1, df2).all().all()
+
+
+def compare_dataframes_equal(df1: pd.DataFrame, df2: pd.DataFrame) -> bool:
     """
     Compare two dataframes and return True if they are identical.
 

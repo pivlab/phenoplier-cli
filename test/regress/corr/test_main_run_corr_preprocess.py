@@ -5,7 +5,7 @@ from typer.testing import CliRunner
 from pytest import mark
 from phenoplier import cli
 from phenoplier.config import settings as conf
-from test.utils import get_test_output_dir, compare_dataframes, load_pickle
+from test.utils import get_test_output_dir, compare_dataframes_equal, load_pickle
 
 runner = CliRunner()
 IN_GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
@@ -77,4 +77,4 @@ def test_cli_command(cohort, gwas_file, spredixcan_dir, output_file_name, smulti
     df1 = load_pickle(test_gene_tissues)
     df2 = load_pickle(ref_gene_tissues)
     # Assert the output matches the expected output
-    assert compare_dataframes(df1, df2), f"Output file {gene_tissues_filename} does not match expected output"
+    assert compare_dataframes_equal(df1, df2), f"Output file {gene_tissues_filename} does not match expected output"
