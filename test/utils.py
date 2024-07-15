@@ -101,3 +101,71 @@ def compare_dataframes_equal(df1: pd.DataFrame, df2: pd.DataFrame) -> bool:
 def load_pickle(filepath):
     with open(filepath, 'rb') as file:
         return pickle.load(file)
+
+
+def compare_npz_files(file1: Path, file2: Path, rtol: float = 1e-5, atol: float = 1e-8):
+    npz1 = np.load(file1)
+    npz2 = np.load(file2)
+
+    # Check if all arrays in the .npz files are close
+    for key in npz1.files:
+        if key not in npz2.files:
+            return False, f"Key {key} not found in both .npz files."
+        array1 = npz1[key]
+        array2 = npz2[key]
+
+        # Handle different data types
+        if array1.dtype != array2.dtype:
+            return False, f"Arrays under key {key} in file {file1} have different data types: {array1.dtype} vs {array2.dtype}"
+
+        if np.issubdtype(array1.dtype, np.number) and np.issubdtype(array2.dtype, np.number):
+            if not np.allclose(array1, array2, rtol=rtol, atol=atol):
+                return False, f"Arrays under key {key} in file {file1} are not close."
+        else:
+            if not np.array_equal(array1, array2):
+                return False, f"Non-numeric arrays under key {key} in file {file1} are not equal."
+
+    return True, "Two files are equal or close in value."
+
+
+def compare_npz_files_in_dirs(dir1, dir2, rtol=1e-5, atol=1e-8, ignore_files=None):
+    if ignore_files is None:
+        ignore_files = []
+
+    # Get list of .npz files in both directories, excluding ignored files
+    files1 = sorted([f for f in os.listdir(dir1) if f.endswith('.npz') and f not in ignore_files])
+    files2 = sorted([f for f in os.listdir(dir2) if f.endswith('.npz') and f not in ignore_files])
+
+    # Check if the number of files is the same
+    if len(files1) != len(files2):
+        return False, "Number of files in the directories are not the same."
+
+    # Compare files
+    for file1, file2 in zip(files1, files2):
+        if file1 != file2:
+            return False, f"File names do not match: {file1} vs {file2}"
+
+        print(f"Comparing {file1}...")
+        # Load the .npz files
+        npz1 = np.load(os.path.join(dir1, file1))
+        npz2 = np.load(os.path.join(dir2, file2))
+
+        # Check if all arrays in the .npz files are close
+        for key in npz1.files:
+            if key not in npz2.files:
+                return False, f"Key {key} not found in both .npz files."
+            array1 = npz1[key]
+            array2 = npz2[key]
+
+            # Handle different data types
+            if array1.dtype != array2.dtype:
+                return False, f"Arrays under key {key} in file {file1} have different data types: {array1.dtype} vs {array2.dtype}"
+
+            if np.issubdtype(array1.dtype, np.number) and np.issubdtype(array2.dtype, np.number):
+                if not np.allclose(array1, array2, rtol=rtol, atol=atol):
+                    return False, f"Arrays under key {key} in file {file1} are not close."
+            else:
+                if not np.array_equal(array1, array2):
+                    return False, f"Non-numeric arrays under key {key} in file {file1} are not equal."
+
+    return True, "All files are equal or close in value."

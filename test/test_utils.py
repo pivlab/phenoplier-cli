@@ -6,6 +6,7 @@ from pytest import mark, raises
 
 from test.utils import get_test_output_dir, compare_hdf5_files
 from phenoplier.config import settings as conf
+from test.utils import compare_npz_files
 
 _test_output_dir = conf.TEST_OUTPUT_DIR
 
@@ -58,3 +59,26 @@ def test_compare_hdf5_files0():
     assert compare_hdf5_files(existing_file2, diff_file) is False
 
 
+@mark.parametrize("filename1, content1, filename2, content2, expected", [
+    ("same1.npz", {'key1': np.array(['value1', 'value2']), 'key2': np.array([1, 2, 3])},
+     "same2.npz", {'key1': np.array(['value1', 'value2']), 'key2': np.array([1, 2, 3])}, True),
+    ("file.npz", {'key1': np.array(['value1', 'value2']), 'key2': np.array([1, 2, 3])},
+     "diff.npz", {'key1': np.array(['value1', 'value2']), 'key2': np.array([2, 3, 4])}, False),
+    ("file.npz", {'key1': np.array(['value1', 'value2']), 'key2': np.array([1, 2, 3])},
+     "diff_keys.npz", {'k1': np.array(['value1', 'value2']), 'k2': np.array([2, 3, 4])}, False),
+    ("file.npz", {'key1': np.array(['value1', 'value2']), 'key2': np.array([1, 2, 3])},
+     "empty.npz", {'key1': np.array([]), 'key2': np.array([])}, False),
+])
+def test_compare_npz_files(filename1, content1, filename2, content2, expected):
+    dir1 = _test_output_dir / "dir1"
+    dir2 = _test_output_dir / "dir2"
+    dir1.mkdir(parents=True, exist_ok=True)
+    dir2.mkdir(parents=True, exist_ok=True)
+
+    file1 = dir1 / filename1
+    file2 = dir2 / filename2
+
+    np.savez(file1, **content1)
+    np.savez(file2, **content2)
+
+    assert compare_npz_files(file1, file2)[0] is expected
