@@ -53,36 +53,44 @@ def plot_distribution_and_heatmap(full_corr_matrix, output_dir: Path):
 
 
 def postprocess(
-        cohort_name: Annotated[Cohort, Args.COHORT_NAME.value],
-        reference_panel: Annotated[RefPanel, Args.REFERENCE_PANEL.value],
-        eqtl_model: Annotated[EqtlModel, Args.EQTL_MODEL.value],
-        plot_output_dir: Annotated[Path, Args.PLOT_OUTPUT_DIR.value] = None,
-        project_dir: Annotated[Path, Args.PROJECT_DIR.value] = conf.CURRENT_DIR,
+        cohort_name:        Annotated[Cohort, Args.COHORT_NAME.value],
+        reference_panel:    Annotated[RefPanel, Args.REFERENCE_PANEL.value],
+        eqtl_model:         Annotated[EqtlModel, Args.EQTL_MODEL.value],
+        plot_output_dir:    Annotated[Path, Args.PLOT_OUTPUT_DIR.value] = None,
+        project_dir:        Annotated[Path, Args.PROJECT_DIR.value] = conf.CURRENT_DIR,
+        input_dir:          Annotated[Path, Args.INPUT_DIR.value] = None,
+        genes_info:         Annotated[Path, Args.GENES_INFO.value] = None,
+        output_dir:         Annotated[Path, Args.OUTPUT_DIR.value] = None,
 ):
     """
-    Reads all gene correlations across all chromosomes and computes a single correlation matrix by assembling a big correlation matrix with all genes.
+    Reads all gene correlations across all chromosomes and computes a single correlation matrix by assembling a big
+    correlation matrix with all genes.
     """
     load_settings_files(project_dir)
     cohort_name = cohort_name.value
 
-    output_dir_base = (
+    if output_dir is None:
+        output_dir_base = (
             Path(conf.RESULTS["GLS"])
             / "gene_corrs"
             / "cohorts"
             / cohort_name
             / reference_panel.lower()
             / eqtl_model.lower()
-    )
+        )
+    else:
+        output_dir_base = output_dir
+
     output_dir_base.mkdir(parents=True, exist_ok=True)
     print(f"Using output dir base: {output_dir_base}")
     # Check input dir
-    input_dir = output_dir_base / "by_chr"
-    if not input_dir.exists():
-        raise ValueError(f"Gene correlations input dir does not exist: {input_dir}")
-    print(f"Gene correlations input dir: {input_dir}")
+    input_dir_ = output_dir_base / "by_chr" if input_dir is None else input_dir
+    if not input_dir_.exists():
+        raise ValueError(f"Gene correlations input dir does not exist: {input_dir_}")
+    print(f"Gene correlations input dir: {input_dir_}")
     # Check if all gene correlation files are present
     all_gene_corr_files = sorted(
-        input_dir.glob("gene_corrs-chr*.pkl"), key=lambda x: int(x.name.split("-chr")[1].split(".pkl")[0])
+        input_dir_.glob("gene_corrs-chr*.pkl"), key=lambda x: int(x.name.split("-chr")[1].split(".pkl")[0])
     )
     if not len(all_gene_corr_files) == 22:
         raise ValueError(f"Expected 22 gene correlation files, found {len(all_gene_corr_files)}")
@@ -92,7 +100,11 @@ def postprocess(
         chr_genes = pd.read_pickle(f).index.tolist()
         gene_ids.update(chr_genes)
 
-    genes_info = pd.read_pickle(output_dir_base / "genes_info.pkl")
+    genes_info_path = output_dir_base / "genes_info.pkl" if genes_info is None else genes_info
+    if not genes_info_path.exists():
+        raise ValueError(f"Genes info file does not exist: {genes_info_path}")
+    genes_info = pd.read_pickle(genes_info_path)
+    print(f"Using genes info file: {genes_info_path}")
     genes_info = genes_info[genes_info["id"].isin(gene_ids)]
     genes_info = genes_info.sort_values(["chr", "start_position"])
 

@@ -79,9 +79,12 @@ class Corr_Postprocess_Args(Enum):
     COHORT_NAME = Common_Args.COHORT_NAME.value
     REFERENCE_PANEL = Common_Args.REFERENCE_PANEL.value
     EQTL_MODEL = Common_Args.EQTL_MODEL.value
-    PLOT_OUTPUT_DIR = typer.Option("--plot-output-dir", "-o", help="Output directory for plots.")
+    PLOT_OUTPUT_DIR = typer.Option("--plot-output-dir", "-p", help="Output directory for plots.")
     PROJECT_DIR = Common_Args.PROJECT_DIR.value
-
+    OUTPUT_DIR = typer.Option("--output-dir", "-o", help="Output directory for computed correlation matrix. "
+                                                         "This argument supersedes the project configuration.")
+    INPUT_DIR = typer.Option("--input-dir", "-i", help="Input data directory containing previous steps' results")
+    GENES_INFO = typer.Option("--genes-info", "-g", help="Path to the genes information file.")
 
 class Corr_Preprocess_Args(Enum):
     COHORT_NAME = Common_Args.COHORT_NAME.value
