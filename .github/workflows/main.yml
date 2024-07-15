@@ -62,8 +62,8 @@ jobs:
       #----------------------------------------------
       - name: Install test dependencies
         run: |
-          apt install -y h5diff
-          apt install -y git-lfs
+          sudo apt install -y h5diff
+          sudo apt install -y git-lfs
           git lfs install
           git lfs pull
       #----------------------------------------------
