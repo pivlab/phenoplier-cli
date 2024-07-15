@@ -15,12 +15,15 @@ from phenoplier.correlations import (
     adjust_non_pos_def,
 )
 
+
 def filter(
         cohort_name:        Annotated[Cohort, Args.COHORT_NAME.value],
         reference_panel:    Annotated[RefPanel, Args.REFERENCE_PANEL.value],
         eqtl_model:         Annotated[EqtlModel, Args.EQTL_MODEL.value],
         distances:          Annotated[List[float], Args.DISTANCES.value] = [10, 5, 2],
         project_dir:        Annotated[Path, Args.PROJECT_DIR.value] = conf.CURRENT_DIR,
+        genes_symbols:         Annotated[Path, Args.GENES_SYMBOLS.value] = None,
+        output_dir:         Annotated[Path, Args.OUTPUT_DIR.value] = None,
 ):
     """
     Reads the correlation matrix generated and creates new matrices with different "within distances" across genes.
@@ -29,18 +32,23 @@ def filter(
     load_settings_files(project_dir)
     cohort_name = cohort_name.value
 
-    output_dir_base = (
-            Path(conf.RESULTS["GLS"])
-            / "gene_corrs"
-            / "cohorts"
-            / cohort_name
-            / reference_panel.lower()
-            / eqtl_model.lower()
-    )
-    assert output_dir_base.exists(), f"Output directory {output_dir_base} does not exist"
-    print(f"Using output dir base: {output_dir_base}")
+    if output_dir is None:
+        output_dir_base = (
+                Path(conf.RESULTS["GLS"])
+                / "gene_corrs"
+                / "cohorts"
+                / cohort_name
+                / reference_panel.lower()
+                / eqtl_model.lower()
+        )
+    else:
+        output_dir_base = output_dir
 
-    gene_corrs = pd.read_pickle(output_dir_base / "gene_corrs-symbols.pkl")
+    output_dir_base.mkdir(parents=True, exist_ok=True)
+    print(f"Using output dir base: {output_dir_base}")
+    # Read the gene correlation symbols
+    gene_corrs_file = output_dir_base / "gene_corrs-symbols.pkl" if genes_symbols is None else genes_symbols
+    gene_corrs = pd.read_pickle(gene_corrs_file)
     gene_objs = [Gene(name=gene_name) for gene_name in gene_corrs.index]
 
     for full_distance in distances:

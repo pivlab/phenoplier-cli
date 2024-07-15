@@ -61,6 +61,9 @@ class Corr_Filter_Args(Enum):
     EQTL_MODEL = Common_Args.EQTL_MODEL.value
     DISTANCES = typer.Option("--distances", "-d", help="List of distances to generate correlation matrices for.")
     PROJECT_DIR = Common_Args.PROJECT_DIR.value
+    GENES_SYMBOLS = typer.Option("--genes-corrs-symbols", "-g", help="Path to the genes correlation symbols file.")
+    OUTPUT_DIR = typer.Option("--output-dir", "-o", help="Output directory for computed correlation matrix. "
+                                                         "This argument supersedes the project configuration.")
 
 
 class Corr_Generate_Args(Enum):
