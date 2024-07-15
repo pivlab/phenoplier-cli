@@ -75,15 +75,17 @@ def postprocess(
     )
     output_dir_base.mkdir(parents=True, exist_ok=True)
     print(f"Using output dir base: {output_dir_base}")
-
+    # Check input dir
     input_dir = output_dir_base / "by_chr"
+    if not input_dir.exists():
+        raise ValueError(f"Gene correlations input dir does not exist: {input_dir}")
     print(f"Gene correlations input dir: {input_dir}")
-    assert input_dir.exists()
-
+    # Check if all gene correlation files are present
     all_gene_corr_files = sorted(
         input_dir.glob("gene_corrs-chr*.pkl"), key=lambda x: int(x.name.split("-chr")[1].split(".pkl")[0])
     )
-    assert len(all_gene_corr_files) == 22
+    if not len(all_gene_corr_files) == 22:
+        raise ValueError(f"Expected 22 gene correlation files, found {len(all_gene_corr_files)}")
 
     gene_ids = set()
     for f in all_gene_corr_files:
@@ -109,17 +111,20 @@ def postprocess(
         if not is_pos_def:
             print("Fixing non-positive definite matrix...")
             corr_data = adjust_non_pos_def(corr_data)
-            assert check_pos_def(corr_data), "Could not adjust gene correlation matrix"
+            if not check_pos_def(corr_data):
+                raise ValueError("Could not adjust gene correlation matrix")
             full_corr_matrix.loc[corr_data.index, corr_data.columns] = corr_data
 
     print("Checking if diagonal elements are zero...")
-    assert np.all(np.isclose(full_corr_matrix.to_numpy().diagonal(), 1.0))
+    if not np.all(np.isclose(full_corr_matrix.to_numpy().diagonal(), 1.0)):
+        raise ValueError("Diagonal elements are not 1.0")
 
     is_pos_def = check_pos_def(full_corr_matrix)
     if not is_pos_def:
         print("Fixing non-positive definite full correlation matrix...")
         full_corr_matrix = adjust_non_pos_def(full_corr_matrix)
-        assert check_pos_def(full_corr_matrix), "Could not adjust full gene correlation matrix"
+        if not check_pos_def(full_corr_matrix):
+            raise ValueError("Could not adjust full gene correlation matrix")
 
     # TODO: Add output name to template, sharing across commands
     output_file = output_dir_base / "gene_corrs-symbols.pkl"
