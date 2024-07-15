@@ -6,7 +6,7 @@ from pytest import mark, raises
 
 from test.utils import get_test_output_dir, compare_hdf5_files
 from phenoplier.config import settings as conf
-from test.utils import compare_npz_files
+from test.utils import compare_npz_files, compare_npz_files_in_dirs
 
 _test_output_dir = conf.TEST_OUTPUT_DIR
 
@@ -82,3 +82,47 @@ def test_compare_npz_files(filename1, content1, filename2, content2, expected):
     np.savez(file2, **content2)
 
     assert compare_npz_files(file1, file2)[0] is expected
+
+
+@mark.parametrize("file_contents1, file_contents2, expected", [
+    # Identical files
+    (
+            {"file1.npz": {'key1': np.array([1, 2, 3]), 'key2': np.array(['a', 'b', 'c'])},
+             "file2.npz": {'key1': np.array([4, 5, 6]), 'key2': np.array(['d', 'e', 'f'])}},
+            {"file1.npz": {'key1': np.array([1, 2, 3]), 'key2': np.array(['a', 'b', 'c'])},
+             "file2.npz": {'key1': np.array([4, 5, 6]), 'key2': np.array(['d', 'e', 'f'])}},
+            True
+    ),
+    # Different files
+    (
+            {"file1.npz": {'key1': np.array([1, 2, 3]), 'key2': np.array(['a', 'b', 'c'])},
+             "file2.npz": {'key1': np.array([4, 5, 6]), 'key2': np.array(['d', 'e', 'f'])}},
+            {"file1.npz": {'key1': np.array([1, 2, 3]), 'key2': np.array(['a', 'b', 'c'])},
+             "file2.npz": {'key1': np.array([7, 8, 9]), 'key2': np.array(['x', 'y', 'z'])}},
+            False
+    ),
+    # Different number of files
+    (
+            {"file1.npz": {'key1': np.array([1, 2, 3]), 'key2': np.array(['a', 'b', 'c'])},
+             "file2.npz": {'key1': np.array([4, 5, 6]), 'key2': np.array(['d', 'e', 'f'])}},
+            {"file1.npz": {'key1': np.array([1, 2, 3]), 'key2': np.array(['a', 'b', 'c'])}},
+            False
+    )
+])
+def test_compare_npz_files_in_dirs(file_contents1, file_contents2, expected):
+    dir1 = _test_output_dir / "dir3"
+    dir2 = _test_output_dir / "dir4"
+    dir1.mkdir(parents=True, exist_ok=True)
+    dir2.mkdir(parents=True, exist_ok=True)
+
+    # Create files in dir1
+    for filename, content in file_contents1.items():
+        np.savez(dir1 / filename, **content)
+
+    # Create files in dir2
+    for filename, content in file_contents2.items():
+        np.savez(dir2 / filename, **content)
+
+    # Compare directories
+    result, message = compare_npz_files_in_dirs(dir1, dir2)
+    assert result is expected, message
