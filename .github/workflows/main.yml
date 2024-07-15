@@ -58,6 +58,15 @@ jobs:
       - name: Install project
         run: poetry install --no-interaction
       #----------------------------------------------
+      # install your root project, if required
+      #----------------------------------------------
+      - name: Install test dependencies
+        run: |
+          apt install -y h5diff
+          apt install -y git-lfs
+          git lfs install
+          git lfs pull
+      #----------------------------------------------
       #              setup data
       #----------------------------------------------
       - name: Setup data
