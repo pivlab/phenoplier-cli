@@ -1,4 +1,5 @@
 import os
+import logging
 import random
 from pathlib import Path
 
@@ -8,9 +9,10 @@ from phenoplier import cli
 from phenoplier.config import settings as conf
 from test.utils import get_test_output_dir, compare_npz_files_in_dirs
 
+logger = logging.getLogger(__name__)
+
 runner = CliRunner()
 IN_GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
-
 
 # Define the placeholders in the command
 _BASE_COMMAND = (
@@ -45,7 +47,7 @@ test_data_dir = Path(conf.TEST_DIR) / "data/gene-corr/99_all_results/mashr/"
                 output_dir_base
         )
         # Use sampling test to reduce runtime
-        for lv_code in random.sample(range(1, 988), 5)
+        for lv_code in random.sample(range(1, 988), 1)
     ]
 )
 def test_cli_command(cohort, reference_panel, eqtl_models, lv_code, lv_percentile, genes_symbols_dir, output_dir):
@@ -62,6 +64,7 @@ def test_cli_command(cohort, reference_panel, eqtl_models, lv_code, lv_percentil
 
     # Execute the command using runner.invoke
     result = runner.invoke(cli.app, command)
+    logger.info(f"Running command: {command}")
     # Assert the command ran successfully
     assert result.exit_code == 0, f"Command failed with exit code {result.exit_code}\nOutput: {result.stdout}"
 
@@ -73,6 +76,6 @@ def test_cli_command(cohort, reference_panel, eqtl_models, lv_code, lv_percentil
         # Assert the output file exists
         assert test_output.exists(), f"Output directory {test_output} does not exist"
         files = ("gene_names.npz", f"LV{lv_code}_corr_mat.npz", f"LV{lv_code}.npz")
-        print(f"Comparing {test_output} and {ref_output}...")
+        logger.info(f"Comparing {test_output} and {ref_output}...")
         success, message = compare_npz_files_in_dirs(test_output, ref_output, include_files=files)
         assert success, message

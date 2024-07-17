@@ -1,5 +1,6 @@
 import os
 import random
+import logging
 from pathlib import Path
 
 from typer.testing import CliRunner
@@ -8,9 +9,10 @@ from phenoplier import cli
 from phenoplier.config import settings as conf
 from test.utils import get_test_output_dir, load_pickle, compare_dataframes_close
 
+logger = logging.getLogger(__name__)
+
 runner = CliRunner()
 IN_GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
-
 
 # Define the placeholders in the command
 _BASE_COMMAND = (
@@ -60,6 +62,7 @@ def test_cli_command(cohort, reference_panel, eqtl_models, chromosome, input_dir
 
     # Execute the command using runner.invoke
     result = runner.invoke(cli.app, command)
+    logger.info(f"Running command: {command}")
 
     # Assert the command ran successfully
     assert result.exit_code == 0, f"Command failed with exit code {result.exit_code}\nOutput: {result.stdout}"

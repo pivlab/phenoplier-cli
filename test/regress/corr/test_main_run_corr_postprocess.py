@@ -1,5 +1,5 @@
 import os
-import random
+import logging
 from pathlib import Path
 
 from typer.testing import CliRunner
