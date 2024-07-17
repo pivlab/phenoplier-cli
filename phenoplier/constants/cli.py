@@ -76,6 +76,9 @@ class Corr_Generate_Args(Enum):
                                  help="A number from 0.0 to 1.0 indicating the top percentile of the genes in the LV "
                                       "to keep")
     PROJECT_DIR = Common_Args.PROJECT_DIR.value
+    GENES_SYMBOLS_DIR = typer.Option("--genes-symbols-dir", "-g", help="Path to the genes correlation symbols folder.")
+    OUTPUT_DIR = typer.Option("--output-dir", "-o", help="Output directory for computed LV-specific correlation matrix. "
+                                                         "This argument supersedes the project configuration.")
 
 
 class Corr_Postprocess_Args(Enum):

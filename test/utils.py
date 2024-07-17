@@ -103,7 +103,40 @@ def load_pickle(filepath):
         return pickle.load(file)
 
 
+def compare_metadata_npz_files(dir1, dir2):
+    """
+    Special handling for 'metadata.npz' files to compare case-insensitively.
+    New results are saved with upper-case keys while old results are saved with lower-case keys.
+    This function servers as an ad-hoc solution.
+    """
+    # Special handling for 'metadata.npz'
+    file1 = Path(dir1) / 'metadata.npz'
+    file2 = Path(dir2) / 'metadata.npz'
+    if not file1.exists() or not file2.exists():
+        return False, "metadata.npz file not found in both directories."
+    # Load the .npz files
+    npz1 = np.load(file1)
+    npz2 = np.load(file2)
+    print(f"Comparing metadata.npz files...")
+    for key in npz1.files:
+        if key not in npz2.files:
+            return False, f"Key {key} not found in both metadata.npz files."
+        array1 = npz1[key]
+        array2 = npz2[key]
+
+        if array1.dtype.kind in {'U', 'S'} and array2.dtype.kind in {'U', 'S'}:
+            if not np.array_equal(np.char.lower(array1), np.char.lower(array2)):
+                return False, f"Arrays under key {key} in metadata.npz are not case-insensitively equal."
+        else:
+            if not np.array_equal(array1, array2):
+                return False, f"Arrays under key {key} in metadata.npz are not equal."
+    return True, "All metadata.npz files are equal."
+
+
 def compare_npz_files(file1: Path, file2: Path, rtol: float = 1e-5, atol: float = 1e-8) -> tuple[bool, str]:
+    if not file1.exists() or not file2.exists():
+        raise FileNotFoundError(f"File not found: {file1 if not file1.exists() else file2}")
+
     npz1 = np.load(file1)
     npz2 = np.load(file2)
 
@@ -128,13 +161,19 @@ def compare_npz_files(file1: Path, file2: Path, rtol: float = 1e-5, atol: float 
     return True, "Two files are equal or close in value."
 
 
-def compare_npz_files_in_dirs(dir1: Path, dir2: Path, ignore_files: tuple[Path] = ()) -> tuple[bool, str]:
+def compare_npz_files_in_dirs(dir1: Path, dir2: Path,
+                              ignore_files: tuple[str, ...] = ('metadata.npz',),
+                              include_files: tuple[str, ...] = ()) -> tuple[bool, str]:
     def get_npz_files(directory, ignores):
         # Get list of .npz files in the directory, excluding ignored files, and return absolute paths
         return sorted([Path(directory) / f for f in os.listdir(directory) if f.endswith('.npz') and f not in ignores])
 
-    files1 = get_npz_files(dir1, ignore_files)
-    files2 = get_npz_files(dir2, ignore_files)
+    if len(include_files) > 0:
+        files1 = list(map(lambda f: dir1 / f, include_files))
+        files2 = list(map(lambda f: dir2 / f, include_files))
+    else:
+        files1 = get_npz_files(dir1, ignore_files)
+        files2 = get_npz_files(dir2, ignore_files)
 
     # Check if the number of files is the same
     if len(files1) != len(files2):
@@ -142,7 +181,12 @@ def compare_npz_files_in_dirs(dir1: Path, dir2: Path, ignore_files: tuple[Path] 
 
     # Compare files
     for file1, file2 in zip(files1, files2):
-        if compare_npz_files(file1, file2)[0] is False:
-            return False, f"Files {file1} and {file2} are not equal."
+        # If include_files is specified, the files should be present in both directories
+        try:
+            success, message = compare_npz_files(file1, file2)
+            if not success:
+                return False, message
+        except FileNotFoundError:
+            return False, "Include file(s) not found in both directories."
 
     return True, "All files are equal or close in value."
