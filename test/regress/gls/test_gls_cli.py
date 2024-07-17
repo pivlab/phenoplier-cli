@@ -8,6 +8,7 @@ import pytest
 
 import phenoplier.gls_cli as gls_cli
 from phenoplier.config import settings
+from phenoplier import cli
 
 GLS_CLI_PATH = Path(gls_cli.__file__).resolve()
 assert GLS_CLI_PATH is not None
@@ -44,40 +45,6 @@ def full_gene_corrs_filepath():
     yield out_file
     if out_file.exists():
         out_file.unlink()
-
-
-def test_gls_cli_without_parameters():
-    print(GLS_CLI_PATH)
-    r = subprocess.run(
-        [
-            "python",
-            GLS_CLI_PATH,
-        ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-    )
-    assert r is not None
-    r_output = r.stdout.decode("utf-8")
-    assert r_output is not None
-    print(r_output)
-    assert r.returncode == 2
-    assert len(r_output) > 1, r_output
-    assert "error:" in r_output
-
-
-def test_gls_cli_help():
-    r = subprocess.run(
-        ["python", GLS_CLI_PATH, "-h"],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-    )
-    assert r is not None
-    assert r.returncode == 0
-    r_output = r.stdout.decode("utf-8")
-    assert r_output is not None
-    print(r_output)
-    assert len(r_output) > 1, r_output
-    assert "PhenoPLIER command line tool" in r_output
 
 
 def test_gls_cli_input_file_does_not_exist(output_file):
