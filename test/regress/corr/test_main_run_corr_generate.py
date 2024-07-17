@@ -41,7 +41,7 @@ test_data_dir = Path(conf.TEST_DIR) / "data/gene-corr/99_all_results/mashr/"
                 "phenomexcan_rapid_gwas",
                 "GTEX_V8",
                 "MASHR",
-                1,
+                lv_code,
                 0.01,
                 test_data_dir,
                 output_dir_base
