@@ -15,7 +15,6 @@ import pandas as pd
 
 from phenoplier.config import settings as conf
 from phenoplier.utils import curl, md5_matches
-from phenoplier.commands.util.utils import load_settings_files
 from phenoplier.log import get_logger
 from phenoplier.utils import get_sha1, run_command
 
