@@ -2,7 +2,6 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from typing import Annotated
 from pathlib import Path
 
-import typer
 import pandas as pd
 import numpy as np
 from scipy import sparse
@@ -27,16 +26,18 @@ def store_df(output_dir, nparray, base_filename):
         sparse.save_npz(output_dir / (base_filename + ".npz"), sparse.csc_matrix(nparray), compressed=False)
 
 
-def get_output_dir(gene_corr_filename, OUTPUT_DIR_BASE):
-    path = OUTPUT_DIR_BASE / gene_corr_filename
-    assert path.exists()
+def get_output_dir(gene_corr_filename, output_dir_base):
+    path = output_dir_base / gene_corr_filename
+    # if not path.exists():
+    #     raise FileNotFoundError(f"Path {path} does not exist")
     return path.with_suffix(".per_lv")
 
 
-def compute_chol_inv(lv_code, gene_corrs_dict, multiplier_z, OUTPUT_DIR_BASE, reference_panel, eqtl_model, lv_percentile):
+def compute_chol_inv(lv_code, gene_corrs_dict, multiplier_z, output_dir_base, reference_panel, eqtl_model,
+                     lv_percentile):
     # Todo: print complete message here
     for gene_corr_filename, gene_corrs in gene_corrs_dict.items():
-        output_dir = get_output_dir(gene_corr_filename, OUTPUT_DIR_BASE)
+        output_dir = get_output_dir(gene_corr_filename, output_dir_base)
         output_dir.mkdir(parents=True, exist_ok=True)
 
         lv_data = multiplier_z[lv_code]
@@ -56,14 +57,15 @@ def compute_chol_inv(lv_code, gene_corrs_dict, multiplier_z, OUTPUT_DIR_BASE, re
             store_df(output_dir, gene_names, "gene_names")
 
 
-
 def generate(
-    cohort_name:        Annotated[Cohort, Args.COHORT_NAME.value],
-    reference_panel:    Annotated[RefPanel, Args.REFERENCE_PANEL.value],
-    eqtl_model:         Annotated[EqtlModel, Args.EQTL_MODEL.value],
-    lv_code:            Annotated[int, Args.LV_CODE.value],
-    lv_percentile:      Annotated[float, Args.LV_PERCENTILE.value] = 0.05,
-    project_dir:        Annotated[Path, Args.PROJECT_DIR.value] = conf.CURRENT_DIR,
+        cohort_name: Annotated[Cohort, Args.COHORT_NAME.value],
+        reference_panel: Annotated[RefPanel, Args.REFERENCE_PANEL.value],
+        eqtl_model: Annotated[EqtlModel, Args.EQTL_MODEL.value],
+        lv_code: Annotated[int, Args.LV_CODE.value],
+        lv_percentile: Annotated[float, Args.LV_PERCENTILE.value] = 0.05,
+        project_dir: Annotated[Path, Args.PROJECT_DIR.value] = conf.CURRENT_DIR,
+        genes_symbols_dir: Annotated[Path, Args.GENES_SYMBOLS_DIR.value] = None,
+        output_dir: Annotated[Path, Args.OUTPUT_DIR.value] = None,
 ):
     """
     Computes an LV-specific correlation matrix by using the top genes in that LV only.
@@ -74,20 +76,37 @@ def generate(
     lv_code = "LV" + str(lv_code)
     load_settings_files(project_dir)
 
-    OUTPUT_DIR_BASE = Path(conf.RESULTS["GLS"]) / "gene_corrs" / "cohorts" / cohort_name / reference_panel / eqtl_model
-    gene_corrs_dict = {f.name: pd.read_pickle(f) for f in OUTPUT_DIR_BASE.glob("gene_corrs-symbols*.pkl")}
+    if output_dir is None:
+        output_dir_base = (
+                Path(conf.RESULTS["GLS"])
+                / "gene_corrs"
+                / "cohorts"
+                / cohort_name
+                / reference_panel.lower()
+                / eqtl_model.lower()
+        )
+    else:
+        output_dir_base = output_dir
+
+    # Load the gene_corrs_symbols
+    gene_corrs_dir = output_dir_base if genes_symbols_dir is None else genes_symbols_dir
+    gene_corrs_dict = {f.name: pd.read_pickle(f) for f in gene_corrs_dir.glob("gene_corrs-symbols*.pkl")}
+    # Make sure the gene_corrs_dict is not empty
+    if not gene_corrs_dict:
+        raise FileNotFoundError(f"No gene_corrs files found in {gene_corrs_dir}")
+    # Load the multiplier_z matrix
     multiplier_z = pd.read_pickle(conf.GENE_MODULE_MODEL["MODEL_Z_MATRIX_FILE"])
 
     lvs_chunks = [[lv_code]]
 
     with ProcessPoolExecutor(max_workers=1) as executor, tqdm(total=len(lvs_chunks), ncols=100) as pbar:
         tasks = [
-            executor.submit(compute_chol_inv, chunk[0], gene_corrs_dict, multiplier_z, OUTPUT_DIR_BASE, reference_panel, eqtl_model, lv_percentile)
+            executor.submit(compute_chol_inv, chunk[0], gene_corrs_dict, multiplier_z, output_dir_base, reference_panel,
+                            eqtl_model, lv_percentile)
             for chunk in lvs_chunks
         ]
         for future in as_completed(tasks):
             res = future.result()
             pbar.update(1)
 
-    print(f"Computation for {lv_code} done. Output to {OUTPUT_DIR_BASE}")
-
+    print(f"Computation for {lv_code} done. Output to {output_dir_base}")
