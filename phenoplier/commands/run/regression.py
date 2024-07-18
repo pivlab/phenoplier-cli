@@ -120,10 +120,10 @@ def regression(
 
     def check_output_file():
         if output_file.exists():
-            typer.BadParameter(f"Skipping, output file exists: {str(output_file)}")
-
+            logger.info(f"Skipping, output file exists: {str(output_file)}")
+            raise typer.Exit(0)
         if not output_file.parent.exists():
-            typer.BadParameter(
+            raise FileNotFoundError(
                 f"Parent directory of output file does not exist: {str(output_file.parent)}"
             )
 
