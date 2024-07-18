@@ -1,14 +1,19 @@
-from pathlib import Path
 import subprocess
-import tempfile
+import re
+from pathlib import Path
+from typing import Tuple
 
 import numpy as np
 import pandas as pd
 import pytest
 
 import phenoplier.gls_cli as gls_cli
-from phenoplier.config import settings
+from typer.testing import CliRunner
+import typer.core
+
 from phenoplier import cli
+from phenoplier.config import settings
+from test.utils import get_test_output_dir
 
 GLS_CLI_PATH = Path(gls_cli.__file__).resolve()
 assert GLS_CLI_PATH is not None
@@ -18,7 +23,11 @@ TEST_DIR = settings.TEST_DIR
 DATA_DIR = Path(TEST_DIR, "data", "gls").resolve()
 assert DATA_DIR.exists()
 
-TEMP_DIR = tempfile.mkdtemp()
+TEMP_DIR = get_test_output_dir(__file__)
+
+typer.core.rich = None
+runner = CliRunner()
+
 
 # Note that since the following tests execute the CLI script directly, we need to add the source root to the PYTHONPATH
 # i.e., PYTHONPATH=. pytest tests/test_gls_cli.py
@@ -47,27 +56,39 @@ def full_gene_corrs_filepath():
         out_file.unlink()
 
 
+_PATH_NOT_FOUND_REGEX = r"Path\s+.*?\s+does not exist"
+
+
+def regex_match(regex: str, text: str) -> Tuple[bool, str]:
+    # use the re.DOTALL flag, which makes the . (dot) match any character, including newline characters
+    match = re.search(regex, text, re.DOTALL)
+    return (True, "Match found!") if match else (False, "No match found.")
+
+
+def rm_path_not_found(text):
+    return regex_match(_PATH_NOT_FOUND_REGEX, text)
+
+
 def test_gls_cli_input_file_does_not_exist(output_file):
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "does_not_exist.txt"),
             "-o",
             output_file,
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
     )
     assert r is not None
-    assert r.returncode == 2
-    r_output = r.stdout.decode("utf-8")
+    assert r.exit_code == 2
+    r_output = r.stdout
     assert r_output is not None
-    print(r_output)
     assert len(r_output) > 1, r_output
-    assert "ERROR" in r_output
-    assert "Input file does not exist" in r_output
+    assert "Error" in r_output
+    match, msg = rm_path_not_found(r_output)
+    assert match, msg
 
 
 def test_gls_cli_output_file_does_exist(output_file):
@@ -209,7 +230,7 @@ def test_gls_cli_single_smultixcan_repeated_gene_names(output_file):
 
 
 def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_keep_first(
-    output_file,
+        output_file,
 ):
     r = subprocess.run(
         [
@@ -239,13 +260,13 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_keep_firs
     assert "Reading input file" in r_output
     assert "Input file has 54 genes" in r_output
     assert (
-        "Removed duplicated genes symbols using 'keep-first'. Data now has 53 genes"
-        in r_output
+            "Removed duplicated genes symbols using 'keep-first'. Data now has 53 genes"
+            in r_output
     )
 
 
 def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_keep_last(
-    output_file,
+        output_file,
 ):
     # run keep-first first, and then check that results are not the same with keep-last
 
@@ -313,8 +334,8 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_keep_last
     assert r.returncode == 0
     assert len(r_output) > 1, r_output
     assert (
-        "Removed duplicated genes symbols using 'keep-last'. Data now has 53 genes"
-        in r_output
+            "Removed duplicated genes symbols using 'keep-last'. Data now has 53 genes"
+            in r_output
     )
 
     assert output_file.exists()
@@ -334,7 +355,7 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_keep_last
 
 
 def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_remove_all(
-    output_file,
+        output_file,
 ):
     # run keep-last first, and then check that results with remove-all are different
 
@@ -402,8 +423,8 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_remove_al
     assert r.returncode == 0
     assert len(r_output) > 1, r_output
     assert (
-        "Removed duplicated genes symbols using 'remove-all'. Data now has 52 genes"
-        in r_output
+            "Removed duplicated genes symbols using 'remove-all'. Data now has 52 genes"
+            in r_output
     )
 
     assert output_file.exists()
@@ -452,8 +473,8 @@ def test_gls_cli_single_smultixcan_input_full_subset_of_lvs(output_file):
     assert "Input file has 54 genes" in r_output
     assert "3 genes with missing values have been removed" in r_output
     assert (
-        "p-values statistics: min=3.2e-05 | mean=2.2e-03 | max=6.3e-03 | # missing=3 (5.6%)"
-        in r_output
+            "p-values statistics: min=3.2e-05 | mean=2.2e-03 | max=6.3e-03 | # missing=3 (5.6%)"
+            in r_output
     )
 
     assert output_file.exists()
@@ -470,7 +491,7 @@ def test_gls_cli_single_smultixcan_input_full_subset_of_lvs(output_file):
 
 
 def test_gls_cli_single_smultixcan_input_full_subset_of_lvs_none_exist_in_models(
-    output_file,
+        output_file,
 ):
     r = subprocess.run(
         [
@@ -526,8 +547,8 @@ def test_gls_cli_single_smultixcan_input_full_all_lvs_in_model_file(output_file)
     assert "Reading input file" in r_output
     assert "Input file has 54 genes" in r_output
     assert (
-        "p-values statistics: min=3.2e-05 | mean=2.2e-03 | max=6.3e-03 | # missing=3 (5.6%)"
-        in r_output
+            "p-values statistics: min=3.2e-05 | mean=2.2e-03 | max=6.3e-03 | # missing=3 (5.6%)"
+            in r_output
     )
 
     assert output_file.exists()
@@ -702,7 +723,7 @@ def test_gls_cli_single_smultixcan_input_debug_use_ols(output_file):
 
 
 def test_gls_cli_single_smultixcan_input_debug_use_ols_incompatible_arguments(
-    output_file,
+        output_file,
 ):
     r = subprocess.run(
         [
@@ -1050,8 +1071,8 @@ def test_gls_cli_batch_parameters_batch_n_splits_value_invalid(output_file):
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert (
-        "ERROR: --batch-n-splits cannot be greater than LVs in the model (5 LVs)"
-        in r_output
+            "ERROR: --batch-n-splits cannot be greater than LVs in the model (5 LVs)"
+            in r_output
     )
 
 
@@ -1213,7 +1234,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits(output_f
 
 
 def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_same_size_of_1(
-    output_file,
+        output_file,
 ):
     # batch 1
     r = subprocess.run(
@@ -1421,7 +1442,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
 
 
 def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_is_1(
-    output_file,
+        output_file,
 ):
     # batch 1
     r = subprocess.run(
@@ -1469,7 +1490,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_is_1(
 
 
 def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_problematic_with_9_lvs(
-    output_file,
+        output_file,
 ):
     # if the chuncker of LVs is not doing it right, here it wont separate the list of LVs into exactly the same
     # number of chunks requested by --batch-n-splits
@@ -1851,7 +1872,7 @@ def test_gls_cli_use_covar_gene_density(output_file):
 
 
 def test_gls_cli_use_covar_gene_n_snps_used_without_cohort_metadata_dir_specified(
-    output_file,
+        output_file,
 ):
     r = subprocess.run(
         [
@@ -2790,7 +2811,7 @@ def test_gls_cli_use_covar_gene_n_snps_used_density_and_its_log(output_file):
 
 
 def test_gls_cli_use_covar_log_without_specifying_original_covariate(
-    output_file,
+        output_file,
 ):
     r = subprocess.run(
         [
@@ -3239,8 +3260,8 @@ def test_gls_cli_use_covar_all_vs_all_specified_separately(output_file):
 
 
 def test_gls_cli_use_covar_gene_size_and_gene_density_lv45_random_phenotype_6(
-    output_file,
-    full_gene_corrs_filepath,
+        output_file,
+        full_gene_corrs_filepath,
 ):
     # in this test, I make sure that the output values are the expected ones
     # generated in notebook nbs/15_gsa_gls/misc/10_10-gls-generate_cases-cases.ipynb
@@ -3315,8 +3336,8 @@ def test_gls_cli_use_covar_gene_size_and_gene_density_lv45_random_phenotype_6(
 
 
 def test_gls_cli_use_covar_gene_size_and_gene_density_lv455_random_phenotype_6(
-    output_file,
-    full_gene_corrs_filepath,
+        output_file,
+        full_gene_corrs_filepath,
 ):
     # in this test, I make sure that the output values are the expected ones
     # generated in notebook nbs/15_gsa_gls/misc/10_10-gls-generate_cases-cases.ipynb
@@ -3390,7 +3411,7 @@ def test_gls_cli_use_covar_gene_size_and_gene_density_lv455_random_phenotype_6(
 
 
 def test_gls_cli_use_covar_gene_size_and_gene_density_lv45_and_lv455_random_phenotype_6(
-    output_file, full_gene_corrs_filepath
+        output_file, full_gene_corrs_filepath
 ):
     # in this test, I make sure that the output values are the expected ones
     # generated in notebook nbs/15_gsa_gls/misc/10_10-gls-generate_cases-cases.ipynb

@@ -107,7 +107,9 @@ class Corr_Preprocess_Args(Enum):
 class Regression_Args(Enum):
     INPUT_FILE = typer.Option("--input-file", "-i",
                               help="File path to S-MultiXcan result file (tab-separated and with at least columns "
-                                   "'gene' and 'pvalue').")
+                                   "'gene' and 'pvalue').",
+                              exists=True,
+                              resolve_path=True,)
 
     OUTPUT_FILE = typer.Option("--output-file", "-o",
                                help="File path where results will be written to.")
