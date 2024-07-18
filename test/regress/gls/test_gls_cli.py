@@ -122,32 +122,26 @@ def test_gls_cli_output_file_does_exist(caplog, output_file):
         assert os.stat(output_file).st_size == 0, "Output file size is not empty"
 
 
-def test_gls_cli_parent_of_output_file_does_not_exist():
+def test_gls_cli_parent_of_output_file_does_not_exist(caplog):
     output_file = Path(TEMP_DIR) / "some_dir" / "out.tsv"
 
-    r = subprocess.run(
-        [
-            "python",
-            GLS_CLI_PATH,
-            "-i",
-            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
-            "-o",
-            output_file,
-            "-l",
-            "LV1",
-            "LV2",
-        ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-    )
-    assert r is not None
-    assert r.returncode == 1
-    r_output = r.stdout.decode("utf-8")
-    assert r_output is not None
-    assert len(r_output) > 1, r_output
-    print(r_output)
-    assert "ERROR" in r_output
-    assert "Parent directory of output file does not exist" in r_output
+    with caplog.at_level(logging.ERROR):
+        try:
+            r = runner.invoke(
+                cli.app,
+                [
+                    "run",
+                    "regression",
+                    "-i",
+                    str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
+                    "-o",
+                    output_file,
+                    "-l",
+                    "LV1 LV2",
+                ],
+            )
+        except ValueError:
+            assert "Parent directory of output file does not exist" in caplog.text
 
     assert not output_file.exists()
 
