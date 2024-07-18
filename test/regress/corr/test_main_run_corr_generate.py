@@ -48,7 +48,7 @@ test_data_dir = Path(conf.TEST_DIR) / "data/gene-corr/99_all_results/mashr/"
                 output_dir_base
         )
         # Use sampling test to reduce runtime
-        for lv_code in random.sample(range(1, 988), 1)
+        for lv_code in random.sample(range(1, 988), 5)
     ]
 )
 def test_cli_command(cohort, reference_panel, eqtl_models, lv_code, lv_percentile, genes_symbols_dir, output_dir):
