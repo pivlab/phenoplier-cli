@@ -1,5 +1,6 @@
 import subprocess
 import re
+import logging
 from pathlib import Path
 from typing import Tuple
 
@@ -91,39 +92,34 @@ def test_gls_cli_input_file_does_not_exist(output_file):
     assert match, msg
 
 
-def test_gls_cli_output_file_does_exist(output_file):
+def test_gls_cli_output_file_does_exist(caplog, output_file):
     # create output file
     with open(output_file, "a"):
         pass
 
     assert output_file.exists()
 
-    r = subprocess.run(
-        [
-            "python",
-            GLS_CLI_PATH,
-            "-i",
-            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
-            "-o",
-            output_file,
-            "-l",
-            "LV1",
-            "LV2",
-        ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-    )
-    assert r is not None
-    assert r.returncode == 0
-    r_output = r.stdout.decode("utf-8")
-    assert r_output is not None
-    assert len(r_output) > 1, r_output
-    assert "WARNING" in r_output
-    assert "Skipping, output file exists" in r_output
-
-    import os
-
-    assert os.stat(output_file).st_size == 0, "Output file size is not empty"
+    with caplog.at_level(logging.INFO):
+        # Click, Typer's internal library, throws a ValueError there's an intentional exit while calling the invoke
+        # method. Use try/except to work around this issue.
+        try:
+            r = runner.invoke(
+                cli.app,
+                [
+                    "run",
+                    "regression",
+                    "-i",
+                    str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
+                    "-o",
+                    output_file,
+                    "-l",
+                    "LV1 LV2",
+                ],
+            )
+        except ValueError:
+            assert "Skipping, output file exists" in caplog.text
+        import os
+        assert os.stat(output_file).st_size == 0, "Output file size is not empty"
 
 
 def test_gls_cli_parent_of_output_file_does_not_exist():

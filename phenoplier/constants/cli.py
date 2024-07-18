@@ -109,10 +109,12 @@ class Regression_Args(Enum):
                               help="File path to S-MultiXcan result file (tab-separated and with at least columns "
                                    "'gene' and 'pvalue').",
                               exists=True,
-                              resolve_path=True,)
+                              resolve_path=True,
+                              )
 
     OUTPUT_FILE = typer.Option("--output-file", "-o",
-                               help="File path where results will be written to.")
+                               help="File path where results will be written to.",
+                               )
 
     PROJECT_DIR = Common_Args.PROJECT_DIR.value
 
