@@ -5,7 +5,7 @@ This module contains utility functions used by the CLI commands.
 import os
 import shutil
 from enum import Enum
-from typing import List, Callable
+from typing import Tuple, List, Callable
 from functools import wraps
 from pathlib import Path
 
@@ -67,7 +67,7 @@ def create_settings_files(directory: Path) -> None:
             print(f"Config file {str(file_name)} created at {directory}")
 
 
-def load_settings_files(directory: Path, more_files: List[Path] = None) -> None:
+def load_settings_files(directory: Path, more_files: Tuple[Path, ...] = ()) -> None:
     """
     Load the settings files from the specified directory. The expected side effect is that after this function is called,
     settings defined in the toml config files will be available as attributes of the settings object.
@@ -92,6 +92,8 @@ def load_settings_files(directory: Path, more_files: List[Path] = None) -> None:
         else:
             raise typer.BadParameter(f"Config file {str(file_name)} does not exist at {directory}.")
     # Load the additional settings
+    if more_files is None:
+        return
     for curr_dir_file in more_files:
         file = directory / curr_dir_file
         if not file.exists():

@@ -4,6 +4,7 @@ import subprocess
 import hashlib
 import pickle
 from pathlib import Path
+from typing import Tuple
 
 import pandas as pd
 import numpy as np
@@ -162,8 +163,16 @@ def compare_npz_files(file1: Path, file2: Path, rtol: float = 1e-5, atol: float 
 
 
 def compare_npz_files_in_dirs(dir1: Path, dir2: Path,
-                              ignore_files: tuple[str, ...] = ('metadata.npz',),
-                              include_files: tuple[str, ...] = ()) -> tuple[bool, str]:
+                              ignore_files: Tuple[str, ...] = ('metadata.npz',),
+                              include_files: Tuple[str, ...] = ()) -> Tuple[bool, str]:
+    """
+    Compare .npz files in two directories.
+
+    :param Path dir1: Path to the first directory.
+    :param Path dir2: Path to the second directory.
+    :param Tuple[str, ...] ignore_files: Tuple of file names (not path) to ignore.
+    :param Tuple[str, ...] include_files: Tuple of file names (not path) to include.
+    """
     def get_npz_files(directory, ignores):
         # Get list of .npz files in the directory, excluding ignored files, and return absolute paths
         return sorted([Path(directory) / f for f in os.listdir(directory) if f.endswith('.npz') and f not in ignores])
