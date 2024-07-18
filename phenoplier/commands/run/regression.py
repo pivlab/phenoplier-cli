@@ -123,9 +123,8 @@ def regression(
             logger.info(f"Skipping, output file exists: {str(output_file)}")
             raise typer.Exit(0)
         if not output_file.parent.exists():
-            raise FileNotFoundError(
-                f"Parent directory of output file does not exist: {str(output_file.parent)}"
-            )
+            logger.error(f"Parent directory of output file does not exist: {str(output_file.parent)}")
+            raise typer.Exit(1)
 
     def read_input():
         data = pd.read_csv(input_file, sep="\t")
