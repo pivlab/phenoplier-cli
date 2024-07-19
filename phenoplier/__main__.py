@@ -1,6 +1,7 @@
 """Entry point for Phenoplier CLI."""
 from phenoplier import cli
 from phenoplier.config import settings
+from phenoplier.log import config_logger
 import sys
 
 
@@ -10,4 +11,5 @@ def main():
 
 
 if __name__ == "__main__":
+    config_logger()
     main()
