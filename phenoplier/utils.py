@@ -5,12 +5,13 @@ General utility functions.
 import re
 import hashlib
 import subprocess
-import pickle
+import logging
 from pathlib import Path
 from subprocess import run
 from typing import Dict
 
-from phenoplier.log import get_logger
+
+logger = logging.getLogger(__name__)
 
 
 def is_number(s):
@@ -58,7 +59,6 @@ def curl(url: str, output_file: str, md5hash: str = None, logger=None):
         md5hash: expected MD5 hash of file to download.
         logger: Logger instance.
     """
-    logger = logger or get_logger("none")
 
     Path(output_file).resolve().parent.mkdir(parents=True, exist_ok=True)
 
