@@ -118,12 +118,15 @@ def regression(
         ):
             typer.BadParameter("--batch-id must be <= --batch-n-splits")
 
+    # Todo: Use enums to store echo messages, can be reused in tests
     def check_output_file():
         if output_file.exists():
-            logger.info(f"Skipping, output file exists: {str(output_file)}")
+            print(f"Skipping, output file exists: {str(output_file)}")
+            # logger.info(f"Skipping, output file exists: {str(output_file)}")
             raise typer.Exit(0)
         if not output_file.parent.exists():
-            logger.error(f"Parent directory of output file does not exist: {str(output_file.parent)}")
+            print(f"Error: parent directory of output file does not exist: {str(output_file.parent)}")
+            # logger.error(f"Parent directory of output file does not exist: {str(output_file.parent)}")
             raise typer.Exit(1)
 
     def read_input():

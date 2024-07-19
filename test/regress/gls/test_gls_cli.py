@@ -7,6 +7,7 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 import pytest
+from _pytest.capture import CaptureFixture
 
 import phenoplier.gls_cli as gls_cli
 from typer.testing import CliRunner
@@ -92,57 +93,52 @@ def test_gls_cli_input_file_does_not_exist(output_file):
     assert match, msg
 
 
-def test_gls_cli_output_file_does_exist(caplog, output_file):
+def test_gls_cli_output_file_does_exist(output_file):
     # create output file
     with open(output_file, "a"):
         pass
 
     assert output_file.exists()
 
-    with caplog.at_level(logging.INFO):
-        # Click, Typer's internal library, throws a ValueError there's an intentional exit while calling the invoke
-        # method. Use try/except to work around this issue.
-        try:
-            r = runner.invoke(
-                cli.app,
-                [
-                    "run",
-                    "regression",
-                    "-i",
-                    str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
-                    "-o",
-                    output_file,
-                    "-l",
-                    "LV1 LV2",
-                ],
-            )
-        except ValueError:
-            assert "Skipping, output file exists" in caplog.text
-        import os
-        assert os.stat(output_file).st_size == 0, "Output file size is not empty"
+    r = runner.invoke(
+        cli.app,
+        [
+            "run",
+            "regression",
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
+            "-o",
+            output_file,
+            "-l",
+            "LV1 LV2",
+        ],
+    )
+    assert r.exit_code == 0
+    r_output = r.stdout
+    assert "Skipping, output file exists" in r_output
+    import os
+    assert os.stat(output_file).st_size == 0, "Output file size is not empty"
 
 
-def test_gls_cli_parent_of_output_file_does_not_exist(caplog):
+def test_gls_cli_parent_of_output_file_does_not_exist():
     output_file = Path(TEMP_DIR) / "some_dir" / "out.tsv"
 
-    with caplog.at_level(logging.ERROR):
-        try:
-            r = runner.invoke(
-                cli.app,
-                [
-                    "run",
-                    "regression",
-                    "-i",
-                    str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
-                    "-o",
-                    output_file,
-                    "-l",
-                    "LV1 LV2",
-                ],
-            )
-        except ValueError:
-            assert "Parent directory of output file does not exist" in caplog.text
-
+    r = runner.invoke(
+        cli.app,
+        [
+            "run",
+            "regression",
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
+            "-o",
+            output_file,
+            "-l",
+            "LV1 LV2",
+        ],
+    )
+    assert r.exit_code == 1
+    r_output = r.stdout
+    assert "Error: parent directory of output file does not exist" in r_output
     assert not output_file.exists()
 
 
