@@ -47,9 +47,9 @@ def test_options(options, expected_output):
 
 @pytest.mark.parametrize("idx, with_default_covars", [
     (0, True),
-    # (0, False),
-    # pytest.param(15, True, marks=pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Redundant test. Slow for GitHub Actions.")),
-    # pytest.param(15, False, marks=pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Redundant test. Slow for GitHub Actions.")),
+    (0, False),
+    pytest.param(15, True, marks=pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Redundant test. Slow for GitHub Actions.")),
+    pytest.param(15, False, marks=pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Redundant test. Slow for GitHub Actions.")),
     # Add more cases as needed
 ])
 def test_random_pheno(idx: int, with_default_covars: bool, click_runner: CliRunner):
