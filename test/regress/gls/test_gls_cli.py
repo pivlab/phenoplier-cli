@@ -167,26 +167,26 @@ def test_gls_cli_single_smultixcan_no_gene_name_column(output_file):
 
 
 def test_gls_cli_single_smultixcan_no_pvalue_column(output_file):
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-no_pvalue_column.txt"),
             "-o",
             output_file,
+            "--model",
+            "ols"
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
     )
     assert r is not None
-    assert r.returncode == 1
-    r_output = r.stdout.decode("utf-8")
+    assert r.exit_code == 1
+    r_output = r.stdout
     assert r_output is not None
     assert len(r_output) > 1, r_output
-    assert "Reading input file" in r_output
-    assert "ERROR:" in r_output
-    assert "'pvalue'" in r_output
+    assert info.LOADING_INPUT in r_output
+    assert err.NO_P_VALUE_COLUMN in r_output
 
 
 def test_gls_cli_single_smultixcan_repeated_gene_names(output_file):
@@ -205,7 +205,7 @@ def test_gls_cli_single_smultixcan_repeated_gene_names(output_file):
         stderr=subprocess.STDOUT,
     )
     assert r is not None
-    assert r.returncode == 1
+    assert r.exit_code == 1
     r_output = r.stdout.decode("utf-8")
     assert r_output is not None
     assert len(r_output) > 1, r_output
@@ -242,7 +242,7 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_keep_firs
     assert r_output is not None
 
     print(r_output)
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert len(r_output) > 1, r_output
     assert "Reading input file" in r_output
     assert "Input file has 54 genes" in r_output
@@ -283,7 +283,7 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_keep_last
     r_output = r.stdout.decode("utf-8")
     assert r_output is not None
     print(r_output)
-    assert r.returncode == 0
+    assert r.exit_code == 0
 
     assert output_file.exists()
     output_data = pd.read_csv(output_file, sep="\t")
@@ -318,7 +318,7 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_keep_last
     assert r_output is not None
 
     print(r_output)
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert len(r_output) > 1, r_output
     assert (
             "Removed duplicated genes symbols using 'keep-last'. Data now has 53 genes"
@@ -372,7 +372,7 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_remove_al
     r_output = r.stdout.decode("utf-8")
     assert r_output is not None
     print(r_output)
-    assert r.returncode == 0
+    assert r.exit_code == 0
 
     assert output_file.exists()
     output_data = pd.read_csv(output_file, sep="\t")
@@ -407,7 +407,7 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_remove_al
     assert r_output is not None
 
     print(r_output)
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert len(r_output) > 1, r_output
     assert (
             "Removed duplicated genes symbols using 'remove-all'. Data now has 52 genes"
@@ -453,7 +453,7 @@ def test_gls_cli_single_smultixcan_input_full_subset_of_lvs(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Reading input file" in r_output
@@ -500,7 +500,7 @@ def test_gls_cli_single_smultixcan_input_full_subset_of_lvs_none_exist_in_models
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 1
+    assert r.exit_code == 1
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "A list of 3 LVs was provided, and 0 are present in LV models" in r_output
@@ -528,7 +528,7 @@ def test_gls_cli_single_smultixcan_input_full_all_lvs_in_model_file(output_file)
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Reading input file" in r_output
@@ -575,7 +575,7 @@ def test_gls_cli_single_smultixcan_input_full_specify_gene_corrs(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using gene correlation file:" in r_output
@@ -608,7 +608,7 @@ def test_gls_cli_single_smultixcan_input_full_specify_gene_corrs(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using gene correlation file:" in r_output
@@ -653,7 +653,7 @@ def test_gls_cli_single_smultixcan_input_debug_use_ols(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using gene correlation file:" in r_output
@@ -685,7 +685,7 @@ def test_gls_cli_single_smultixcan_input_debug_use_ols(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using gene correlation file:" not in r_output
@@ -733,7 +733,7 @@ def test_gls_cli_single_smultixcan_input_debug_use_ols_incompatible_arguments(
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 1
+    assert r.exit_code == 1
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Incompatible arguments" in r_output
@@ -770,7 +770,7 @@ def test_gls_cli_use_incompatible_parameters_batch_and_lv_list(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 2
+    assert r.exit_code == 2
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Incompatible parameters" in r_output
@@ -798,7 +798,7 @@ def test_gls_cli_batch_parameters_batch_n_splits_missing(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 2
+    assert r.exit_code == 2
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Both --batch-id and --batch-n-splits" in r_output
@@ -826,7 +826,7 @@ def test_gls_cli_batch_parameters_batch_id_missing(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 2
+    assert r.exit_code == 2
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Both --batch-id and --batch-n-splits" in r_output
@@ -856,7 +856,7 @@ def test_gls_cli_batch_parameters_batch_id_value_invalid(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 2
+    assert r.exit_code == 2
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "error: argument --batch-id" in r_output
@@ -884,7 +884,7 @@ def test_gls_cli_batch_parameters_batch_id_value_invalid(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 2
+    assert r.exit_code == 2
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "ERROR: --batch-id must be" in r_output
@@ -912,7 +912,7 @@ def test_gls_cli_batch_parameters_batch_id_value_invalid(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 2
+    assert r.exit_code == 2
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "ERROR: --batch-id must be" in r_output
@@ -940,7 +940,7 @@ def test_gls_cli_batch_parameters_batch_id_value_invalid(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 2
+    assert r.exit_code == 2
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "ERROR: --batch-id must be <= --batch-n-splits" in r_output
@@ -970,7 +970,7 @@ def test_gls_cli_batch_parameters_batch_n_splits_value_invalid(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 2
+    assert r.exit_code == 2
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "error: argument --batch-n-splits" in r_output
@@ -998,7 +998,7 @@ def test_gls_cli_batch_parameters_batch_n_splits_value_invalid(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 2
+    assert r.exit_code == 2
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "ERROR: --batch-id must be <= --batch-n-splits" in r_output
@@ -1026,7 +1026,7 @@ def test_gls_cli_batch_parameters_batch_n_splits_value_invalid(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 2
+    assert r.exit_code == 2
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "ERROR: --batch-id must be <= --batch-n-splits" in r_output
@@ -1054,7 +1054,7 @@ def test_gls_cli_batch_parameters_batch_n_splits_value_invalid(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 2
+    assert r.exit_code == 2
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert (
@@ -1089,7 +1089,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits(output_f
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using batch 1 out of 3" in r_output
@@ -1132,7 +1132,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits(output_f
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using batch 2 out of 3" in r_output
@@ -1175,7 +1175,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits(output_f
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using batch 3 out of 3" in r_output
@@ -1248,7 +1248,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using batch 1 out of 5" in r_output
@@ -1289,7 +1289,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using batch 2 out of 5" in r_output
@@ -1330,7 +1330,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using batch 3 out of 5" in r_output
@@ -1371,7 +1371,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using batch 4 out of 5" in r_output
@@ -1412,7 +1412,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using batch 5 out of 5" in r_output
@@ -1456,7 +1456,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_is_1(
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using batch 1 out of 1" in r_output
@@ -1507,7 +1507,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_problema
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using batch 1 out of 4" in r_output
@@ -1550,7 +1550,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_problema
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using batch 2 out of 4" in r_output
@@ -1592,7 +1592,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_problema
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using batch 3 out of 4" in r_output
@@ -1634,7 +1634,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_problema
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using batch 4 out of 4" in r_output
@@ -1676,7 +1676,7 @@ def test_gls_cli_use_covar_gene_size(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
 
@@ -1719,7 +1719,7 @@ def test_gls_cli_use_covar_gene_size(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using covariates: " in r_output
@@ -1779,7 +1779,7 @@ def test_gls_cli_use_covar_gene_density(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
 
@@ -1822,7 +1822,7 @@ def test_gls_cli_use_covar_gene_density(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using covariates: " in r_output
@@ -1882,7 +1882,7 @@ def test_gls_cli_use_covar_gene_n_snps_used_without_cohort_metadata_dir_specifie
         stderr=subprocess.STDOUT,
     )
     assert r is not None
-    assert r.returncode == 1
+    assert r.exit_code == 1
     r_output = r.stdout.decode("utf-8")
     assert r_output is not None
     assert len(r_output) > 1, r_output
@@ -1915,7 +1915,7 @@ def test_gls_cli_use_covar_gene_n_snps_used(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
 
@@ -1962,7 +1962,7 @@ def test_gls_cli_use_covar_gene_n_snps_used(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using covariates: " in r_output
@@ -2022,7 +2022,7 @@ def test_gls_cli_use_covar_gene_n_snps_used_density(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
 
@@ -2069,7 +2069,7 @@ def test_gls_cli_use_covar_gene_n_snps_used_density(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using covariates: " in r_output
@@ -2129,7 +2129,7 @@ def test_gls_cli_use_covar_gene_size_and_its_log(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
 
@@ -2176,7 +2176,7 @@ def test_gls_cli_use_covar_gene_size_and_its_log(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using covariates: " in r_output
@@ -2226,7 +2226,7 @@ def test_gls_cli_use_covar_gene_size_and_its_log(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using covariates: " in r_output
@@ -2298,7 +2298,7 @@ def test_gls_cli_use_covar_gene_density_and_its_log(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
 
@@ -2345,7 +2345,7 @@ def test_gls_cli_use_covar_gene_density_and_its_log(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using covariates: " in r_output
@@ -2395,7 +2395,7 @@ def test_gls_cli_use_covar_gene_density_and_its_log(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using covariates: " in r_output
@@ -2467,7 +2467,7 @@ def test_gls_cli_use_covar_gene_n_snps_used_and_its_log(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
 
@@ -2518,7 +2518,7 @@ def test_gls_cli_use_covar_gene_n_snps_used_and_its_log(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using covariates: " in r_output
@@ -2572,7 +2572,7 @@ def test_gls_cli_use_covar_gene_n_snps_used_and_its_log(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using covariates: " in r_output
@@ -2644,7 +2644,7 @@ def test_gls_cli_use_covar_gene_n_snps_used_density_and_its_log(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
 
@@ -2695,7 +2695,7 @@ def test_gls_cli_use_covar_gene_n_snps_used_density_and_its_log(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using covariates: " in r_output
@@ -2749,7 +2749,7 @@ def test_gls_cli_use_covar_gene_n_snps_used_density_and_its_log(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using covariates: " in r_output
@@ -2826,7 +2826,7 @@ def test_gls_cli_use_covar_log_without_specifying_original_covariate(
     assert r_output is not None
     assert len(r_output) > 1, r_output
     print(r_output)
-    assert r.returncode == 1
+    assert r.exit_code == 1
     assert "ERROR" in r_output
     assert "covar has to be selected as well" in r_output
 
@@ -2855,7 +2855,7 @@ def test_gls_cli_use_covar_all(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
 
@@ -2902,7 +2902,7 @@ def test_gls_cli_use_covar_all(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using covariates: " in r_output
@@ -2951,7 +2951,7 @@ def test_gls_cli_use_covar_all(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using covariates: " in r_output
@@ -3004,7 +3004,7 @@ def test_gls_cli_use_covar_all(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using covariates: " in r_output
@@ -3086,7 +3086,7 @@ def test_gls_cli_use_covar_all_vs_all_specified_separately(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
 
@@ -3144,7 +3144,7 @@ def test_gls_cli_use_covar_all_vs_all_specified_separately(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using covariates: " in r_output
@@ -3196,7 +3196,7 @@ def test_gls_cli_use_covar_all_vs_all_specified_separately(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using covariates: " in r_output
@@ -3279,7 +3279,7 @@ def test_gls_cli_use_covar_gene_size_and_gene_density_lv45_random_phenotype_6(
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using covariates: " in r_output
@@ -3354,7 +3354,7 @@ def test_gls_cli_use_covar_gene_size_and_gene_density_lv455_random_phenotype_6(
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using covariates: " in r_output
@@ -3431,7 +3431,7 @@ def test_gls_cli_use_covar_gene_size_and_gene_density_lv45_and_lv455_random_phen
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using covariates: " in r_output
@@ -3502,7 +3502,7 @@ def test_gls_cli_use_covar_debug_use_ols_vs_ols_without_covars(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using covariates: " not in r_output
@@ -3539,7 +3539,7 @@ def test_gls_cli_use_covar_debug_use_ols_vs_ols_without_covars(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using gene correlation file:" not in r_output
@@ -3598,7 +3598,7 @@ def test_gls_cli_use_covar_debug_use_ols_vs_gls(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using gene correlation file:" in r_output
@@ -3640,7 +3640,7 @@ def test_gls_cli_use_covar_debug_use_ols_vs_gls(output_file):
     r_output = r.stdout.decode("utf-8")
     print("\n" + r_output)
 
-    assert r.returncode == 0
+    assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using gene correlation file:" not in r_output

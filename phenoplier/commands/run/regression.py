@@ -143,7 +143,8 @@ def regression(
             sys.exit(1)
 
         if "pvalue" not in data.columns:
-            logger.error("Mandatory columns not present in data 'pvalue'")
+            print(err.NO_P_VALUE_COLUMN)
+            # logger.error("Mandatory columns not present in data 'pvalue'")
             sys.exit(1)
 
         data = data.set_index("gene_name")
