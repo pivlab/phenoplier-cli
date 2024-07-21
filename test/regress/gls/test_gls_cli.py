@@ -7,7 +7,6 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 import pytest
-from _pytest.capture import CaptureFixture
 
 import phenoplier.gls_cli as gls_cli
 from typer.testing import CliRunner
@@ -15,6 +14,8 @@ import typer.core
 
 from phenoplier import cli
 from phenoplier.config import settings
+from phenoplier.constants.message import RegressionError as err
+from phenoplier.constants.message import RegressionInfo as info
 from test.utils import get_test_output_dir
 
 GLS_CLI_PATH = Path(gls_cli.__file__).resolve()
@@ -143,26 +144,26 @@ def test_gls_cli_parent_of_output_file_does_not_exist():
 
 
 def test_gls_cli_single_smultixcan_no_gene_name_column(output_file):
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-no_gene_name_column.txt"),
             "-o",
             output_file,
+            "--model",
+            "ols"
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
     )
     assert r is not None
-    assert r.returncode == 1
-    r_output = r.stdout.decode("utf-8")
+    assert r.exit_code == 1
+    r_output = r.stdout
     assert r_output is not None
     assert len(r_output) > 1, r_output
-    assert "Reading input file" in r_output
-    assert "ERROR:" in r_output
-    assert "'gene_name'" in r_output
+    assert info.LOADING_INPUT in r_output
+    assert err.NO_GENE_NAME_COLUMN in r_output
 
 
 def test_gls_cli_single_smultixcan_no_pvalue_column(output_file):
