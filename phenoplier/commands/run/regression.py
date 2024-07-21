@@ -11,11 +11,14 @@ from enum import Enum
 import typer
 import pandas as pd
 import numpy as np
+from rich import print
 
 from phenoplier.gls import GLSPhenoplier
 from phenoplier.config import settings, SETTINGS_FILES
 from phenoplier.constants.cli import Regression_Args as Args, Regression_Defaults
 from phenoplier.commands.util.utils import load_settings_files
+from phenoplier.constants.message import RegressionError as err
+from phenoplier.constants.message import RegressionInfo as info
 
 LOG_FORMAT = "%(levelname)s: %(message)s"
 
@@ -131,10 +134,12 @@ def regression(
 
     def read_input():
         data = pd.read_csv(input_file, sep="\t")
-        logger.info(f"Input file has {data.shape[0]} genes")
+        print(info.LOADING_INPUT)
+        print(f"Input file has {data.shape[0]} genes")
 
         if "gene_name" not in data.columns:
-            logger.error("Mandatory columns not present in data 'gene_name'")
+            # logger.error("Mandatory columns not present in data 'gene_name'")
+            print(err.NO_GENE_NAME_COLUMN)
             sys.exit(1)
 
         if "pvalue" not in data.columns:
@@ -167,11 +172,15 @@ def regression(
     # TODO: Put error messages in constants.messages as dict kv paris
     # Check if both "debug_use_ols" and "gene_corr_file" are None
     if model != "ols" and gene_corr_file is None:
-        raise typer.BadParameter("When not using --model=ols, option '--gene-corr-file <value>' must be provided")
+        print("When not using --model=ols, option '--gene-corr-file <value>' must be provided")
+        exit(2)
+        # raise typer.BadParameter("When not using --model=ols, option '--gene-corr-file <value>' must be provided")
     # and they should not be both provided
     if model == "ols" and gene_corr_file is not None:
         # Todo: can print a message to tell the user that the gene_corr_file will be ignored
-        raise typer.BadParameter("When using '--model=ols', option '--gene-corr-file <value>' should not be provided")
+        print("When using '--model=ols', option '--gene-corr-file <value>' should not be provided")
+        exit(2)
+        # raise typer.BadParameter("When using '--model=ols', option '--gene-corr-file <value>' should not be provided")
 
     # Print out useful information
     covars_info = (
