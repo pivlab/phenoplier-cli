@@ -132,6 +132,19 @@ def regression(
             # logger.error(f"Parent directory of output file does not exist: {str(output_file.parent)}")
             raise typer.Exit(1)
 
+    def check_model_args():
+        # Check if both "debug_use_ols" and "gene_corr_file" are None
+        if model != "ols" and gene_corr_file is None:
+            print("When not using --model=ols, option '--gene-corr-file <value>' must be provided")
+            exit(2)
+            # raise typer.BadParameter("When not using --model=ols, option '--gene-corr-file <value>' must be provided")
+        # and they should not be both provided
+        if model == "ols" and gene_corr_file is not None:
+            # Todo: can print a message to tell the user that the gene_corr_file will be ignored
+            print("When using '--model=ols', option '--gene-corr-file <value>' should not be provided")
+            exit(2)
+            # raise typer.BadParameter("When using '--model=ols', option '--gene-corr-file <value>' should not be provided")
+
     def read_input():
         data = pd.read_csv(input_file, sep="\t")
         print(info.LOADING_INPUT)
@@ -165,23 +178,10 @@ def regression(
 
     # Check arguments
     check_batch_args()
+    check_model_args()
     check_output_file()
-
     # Load config files
     load_settings_files(Path(project_dir))
-
-    # TODO: Put error messages in constants.messages as dict kv paris
-    # Check if both "debug_use_ols" and "gene_corr_file" are None
-    if model != "ols" and gene_corr_file is None:
-        print("When not using --model=ols, option '--gene-corr-file <value>' must be provided")
-        exit(2)
-        # raise typer.BadParameter("When not using --model=ols, option '--gene-corr-file <value>' must be provided")
-    # and they should not be both provided
-    if model == "ols" and gene_corr_file is not None:
-        # Todo: can print a message to tell the user that the gene_corr_file will be ignored
-        print("When using '--model=ols', option '--gene-corr-file <value>' should not be provided")
-        exit(2)
-        # raise typer.BadParameter("When using '--model=ols', option '--gene-corr-file <value>' should not be provided")
 
     # Print out useful information
     covars_info = (
@@ -195,10 +195,11 @@ def regression(
     data, keep_action = remove_dup_gene_entries(data)
     # unique index (gene names)
     if not data.index.is_unique:
-        logger.error(
-            "Duplicated genes in input data. Use option --dup-gene-action "
-            "if you want to skip them."
-        )
+        # logger.error(
+        #     "Duplicated genes in input data. Use option --dup-gene-action "
+        #     "if you want to skip them."
+        # )
+        print(err.DUP_GENES_FOUND)
         sys.exit(1)
 
     # pvalues statistics
