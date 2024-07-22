@@ -6,7 +6,7 @@ import sys
 import logging
 from typing import Optional, Annotated, List
 from pathlib import Path
-from enum import Enum
+from enum import Enum, StrEnum
 
 import typer
 import pandas as pd
@@ -57,10 +57,11 @@ SNPLEVEL_COVAR_OPTIONS_PREFIXES = [
 ]
 
 
-class DUP_GENE_ACTIONS(str, Enum):
+class DUP_GENE_ACTIONS(StrEnum):
     keep_first = "keep-first"
     keep_last = "keep-last"
     remove_all = "remove-all"
+    no_action = "no-action"
 
 
 class REGRESSION_MODEL(str, Enum):
@@ -88,7 +89,7 @@ def regression(
         model:                  Annotated[REGRESSION_MODEL, Args.MODEL.value] = REGRESSION_MODEL.gls,
         gene_corr_file:         Annotated[Optional[Path], Args.GENE_CORR_FILE.value] = None,
         gene_corr_mode:         Annotated[GENE_CORREALATION_MODE, Args.GENE_CORR_MODE.value] = GENE_CORREALATION_MODE.sub,
-        dup_genes_action:       Annotated[DUP_GENE_ACTIONS, Args.DUP_GENES_ACTION.value] = DUP_GENE_ACTIONS.keep_first,
+        dup_genes_action:       Annotated[DUP_GENE_ACTIONS, Args.DUP_GENES_ACTION.value] = DUP_GENE_ACTIONS.no_action,
         covars:                 Annotated[Optional[str], Args.COVARS.value] = None,
         cohort_metadata_dir:    Annotated[Optional[str], Args.COHORT_METADATA_DIR.value] = None,
         lv_list:                Annotated[Optional[List[str]], Args.LV_LIST.value] = None,
@@ -137,13 +138,11 @@ def regression(
         if model != "ols" and gene_corr_file is None:
             print("When not using --model=ols, option '--gene-corr-file <value>' must be provided")
             exit(2)
-            # raise typer.BadParameter("When not using --model=ols, option '--gene-corr-file <value>' must be provided")
         # and they should not be both provided
         if model == "ols" and gene_corr_file is not None:
             # Todo: can print a message to tell the user that the gene_corr_file will be ignored
             print("When using '--model=ols', option '--gene-corr-file <value>' should not be provided")
             exit(2)
-            # raise typer.BadParameter("When using '--model=ols', option '--gene-corr-file <value>' should not be provided")
 
     def read_input():
         data = pd.read_csv(input_file, sep="\t")
@@ -164,6 +163,9 @@ def regression(
         return data
 
     def remove_dup_gene_entries(input_data):
+        if dup_genes_action is DUP_GENE_ACTIONS.no_action:
+            return input_data, False
+
         if dup_genes_action.startswith("keep"):
             keep_action = dup_genes_action.split("-")[1]
         elif dup_genes_action == "remove-all":
@@ -180,17 +182,11 @@ def regression(
     check_batch_args()
     check_model_args()
     check_output_file()
+
     # Load config files
     load_settings_files(Path(project_dir))
 
-    # Print out useful information
-    covars_info = (
-        f"Using DEFAULT covariates: {Regression_Defaults.COVARS.value}" if covars == "default"
-        else f"Using covariates {covars}" if covars
-        else f"Running {model} without covariates."
-    )
-    print("[blue][Info]: " + covars_info)
-
+    # Load input data
     data = read_input()
     data, keep_action = remove_dup_gene_entries(data)
     # unique index (gene names)
@@ -202,6 +198,13 @@ def regression(
         print(err.DUP_GENES_FOUND)
         sys.exit(1)
 
+    # Print out useful information
+    covars_info = (
+        f"Using DEFAULT covariates: {Regression_Defaults.COVARS.value}" if covars == "default"
+        else f"Using covariates {covars}" if covars
+        else f"Running {model} without covariates."
+    )
+    print("[blue][Info]: " + covars_info)
     # pvalues statistics
     _data_pvalues = data["pvalue"]
     n_missing = _data_pvalues.isna().sum()
