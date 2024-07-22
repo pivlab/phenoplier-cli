@@ -215,15 +215,18 @@ def regression(
     mean_pval = _data_pvalues.mean()
     max_pval = _data_pvalues.max()
 
-    logger.info(
-        f"p-values statistics: min={min_pval:.1e} | mean={mean_pval:.1e} | max={max_pval:.1e} | # missing={n_missing} ({(n_missing / n) * 100:.1f}%)"
-    )
+    # logger.info(
+    #     f"p-values statistics: min={min_pval:.1e} | mean={mean_pval:.1e} | max={max_pval:.1e} | # missing={n_missing} ({(n_missing / n) * 100:.1f}%)"
+    # )
+    print(f"p-values statistics: min={min_pval:.1e} | mean={mean_pval:.1e} | max={max_pval:.1e} | # missing={n_missing} ({(n_missing / n) * 100:.1f}%)")
 
     if min_pval < 0.0:
-        logger.warning("Some p-values are smaller than 0.0")
+        # logger.warning("Some p-values are smaller than 0.0")
+        print("Some p-values are smaller than 0.0")
 
     if max_pval > 1.0:
-        logger.warning("Some p-values are greater than 1.0")
+        print("Some p-values are greater than 1.0")
+        # logger.warning("Some p-values are greater than 1.0")
 
     final_data = data.loc[:, ["pvalue"]].rename(
         columns={
@@ -231,7 +234,7 @@ def regression(
         }
     )
 
-    # add covariates (if specified)
+    # Add covariates (if specified)
     if covars is not None:
         covars_selected = str.split(covars, " ")
         print("Covars selected: ", covars)
@@ -244,7 +247,8 @@ def regression(
 
         covars_selected = sorted(covars_selected)
 
-        logger.info(f"Using covariates: {covars_selected}")
+        # logger.info(f"Using covariates: {covars_selected}")
+        print(f"Using covariates: {covars_selected}")
 
         # get necessary columns from results
         covars = data[["pvalue", "n", "n_indep"]]
@@ -267,7 +271,11 @@ def regression(
         ):
             # first load the cohort metadata gene tissues file
             if cohort_metadata_dir is None:
-                logger.error(
+                # logger.error(
+                #     "To use SNP-level covariates, a cohort metadata folder must "
+                #     "be provided (--cohort-metadata-dir)"
+                # )
+                print(
                     "To use SNP-level covariates, a cohort metadata folder must "
                     "be provided (--cohort-metadata-dir)"
                 )
@@ -284,16 +292,18 @@ def regression(
                     f"{cohort_metadata_dir}"
                 )
 
-            logger.info(f"Loading cohort metadata: {str(cohort_gene_tissues_filepath)}")
+            # logger.info(f"Loading cohort metadata: {str(cohort_gene_tissues_filepath)}")
+            print(f"Loading cohort metadata: {str(cohort_gene_tissues_filepath)}")
             cohort_gene_tissues = pd.read_pickle(
                 cohort_gene_tissues_filepath
             ).set_index("gene_name")
             # remove duplicated gene names
             if not cohort_gene_tissues.index.is_unique:
                 if dup_genes_action is None:
-                    logger.error(
-                        "There are duplicated gene names in cohort metadat files, --dup-gene-action must be specified"
-                    )
+                    # logger.error(
+                    #     "There are duplicated gene names in cohort metadat files, --dup-gene-action must be specified"
+                    # )
+                    print("There are duplicated gene names in cohort metadat files, --dup-gene-action must be specified")
                     sys.exit(1)
 
                 cohort_gene_tissues = cohort_gene_tissues.loc[
@@ -323,7 +333,11 @@ def regression(
                 c_prefix = c.split("_log")[0]
 
                 if c_prefix not in covars.columns:
-                    logger.error(
+                    # logger.error(
+                    #     f"If log version of covar is selected, covar has to be "
+                    #     f"selected as well ({c_prefix} not present)"
+                    # )
+                    print(
                         f"If log version of covar is selected, covar has to be "
                         f"selected as well ({c_prefix} not present)"
                     )
@@ -336,51 +350,58 @@ def regression(
         final_data = pd.concat([final_data, covars[covars_selected]], axis=1)
 
     # convert p-values
-    logger.info("Replacing zero p-values by nonzero minimum divided by 10")
+    # logger.info("Replacing zero p-values by nonzero minimum divided by 10")
+    print("Replacing zero p-values by nonzero minimum divided by 10")
     min_nonzero_pvalue = final_data[final_data["y"] > 0]["y"].min() / 10.0
     final_data["y"] = final_data["y"].replace(0, min_nonzero_pvalue)
 
-    logger.info("Using -log10(pvalue)")
+    # logger.info("Using -log10(pvalue)")
+    print("Using -log10(pvalue)")
     final_data["y"] = -np.log10(final_data["y"])
 
     if final_data.shape[1] == 1:
         final_data = final_data.squeeze().rename(input_file.stem)
 
-    if model == "ols" and gene_corr_file is not None:
-        logger.error(
-            "Incompatible arguments: you cannot specify both "
-            "--gene-corr-file and --debug-use-ols"
-        )
-        sys.exit(1)
-
     if gene_corr_file is not None:
-        logger.info(f"Using gene correlation file: {gene_corr_file}")
+        # logger.info(f"Using gene correlation file: {gene_corr_file}")
+        print(f"Using gene correlation file: {gene_corr_file}")
 
     if lv_model_file is not None:
         lv_model_file = Path(lv_model_file)
-        logger.info(f"Reading LV model file: {str(lv_model_file)}")
+        # logger.info(f"Reading LV model file: {str(lv_model_file)}")
+        print(f"Reading LV model file: {str(lv_model_file)}")
         full_lvs_list = GLSPhenoplier._get_lv_weights(lv_model_file).columns.tolist()
     else:
         full_lvs_list = GLSPhenoplier._get_lv_weights().columns.tolist()
 
     if batch_n_splits is not None and batch_n_splits > len(full_lvs_list):
-        logger.error(
+        print(
             f"--batch-n-splits cannot be greater than LVs in the model "
             f"({len(full_lvs_list)} LVs)"
         )
+        # logger.error(
+        #     f"--batch-n-splits cannot be greater than LVs in the model "
+        #     f"({len(full_lvs_list)} LVs)"
+        # )
         sys.exit(2)
 
     full_lvs_set = set(full_lvs_list)
-    logger.info(f"{len(full_lvs_set)} LVs (gene modules) were found in LV model")
+    # logger.info(f"{len(full_lvs_set)} LVs (gene modules) were found in LV model")
+    print((f"{len(full_lvs_set)} LVs (gene modules) were found in LV model"))
 
     if lv_list:
         selected_lvs = [lv for lv in lv_list if lv in full_lvs_set]
-        logger.info(
+        print(
             f"A list of {len(lv_list)} LVs was provided, and {len(selected_lvs)} "
             f"are present in LV models"
         )
+        # logger.info(
+        #     f"A list of {len(lv_list)} LVs was provided, and {len(selected_lvs)} "
+        #     f"are present in LV models"
+        # )
     else:
         selected_lvs = full_lvs_list
+        print("All LVs in models will be used")
         logger.info("All LVs in models will be used")
 
     if batch_id is not None and batch_n_splits is not None:
@@ -388,12 +409,14 @@ def regression(
             ar.tolist() for ar in np.array_split(selected_lvs, batch_n_splits)
         ]
         selected_lvs = selected_lvs_chunks[batch_id - 1]
-        logger.info(
-            f"Using batch {batch_id} out of {batch_n_splits} ({len(selected_lvs)} LVs selected)"
-        )
+        print(f"Using batch {batch_id} out of {batch_n_splits} ({len(selected_lvs)} LVs selected)")
+        # logger.info(
+        #     f"Using batch {batch_id} out of {batch_n_splits} ({len(selected_lvs)} LVs selected)"
+        # )
 
     if len(selected_lvs) == 0:
-        logger.error("No LVs were selected")
+        print("No LVs were selected")
+        # logger.error("No LVs were selected")
         sys.exit(1)
 
     # create model object
@@ -409,7 +432,8 @@ def regression(
 
     # compute an association between each LV and the gene-trait associations
     for lv_idx, lv_code in enumerate(selected_lvs):
-        logger.info(f"Computing for {lv_code}")
+        print(f"Computing for {lv_code}")
+        # logger.info(f"Computing for {lv_code}")
 
         # show warnings or logs only in the first run
         if lv_idx == 0:
@@ -434,5 +458,6 @@ def regression(
 
     # create final dataframe and save
     results = pd.DataFrame(results).set_index("lv").sort_values("pvalue_onesided")
-    logger.info(f"Writing results to {str(output_file)}")
+    print(f"Writing results to {str(output_file)}")
+    # logger.info(f"Writing results to {str(output_file)}")
     results.to_csv(output_file, sep="\t", na_rep="NA")
