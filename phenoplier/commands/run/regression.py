@@ -144,7 +144,7 @@ def regression(
             print("When using '--model=ols', option '--gene-corr-file <value>' should not be provided")
             exit(2)
 
-    def read_input():
+    def read_input() -> pd.DataFrame:
         data = pd.read_csv(input_file, sep="\t")
         print(info.LOADING_INPUT)
         print(f"Input file has {data.shape[0]} genes")
@@ -162,21 +162,23 @@ def regression(
         data = data.set_index("gene_name")
         return data
 
-    def remove_dup_gene_entries(input_data):
+    def remove_dup_gene_entries(input_data: pd.DataFrame) -> (pd.DataFrame, bool):
         if dup_genes_action is DUP_GENE_ACTIONS.no_action:
             return input_data, False
 
         if dup_genes_action.startswith("keep"):
-            keep_action = dup_genes_action.split("-")[1]
+            action = dup_genes_action.split("-")[1]
         elif dup_genes_action == "remove-all":
-            keep_action = False
+            action = False
         else:
             raise ValueError("Wrong --dup-gene-action value")
-        logger.info(
+
+        dedup_data = input_data.loc[~input_data.index.duplicated(keep=action)]
+        print(
             f"Removed duplicated genes symbols using '{dup_genes_action}'. "
-            f"Data now has {input_data.shape[0]} genes"
+            f"Data now has {dedup_data.shape[0]} genes"
         )
-        return input_data.loc[~input_data.index.duplicated(keep=keep_action)], keep_action
+        return dedup_data, action
 
     # Check arguments
     check_batch_args()
