@@ -136,12 +136,12 @@ def regression(
     def check_model_args():
         # Check if both "debug_use_ols" and "gene_corr_file" are None
         if model != "ols" and gene_corr_file is None:
-            print("When not using --model=ols, option '--gene-corr-file <value>' must be provided")
+            print(err.EXPECT_GENE_CORR_FILE)
             exit(2)
         # and they should not be both provided
         if model == "ols" and gene_corr_file is not None:
             # Todo: can print a message to tell the user that the gene_corr_file will be ignored
-            print("When using '--model=ols', option '--gene-corr-file <value>' should not be provided")
+            print(err.EXPECT_NO_GENE_CORR_FILE)
             exit(2)
 
     def read_input() -> pd.DataFrame:

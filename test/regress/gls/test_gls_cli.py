@@ -715,7 +715,8 @@ def test_gls_cli_single_smultixcan_input_debug_use_ols_incompatible_arguments(
             str(DATA_DIR / "sample-lv-model.pkl"),
             "-g",
             str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
-            "--debug-use-ols",
+            "--model",
+            "ols"
         ],
 
     )
@@ -723,11 +724,10 @@ def test_gls_cli_single_smultixcan_input_debug_use_ols_incompatible_arguments(
     r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
-    assert r.exit_code == 1
+    assert r.exit_code == 2
     assert r_output is not None
     assert len(r_output) > 1, r_output
-    assert "Incompatible arguments" in r_output
-    assert "--debug-use-ols" in r_output
+    assert err.EXPECT_NO_GENE_CORR_FILE in r_output
 
     assert not output_file.exists()
 
