@@ -353,8 +353,7 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_remove_al
             "--dup-genes-action",
             "keep-last",
             "-l",
-            "LV1",
-            "LV5",
+            "LV1 LV5",
             "-g",
             str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
@@ -387,8 +386,7 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_remove_al
             "--dup-genes-action",
             "remove-all",
             "-l",
-            "LV1",
-            "LV5",
+            "LV1 LV5",
             "-g",
             str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
@@ -433,9 +431,7 @@ def test_gls_cli_single_smultixcan_input_full_subset_of_lvs(output_file):
             "-o",
             output_file,
             "-l",
-            "LV1",
-            "LV2",
-            "LV3",
+            "LV1 LV2 LV3",
             "-g",
             str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
@@ -448,11 +444,11 @@ def test_gls_cli_single_smultixcan_input_full_subset_of_lvs(output_file):
     assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
-    assert "Reading input file" in r_output
+    assert info.LOADING_INPUT in r_output
     assert "Input file has 54 genes" in r_output
     assert "3 genes with missing values have been removed" in r_output
     assert (
-            "p-values statistics: min=3.2e-05 | mean=2.2e-03 | max=6.3e-03 | # missing=3 (5.6%)"
+            "p-values statistics: min=3.2e-05 | mean=2.2e-03 | max=6.3e-03 | # missing=3  (5.6%)"
             in r_output
     )
 

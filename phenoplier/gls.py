@@ -7,9 +7,9 @@ from functools import lru_cache
 
 import numpy as np
 import pandas as pd
-from scipy import stats
-from scipy import sparse
 import statsmodels.api as sm
+from scipy import stats, sparse
+from rich import print
 
 from phenoplier.entity import Gene
 from phenoplier.config import settings as conf
@@ -329,9 +329,10 @@ class GLSPhenoplier(object):
         assert not y.isin([np.inf, -np.inf]).any(axis=None), "y contains inf values"
         n_genes_without_nan = y.shape[0]
         if n_genes_orig != n_genes_without_nan:
-            self.log_warning(
-                f"{n_genes_orig - n_genes_without_nan} genes with missing values have been removed"
-            )
+            # self.log_warning(
+            #     f"{n_genes_orig - n_genes_without_nan} genes with missing values have been removed"
+            # )
+            print(f"{n_genes_orig - n_genes_without_nan} genes with missing values have been removed")
 
         # make sure data is aligned
         n_genes_orig_phenotype = y.shape[0]

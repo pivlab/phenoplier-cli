@@ -83,19 +83,19 @@ def check_config_files(dir: str) -> None:
 
 
 def regression(
-        input_file:             Annotated[Path, Args.INPUT_FILE.value],
-        output_file:            Annotated[Path, Args.OUTPUT_FILE.value],
-        project_dir:            Annotated[str, Args.PROJECT_DIR.value] = settings.CURRENT_DIR,
-        model:                  Annotated[REGRESSION_MODEL, Args.MODEL.value] = REGRESSION_MODEL.gls,
-        gene_corr_file:         Annotated[Optional[Path], Args.GENE_CORR_FILE.value] = None,
-        gene_corr_mode:         Annotated[GENE_CORREALATION_MODE, Args.GENE_CORR_MODE.value] = GENE_CORREALATION_MODE.sub,
-        dup_genes_action:       Annotated[DUP_GENE_ACTIONS, Args.DUP_GENES_ACTION.value] = DUP_GENE_ACTIONS.no_action,
-        covars:                 Annotated[Optional[str], Args.COVARS.value] = None,
-        cohort_metadata_dir:    Annotated[Optional[str], Args.COHORT_METADATA_DIR.value] = None,
-        lv_list:                Annotated[Optional[str], Args.LV_LIST.value] = None,
-        lv_model_file:          Annotated[Optional[Path], Args.LV_MODEL_FILE.value] = None,
-        batch_id:               Annotated[Optional[int], Args.BATCH_ID.value] = None,
-        batch_n_splits:         Annotated[Optional[int], Args.BATCH_N_SPLITS.value] = None,
+        input_file: Annotated[Path, Args.INPUT_FILE.value],
+        output_file: Annotated[Path, Args.OUTPUT_FILE.value],
+        project_dir: Annotated[str, Args.PROJECT_DIR.value] = settings.CURRENT_DIR,
+        model: Annotated[REGRESSION_MODEL, Args.MODEL.value] = REGRESSION_MODEL.gls,
+        gene_corr_file: Annotated[Optional[Path], Args.GENE_CORR_FILE.value] = None,
+        gene_corr_mode: Annotated[GENE_CORREALATION_MODE, Args.GENE_CORR_MODE.value] = GENE_CORREALATION_MODE.sub,
+        dup_genes_action: Annotated[DUP_GENE_ACTIONS, Args.DUP_GENES_ACTION.value] = DUP_GENE_ACTIONS.no_action,
+        covars: Annotated[Optional[str], Args.COVARS.value] = None,
+        cohort_metadata_dir: Annotated[Optional[str], Args.COHORT_METADATA_DIR.value] = None,
+        lv_list: Annotated[Optional[str], Args.LV_LIST.value] = None,
+        lv_model_file: Annotated[Optional[Path], Args.LV_MODEL_FILE.value] = None,
+        batch_id: Annotated[Optional[int], Args.BATCH_ID.value] = None,
+        batch_n_splits: Annotated[Optional[int], Args.BATCH_N_SPLITS.value] = None,
 ) -> None:
     """
     Run the Generalized Least Squares (GLS) model by default. Note that you need to run "phenoplier init" first to set up the environment.
@@ -218,7 +218,11 @@ def regression(
     # logger.info(
     #     f"p-values statistics: min={min_pval:.1e} | mean={mean_pval:.1e} | max={max_pval:.1e} | # missing={n_missing} ({(n_missing / n) * 100:.1f}%)"
     # )
-    print(f"p-values statistics: min={min_pval:.1e} | mean={mean_pval:.1e} | max={max_pval:.1e} | # missing={n_missing} ({(n_missing / n) * 100:.1f}%)")
+    print(f"p-values statistics: "
+          f"min={min_pval:.1e} | "
+          f"mean={mean_pval:.1e} | "
+          f"max={max_pval:.1e} | "
+          f"# missing={n_missing} ({(n_missing / n) * 100:.1f}%)")
 
     if min_pval < 0.0:
         # logger.warning("Some p-values are smaller than 0.0")
@@ -303,7 +307,8 @@ def regression(
                     # logger.error(
                     #     "There are duplicated gene names in cohort metadat files, --dup-gene-action must be specified"
                     # )
-                    print("There are duplicated gene names in cohort metadat files, --dup-gene-action must be specified")
+                    print(
+                        "There are duplicated gene names in cohort metadat files, --dup-gene-action must be specified")
                     sys.exit(1)
 
                 cohort_gene_tissues = cohort_gene_tissues.loc[
