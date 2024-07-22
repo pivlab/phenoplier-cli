@@ -255,32 +255,29 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_keep_last
     # run keep-first first, and then check that results are not the same with keep-last
 
     # with keep-first
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-repeated_gene_names.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model.pkl"),
             "--dup-genes-action",
             "keep-first",
             "-l",
-            "LV1",
-            "LV5",
+            "LV1 LV5",
             "-g",
             str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
     assert r_output is not None
-    print(r_output)
-    assert r.exit_code == 0
+    assert r.exit_code == 0, r_output
 
     assert output_file.exists()
     output_data = pd.read_csv(output_file, sep="\t")
@@ -289,26 +286,24 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_keep_last
     output_file.unlink()
 
     # with keep-last
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-repeated_gene_names.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model.pkl"),
             "--dup-genes-action",
             "keep-last",
             "-l",
-            "LV1",
-            "LV5",
+            "LV1 LV5",
             "-g",
             str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -352,7 +347,7 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_remove_al
             str(DATA_DIR / "random.pheno0-smultixcan-repeated_gene_names.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model.pkl"),
             "--dup-genes-action",
             "keep-last",
@@ -362,8 +357,7 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_remove_al
             "-g",
             str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -386,7 +380,7 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_remove_al
             str(DATA_DIR / "random.pheno0-smultixcan-repeated_gene_names.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model.pkl"),
             "--dup-genes-action",
             "remove-all",
@@ -396,8 +390,7 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_remove_al
             "-g",
             str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -443,8 +436,7 @@ def test_gls_cli_single_smultixcan_input_full_subset_of_lvs(output_file):
             "-g",
             str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -490,8 +482,7 @@ def test_gls_cli_single_smultixcan_input_full_subset_of_lvs_none_exist_in_models
             "LV2b",
             "LV3c",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -513,13 +504,12 @@ def test_gls_cli_single_smultixcan_input_full_all_lvs_in_model_file(output_file)
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model.pkl"),
             "-g",
             str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -560,13 +550,12 @@ def test_gls_cli_single_smultixcan_input_full_specify_gene_corrs(output_file):
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model.pkl"),
             "-g",
             str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -593,13 +582,12 @@ def test_gls_cli_single_smultixcan_input_full_specify_gene_corrs(output_file):
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model.pkl"),
             "-g",
             str(DATA_DIR / "sample-gene_corrs-1000g-en.pkl"),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -638,13 +626,12 @@ def test_gls_cli_single_smultixcan_input_debug_use_ols(output_file):
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model.pkl"),
             "-g",
             str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -671,12 +658,11 @@ def test_gls_cli_single_smultixcan_input_debug_use_ols(output_file):
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model.pkl"),
             "--debug-use-ols",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -717,14 +703,13 @@ def test_gls_cli_single_smultixcan_input_debug_use_ols_incompatible_arguments(
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model.pkl"),
             "-g",
             str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
             "--debug-use-ols",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -749,7 +734,7 @@ def test_gls_cli_use_incompatible_parameters_batch_and_lv_list(output_file):
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model.pkl"),
             "-l",
             "LV1a",
@@ -760,8 +745,7 @@ def test_gls_cli_use_incompatible_parameters_batch_and_lv_list(output_file):
             "--batch-n-splits",
             "3",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -783,13 +767,12 @@ def test_gls_cli_batch_parameters_batch_n_splits_missing(output_file):
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model.pkl"),
             "--batch-id",
             "1",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -811,13 +794,12 @@ def test_gls_cli_batch_parameters_batch_id_missing(output_file):
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model.pkl"),
             "--batch-n-splits",
             "3",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -839,15 +821,14 @@ def test_gls_cli_batch_parameters_batch_id_value_invalid(output_file):
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model.pkl"),
             "--batch-id",
             "a",
             "--batch-n-splits",
             "3",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -867,15 +848,14 @@ def test_gls_cli_batch_parameters_batch_id_value_invalid(output_file):
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model.pkl"),
             "--batch-id",
             "-1",
             "--batch-n-splits",
             "3",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -895,15 +875,14 @@ def test_gls_cli_batch_parameters_batch_id_value_invalid(output_file):
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model.pkl"),
             "--batch-id",
             "0",
             "--batch-n-splits",
             "3",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -923,15 +902,14 @@ def test_gls_cli_batch_parameters_batch_id_value_invalid(output_file):
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model.pkl"),
             "--batch-id",
             "4",
             "--batch-n-splits",
             "3",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -953,15 +931,14 @@ def test_gls_cli_batch_parameters_batch_n_splits_value_invalid(output_file):
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model.pkl"),
             "--batch-id",
             "1",
             "--batch-n-splits",
             "a",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -981,15 +958,14 @@ def test_gls_cli_batch_parameters_batch_n_splits_value_invalid(output_file):
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model.pkl"),
             "--batch-id",
             "3",
             "--batch-n-splits",
             "0",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -1009,15 +985,14 @@ def test_gls_cli_batch_parameters_batch_n_splits_value_invalid(output_file):
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model.pkl"),
             "--batch-id",
             "3",
             "--batch-n-splits",
             "-2",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -1037,15 +1012,14 @@ def test_gls_cli_batch_parameters_batch_n_splits_value_invalid(output_file):
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model.pkl"),
             "--batch-id",
             "3",
             "--batch-n-splits",
             "6",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -1070,7 +1044,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits(output_f
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model.pkl"),
             "--batch-id",
             "1",
@@ -1079,8 +1053,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits(output_f
             "-g",
             str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -1113,7 +1086,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits(output_f
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model.pkl"),
             "--batch-id",
             "2",
@@ -1122,8 +1095,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits(output_f
             "-g",
             str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -1156,7 +1128,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits(output_f
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model.pkl"),
             "--batch-id",
             "3",
@@ -1165,8 +1137,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits(output_f
             "-g",
             str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -1229,7 +1200,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model.pkl"),
             "--batch-id",
             "1",
@@ -1238,8 +1209,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
             "-g",
             str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -1270,7 +1240,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model.pkl"),
             "--batch-id",
             "2",
@@ -1279,8 +1249,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
             "-g",
             str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -1311,7 +1280,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model.pkl"),
             "--batch-id",
             "3",
@@ -1320,8 +1289,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
             "-g",
             str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -1352,7 +1320,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model.pkl"),
             "--batch-id",
             "4",
@@ -1361,8 +1329,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
             "-g",
             str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -1393,7 +1360,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model.pkl"),
             "--batch-id",
             "5",
@@ -1402,8 +1369,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
             "-g",
             str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -1437,7 +1403,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_is_1(
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model.pkl"),
             "--batch-id",
             "1",
@@ -1446,8 +1412,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_is_1(
             "-g",
             str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -1488,7 +1453,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_problema
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model-n9.pkl"),
             "--batch-id",
             "1",
@@ -1497,8 +1462,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_problema
             "-g",
             str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -1531,7 +1495,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_problema
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model-n9.pkl"),
             "--batch-id",
             "2",
@@ -1540,8 +1504,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_problema
             "-g",
             str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -1573,7 +1536,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_problema
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model-n9.pkl"),
             "--batch-id",
             "3",
@@ -1582,8 +1545,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_problema
             "-g",
             str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -1615,7 +1577,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_problema
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model-n9.pkl"),
             "--batch-id",
             "4",
@@ -1624,8 +1586,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_problema
             "-g",
             str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -1666,8 +1627,7 @@ def test_gls_cli_use_covar_gene_size(output_file):
             "-g",
             str(DATA_DIR / "sample-gene_corrs-1000g-mashr.pkl"),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -1709,8 +1669,7 @@ def test_gls_cli_use_covar_gene_size(output_file):
             "--covars",
             "gene_size",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -1769,8 +1728,7 @@ def test_gls_cli_use_covar_gene_density(output_file):
             "-g",
             str(DATA_DIR / "sample-gene_corrs-1000g-mashr.pkl"),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -1812,8 +1770,7 @@ def test_gls_cli_use_covar_gene_density(output_file):
             "--covars",
             "gene_density",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -1875,8 +1832,7 @@ def test_gls_cli_use_covar_gene_n_snps_used_without_cohort_metadata_dir_specifie
             "--covars",
             "gene_n_snps_used",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     assert r.exit_code == 1
@@ -1905,8 +1861,7 @@ def test_gls_cli_use_covar_gene_n_snps_used(output_file):
             "-g",
             str(DATA_DIR / "sample-gene_corrs-1000g-mashr.pkl"),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -1952,8 +1907,7 @@ def test_gls_cli_use_covar_gene_n_snps_used(output_file):
             "--dup-genes-action",
             "keep-first",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -2012,8 +1966,7 @@ def test_gls_cli_use_covar_gene_n_snps_used_density(output_file):
             "-g",
             str(DATA_DIR / "sample-gene_corrs-1000g-mashr.pkl"),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -2059,8 +2012,7 @@ def test_gls_cli_use_covar_gene_n_snps_used_density(output_file):
             "--dup-genes-action",
             "keep-first",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -2119,8 +2071,7 @@ def test_gls_cli_use_covar_gene_size_and_its_log(output_file):
             "-g",
             str(DATA_DIR / "sample-gene_corrs-1000g-mashr.pkl"),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -2166,8 +2117,7 @@ def test_gls_cli_use_covar_gene_size_and_its_log(output_file):
             "--covars",
             "gene_size",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -2216,8 +2166,7 @@ def test_gls_cli_use_covar_gene_size_and_its_log(output_file):
             "gene_size",
             "gene_size_log",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -2288,8 +2237,7 @@ def test_gls_cli_use_covar_gene_density_and_its_log(output_file):
             "-g",
             str(DATA_DIR / "sample-gene_corrs-1000g-mashr.pkl"),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -2335,8 +2283,7 @@ def test_gls_cli_use_covar_gene_density_and_its_log(output_file):
             "--covars",
             "gene_density",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -2385,8 +2332,7 @@ def test_gls_cli_use_covar_gene_density_and_its_log(output_file):
             "gene_density",
             "gene_density_log",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -2457,8 +2403,7 @@ def test_gls_cli_use_covar_gene_n_snps_used_and_its_log(output_file):
             "-g",
             str(DATA_DIR / "sample-gene_corrs-1000g-mashr.pkl"),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -2508,8 +2453,7 @@ def test_gls_cli_use_covar_gene_n_snps_used_and_its_log(output_file):
             "--dup-genes-action",
             "keep-first",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -2562,8 +2506,7 @@ def test_gls_cli_use_covar_gene_n_snps_used_and_its_log(output_file):
             "--dup-genes-action",
             "keep-first",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -2634,8 +2577,7 @@ def test_gls_cli_use_covar_gene_n_snps_used_density_and_its_log(output_file):
             "-g",
             str(DATA_DIR / "sample-gene_corrs-1000g-mashr.pkl"),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -2685,8 +2627,7 @@ def test_gls_cli_use_covar_gene_n_snps_used_density_and_its_log(output_file):
             "--dup-genes-action",
             "keep-first",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -2739,8 +2680,7 @@ def test_gls_cli_use_covar_gene_n_snps_used_density_and_its_log(output_file):
             "--dup-genes-action",
             "keep-first",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -2815,8 +2755,7 @@ def test_gls_cli_use_covar_log_without_specifying_original_covariate(
             "gene_size_log",
             "gene_density_log",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -2845,8 +2784,7 @@ def test_gls_cli_use_covar_all(output_file):
             "-g",
             str(DATA_DIR / "sample-gene_corrs-1000g-mashr.pkl"),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -2892,8 +2830,7 @@ def test_gls_cli_use_covar_all(output_file):
             "--covars",
             "gene_density",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -2941,8 +2878,7 @@ def test_gls_cli_use_covar_all(output_file):
             "--covars",
             "gene_size",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -2994,8 +2930,7 @@ def test_gls_cli_use_covar_all(output_file):
             "--dup-genes-action",
             "keep-first",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -3076,8 +3011,7 @@ def test_gls_cli_use_covar_all_vs_all_specified_separately(output_file):
             "-g",
             str(DATA_DIR / "sample-gene_corrs-1000g-mashr.pkl"),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -3134,8 +3068,7 @@ def test_gls_cli_use_covar_all_vs_all_specified_separately(output_file):
             "--dup-genes-action",
             "keep-first",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -3186,8 +3119,7 @@ def test_gls_cli_use_covar_all_vs_all_specified_separately(output_file):
             "--dup-genes-action",
             "keep-first",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -3269,8 +3201,7 @@ def test_gls_cli_use_covar_gene_size_and_gene_density_lv45_random_phenotype_6(
             "gene_size",
             "gene_density",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -3344,8 +3275,7 @@ def test_gls_cli_use_covar_gene_size_and_gene_density_lv455_random_phenotype_6(
             "gene_size",
             "gene_density",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -3421,8 +3351,7 @@ def test_gls_cli_use_covar_gene_size_and_gene_density_lv45_and_lv455_random_phen
             "gene_size",
             "gene_density",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -3488,12 +3417,11 @@ def test_gls_cli_use_covar_debug_use_ols_vs_ols_without_covars(output_file):
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model.pkl"),
             "--debug-use-ols",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -3519,7 +3447,7 @@ def test_gls_cli_use_covar_debug_use_ols_vs_ols_without_covars(output_file):
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model.pkl"),
             "--covars",
             "all",
@@ -3529,8 +3457,7 @@ def test_gls_cli_use_covar_debug_use_ols_vs_ols_without_covars(output_file):
             "--cohort-metadata-dir",
             str(DATA_DIR / "cohort_1000g_eur_metadata"),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -3577,7 +3504,7 @@ def test_gls_cli_use_covar_debug_use_ols_vs_gls(output_file):
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model.pkl"),
             "-g",
             str(DATA_DIR / "sample-gene_corrs-1000g-mashr.pkl"),
@@ -3588,8 +3515,7 @@ def test_gls_cli_use_covar_debug_use_ols_vs_gls(output_file):
             "--cohort-metadata-dir",
             str(DATA_DIR / "cohort_1000g_eur_metadata"),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
@@ -3620,7 +3546,7 @@ def test_gls_cli_use_covar_debug_use_ols_vs_gls(output_file):
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
             output_file,
-            "-p",
+            "-f",
             str(DATA_DIR / "sample-lv-model.pkl"),
             "--covars",
             "all",
@@ -3630,8 +3556,7 @@ def test_gls_cli_use_covar_debug_use_ols_vs_gls(output_file):
             str(DATA_DIR / "cohort_1000g_eur_metadata"),
             "--debug-use-ols",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+
     )
     assert r is not None
     r_output = r.stdout.replace(os.linesep, " ")
