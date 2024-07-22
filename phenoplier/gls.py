@@ -51,6 +51,7 @@ class GLSPhenoplier(object):
             If a Logger instance is provided, then the logger is used for everything (warnings and log messages).
             Default: "warnings_only"
     """
+    gene_corrs_file_path: Path | None
 
     def __init__(
             self,
@@ -397,7 +398,8 @@ class GLSPhenoplier(object):
 
         assert not data.isna().any(axis=None), "Data contains NaN"
 
-        self.log_info(f"Final number of genes in training data: {data.shape[0]}")
+        # self.log_info(f"Final number of genes in training data: {data.shape[0]}")
+        print(f"Final number of genes in training data: {data.shape[0]}")
 
         # create GLS model and fit according to arguments
         if not self.debug_use_ols and self.use_own_implementation:
@@ -520,13 +522,15 @@ class GLSPhenoplier(object):
         else:
             # here I use models from statsmodels
             if gene_corrs is not None:
-                self.log_info("Using a Generalized Least Squares (GLS) model")
+                # self.log_info("Using a Generalized Least Squares (GLS) model")
+                print("Using a Generalized Least Squares (GLS) model")
                 gls_model = sm.GLS(
                     data[phenotype_col], data[predictor_cols], sigma=gene_corrs
                 )
                 gls_results = gls_model.fit()
             else:
-                self.log_info("Using a Ordinary Least Squares (OLS) model")
+                # self.log_info("Using a Ordinary Least Squares (OLS) model")
+                print("Using a Ordinary Least Squares (OLS) model")
                 gls_model = sm.OLS(data[phenotype_col], data[predictor_cols])
                 gls_results = gls_model.fit()
 

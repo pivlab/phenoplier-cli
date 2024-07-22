@@ -64,12 +64,12 @@ class DUP_GENE_ACTIONS(StrEnum):
     no_action = "no-action"
 
 
-class REGRESSION_MODEL(str, Enum):
+class REGRESSION_MODEL(StrEnum):
     gls = "gls"
     ols = "ols"
 
 
-class GENE_CORREALATION_MODE(str, Enum):
+class GENE_CORREALATION_MODE(StrEnum):
     sub = "sub"
     full = "full"
 
@@ -88,7 +88,7 @@ def regression(
         project_dir: Annotated[str, Args.PROJECT_DIR.value] = settings.CURRENT_DIR,
         model: Annotated[REGRESSION_MODEL, Args.MODEL.value] = REGRESSION_MODEL.gls,
         gene_corr_file: Annotated[Optional[Path], Args.GENE_CORR_FILE.value] = None,
-        gene_corr_mode: Annotated[GENE_CORREALATION_MODE, Args.GENE_CORR_MODE.value] = GENE_CORREALATION_MODE.sub,
+        gene_corr_mode: Annotated[GENE_CORREALATION_MODE, Args.GENE_CORR_MODE.value] = GENE_CORREALATION_MODE.full,
         dup_genes_action: Annotated[DUP_GENE_ACTIONS, Args.DUP_GENES_ACTION.value] = DUP_GENE_ACTIONS.no_action,
         covars: Annotated[Optional[str], Args.COVARS.value] = None,
         cohort_metadata_dir: Annotated[Optional[str], Args.COHORT_METADATA_DIR.value] = None,
@@ -424,8 +424,10 @@ def regression(
         # logger.error("No LVs were selected")
         sys.exit(1)
 
+    print(model)
+    print(gene_corr_mode)
     # create model object
-    model = GLSPhenoplier(
+    gls_model = GLSPhenoplier(
         gene_corrs_file_path=gene_corr_file,
         debug_use_ols=True if model == "ols" else False,
         debug_use_sub_gene_corr=True if gene_corr_mode == "sub" else False,
@@ -442,13 +444,13 @@ def regression(
 
         # show warnings or logs only in the first run
         if lv_idx == 0:
-            model.set_logger(logger)
+            gls_model.set_logger(logger)
         elif lv_idx == 1:
-            model.set_logger(None)
+            gls_model.set_logger(None)
 
-        model.fit_named(lv_code, final_data)
+        gls_model.fit_named(lv_code, final_data)
 
-        res = model.results
+        res = gls_model.results
 
         results.append(
             {
