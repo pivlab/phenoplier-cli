@@ -103,24 +103,26 @@ def regression(
 
     def check_batch_args():
         if lv_list and (batch_id is not None or batch_n_splits is not None):
-            raise typer.BadParameter("Incompatible parameters: LV list and batches cannot be used together")
+            print(err.INCOMPATIBLE_BATCH_ID_AND_LV_LIST)
+            exit(2)
 
         if (batch_id is not None and batch_n_splits is None) or (
                 batch_id is None and batch_n_splits is not None
         ):
-            raise typer.BadParameter(
-                "Both --batch-id and --batch-n-splits have to be provided (not only one of them)"
-            )
+            print(err.EXPECT_BOTH_BATCH_ARGS)
+            exit(2)
 
         if batch_id is not None and batch_id < 1:
-            raise typer.BadParameter("--batch-id must be >= 1")
+            print(err.EXPECT_BATCH_ID_GT_ZERO)
+            exit(2)
 
         if (
                 batch_id is not None
                 and batch_n_splits is not None
                 and batch_id > batch_n_splits
         ):
-            typer.BadParameter("--batch-id must be <= --batch-n-splits")
+            print(err.INCOMPATIBLE_BATCH_ARGS)
+            exit(2)
 
     # Todo: Use enums to store echo messages, can be reused in tests
     def check_output_file():
@@ -380,10 +382,7 @@ def regression(
         full_lvs_list = GLSPhenoplier._get_lv_weights().columns.tolist()
 
     if batch_n_splits is not None and batch_n_splits > len(full_lvs_list):
-        print(
-            f"--batch-n-splits cannot be greater than LVs in the model "
-            f"({len(full_lvs_list)} LVs)"
-        )
+        print(err.EXPECT_BATCH_N_SPLITS_LT_LVS)
         # logger.error(
         #     f"--batch-n-splits cannot be greater than LVs in the model "
         #     f"({len(full_lvs_list)} LVs)"

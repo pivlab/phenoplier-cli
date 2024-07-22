@@ -746,9 +746,7 @@ def test_gls_cli_use_incompatible_parameters_batch_and_lv_list(output_file):
             "-f",
             str(DATA_DIR / "sample-lv-model.pkl"),
             "-l",
-            "LV1a",
-            "LV2b",
-            "LV3c",
+            "LV1a LV2b LV3c",
             "--batch-id",
             "1",
             "--batch-n-splits",
@@ -763,7 +761,7 @@ def test_gls_cli_use_incompatible_parameters_batch_and_lv_list(output_file):
     assert r.exit_code == 2
     assert r_output is not None
     assert len(r_output) > 1, r_output
-    assert "Incompatible parameters" in r_output
+    assert err.INCOMPATIBLE_BATCH_ID_AND_LV_LIST in r_output
 
 
 def test_gls_cli_batch_parameters_batch_n_splits_missing(output_file):
@@ -791,7 +789,7 @@ def test_gls_cli_batch_parameters_batch_n_splits_missing(output_file):
     assert r.exit_code == 2
     assert r_output is not None
     assert len(r_output) > 1, r_output
-    assert "Both --batch-id and --batch-n-splits" in r_output
+    assert err.EXPECT_BOTH_BATCH_ARGS in r_output
 
 
 def test_gls_cli_batch_parameters_batch_id_missing(output_file):
@@ -849,7 +847,7 @@ def test_gls_cli_batch_parameters_batch_id_value_invalid(output_file):
     assert r.exit_code == 2
     assert r_output is not None
     assert len(r_output) > 1, r_output
-    assert "error: argument --batch-id" in r_output
+    assert "Error: Invalid value for '--batch-id'" in r_output
 
     # batch id is negative
     r = runner.invoke(
@@ -877,7 +875,7 @@ def test_gls_cli_batch_parameters_batch_id_value_invalid(output_file):
     assert r.exit_code == 2
     assert r_output is not None
     assert len(r_output) > 1, r_output
-    assert "ERROR: --batch-id must be" in r_output
+    assert err.EXPECT_BATCH_ID_GT_ZERO  in r_output
 
     # batch id is zero
     r = runner.invoke(
@@ -905,7 +903,7 @@ def test_gls_cli_batch_parameters_batch_id_value_invalid(output_file):
     assert r.exit_code == 2
     assert r_output is not None
     assert len(r_output) > 1, r_output
-    assert "ERROR: --batch-id must be" in r_output
+    assert err.EXPECT_BATCH_ID_GT_ZERO  in r_output
 
     # batch id is larger than --batch-n-splits
     r = runner.invoke(
@@ -933,7 +931,7 @@ def test_gls_cli_batch_parameters_batch_id_value_invalid(output_file):
     assert r.exit_code == 2
     assert r_output is not None
     assert len(r_output) > 1, r_output
-    assert "ERROR: --batch-id must be <= --batch-n-splits" in r_output
+    assert err.INCOMPATIBLE_BATCH_ARGS in r_output
 
 
 def test_gls_cli_batch_parameters_batch_n_splits_value_invalid(output_file):
@@ -963,7 +961,7 @@ def test_gls_cli_batch_parameters_batch_n_splits_value_invalid(output_file):
     assert r.exit_code == 2
     assert r_output is not None
     assert len(r_output) > 1, r_output
-    assert "error: argument --batch-n-splits" in r_output
+    assert "Error: Invalid value for '--batch-n-splits'" in r_output
 
     # batch n splits is smaller than batch id
     r = runner.invoke(
@@ -991,7 +989,7 @@ def test_gls_cli_batch_parameters_batch_n_splits_value_invalid(output_file):
     assert r.exit_code == 2
     assert r_output is not None
     assert len(r_output) > 1, r_output
-    assert "ERROR: --batch-id must be <= --batch-n-splits" in r_output
+    assert err.INCOMPATIBLE_BATCH_ARGS in r_output
 
     # batch n splits is smaller than batch id
     r = runner.invoke(
@@ -1019,7 +1017,7 @@ def test_gls_cli_batch_parameters_batch_n_splits_value_invalid(output_file):
     assert r.exit_code == 2
     assert r_output is not None
     assert len(r_output) > 1, r_output
-    assert "ERROR: --batch-id must be <= --batch-n-splits" in r_output
+    assert err.INCOMPATIBLE_BATCH_ARGS in r_output
 
     # batch n splits larger than LVs in the model
     r = runner.invoke(
@@ -1037,6 +1035,8 @@ def test_gls_cli_batch_parameters_batch_n_splits_value_invalid(output_file):
             "3",
             "--batch-n-splits",
             "6",
+            "--model",
+            "ols"
         ],
 
     )
@@ -1048,7 +1048,7 @@ def test_gls_cli_batch_parameters_batch_n_splits_value_invalid(output_file):
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert (
-            "ERROR: --batch-n-splits cannot be greater than LVs in the model (5 LVs)"
+            err.EXPECT_BATCH_N_SPLITS_LT_LVS
             in r_output
     )
 
