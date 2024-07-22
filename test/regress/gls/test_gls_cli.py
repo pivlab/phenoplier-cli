@@ -86,7 +86,7 @@ def test_gls_cli_input_file_does_not_exist(output_file):
     )
     assert r is not None
     assert r.exit_code == 2
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Error" in r_output
@@ -115,7 +115,7 @@ def test_gls_cli_output_file_does_exist(output_file):
         ],
     )
     assert r.exit_code == 0
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     assert "Skipping, output file exists" in r_output
     import os
     assert os.stat(output_file).st_size == 0, "Output file size is not empty"
@@ -138,7 +138,7 @@ def test_gls_cli_parent_of_output_file_does_not_exist():
         ],
     )
     assert r.exit_code == 1
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     assert "Error: parent directory of output file does not exist" in r_output
     assert not output_file.exists()
 
@@ -159,7 +159,7 @@ def test_gls_cli_single_smultixcan_no_gene_name_column(output_file):
     )
     assert r is not None
     assert r.exit_code == 1, r.stdout
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert info.LOADING_INPUT in r_output
@@ -182,7 +182,7 @@ def test_gls_cli_single_smultixcan_no_pvalue_column(output_file):
     )
     assert r is not None
     assert r.exit_code == 1
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert info.LOADING_INPUT in r_output
@@ -207,7 +207,7 @@ def test_gls_cli_single_smultixcan_repeated_gene_names(output_file):
     )
     assert r is not None
     assert r.exit_code == 1, r.stdout
-    r_output = r.stdout.replace(os.linesep, " ").replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "").replace(os.linesep, " ")
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert info.LOADING_INPUT in r_output
@@ -235,7 +235,7 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_keep_firs
         ],
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     assert r_output is not None
 
     print(r_output)
@@ -275,7 +275,7 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_keep_last
         ],
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     assert r_output is not None
     assert r.exit_code == 0, r_output
 
@@ -306,7 +306,7 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_keep_last
         ],
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     assert r_output is not None
 
     print(r_output)
@@ -360,7 +360,7 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_remove_al
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     assert r_output is not None
     print(r_output)
     assert r.exit_code == 0
@@ -393,7 +393,7 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_remove_al
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     assert r_output is not None
 
     print(r_output)
@@ -438,7 +438,7 @@ def test_gls_cli_single_smultixcan_input_full_subset_of_lvs(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -448,7 +448,7 @@ def test_gls_cli_single_smultixcan_input_full_subset_of_lvs(output_file):
     assert "Input file has 54 genes" in r_output
     assert "3 genes with missing values have been removed" in r_output
     assert (
-            "p-values statistics: min=3.2e-05 | mean=2.2e-03 | max=6.3e-03 | # missing=3  (5.6%)"
+            "p-values statistics: min=3.2e-05 | mean=2.2e-03 | max=6.3e-03 | # missing=3 (5.6%)"
             in r_output
     )
 
@@ -478,14 +478,14 @@ def test_gls_cli_single_smultixcan_input_full_subset_of_lvs_none_exist_in_models
             "-o",
             output_file,
             "-l",
-            "LV1a",
-            "LV2b",
-            "LV3c",
+            "LV1a LV2b LV3c",
+            "--model",
+            "ols"
         ],
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 1
@@ -513,13 +513,13 @@ def test_gls_cli_single_smultixcan_input_full_all_lvs_in_model_file(output_file)
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
     assert r_output is not None
     assert len(r_output) > 1, r_output
-    assert "Reading input file" in r_output
+    assert info.LOADING_INPUT in r_output
     assert "Input file has 54 genes" in r_output
     assert (
             "p-values statistics: min=3.2e-05 | mean=2.2e-03 | max=6.3e-03 | # missing=3 (5.6%)"
@@ -560,7 +560,7 @@ def test_gls_cli_single_smultixcan_input_full_specify_gene_corrs(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -593,7 +593,7 @@ def test_gls_cli_single_smultixcan_input_full_specify_gene_corrs(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -638,7 +638,7 @@ def test_gls_cli_single_smultixcan_input_debug_use_ols(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -670,7 +670,7 @@ def test_gls_cli_single_smultixcan_input_debug_use_ols(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -718,7 +718,7 @@ def test_gls_cli_single_smultixcan_input_debug_use_ols_incompatible_arguments(
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 1
@@ -755,7 +755,7 @@ def test_gls_cli_use_incompatible_parameters_batch_and_lv_list(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 2
@@ -783,7 +783,7 @@ def test_gls_cli_batch_parameters_batch_n_splits_missing(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 2
@@ -811,7 +811,7 @@ def test_gls_cli_batch_parameters_batch_id_missing(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 2
@@ -841,7 +841,7 @@ def test_gls_cli_batch_parameters_batch_id_value_invalid(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 2
@@ -869,7 +869,7 @@ def test_gls_cli_batch_parameters_batch_id_value_invalid(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 2
@@ -897,7 +897,7 @@ def test_gls_cli_batch_parameters_batch_id_value_invalid(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 2
@@ -925,7 +925,7 @@ def test_gls_cli_batch_parameters_batch_id_value_invalid(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 2
@@ -955,7 +955,7 @@ def test_gls_cli_batch_parameters_batch_n_splits_value_invalid(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 2
@@ -983,7 +983,7 @@ def test_gls_cli_batch_parameters_batch_n_splits_value_invalid(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 2
@@ -1011,7 +1011,7 @@ def test_gls_cli_batch_parameters_batch_n_splits_value_invalid(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 2
@@ -1039,7 +1039,7 @@ def test_gls_cli_batch_parameters_batch_n_splits_value_invalid(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 2
@@ -1074,7 +1074,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits(output_f
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -1117,7 +1117,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits(output_f
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -1160,7 +1160,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits(output_f
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -1233,7 +1233,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -1274,7 +1274,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -1315,7 +1315,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -1356,7 +1356,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -1397,7 +1397,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -1441,7 +1441,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_is_1(
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -1492,7 +1492,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_problema
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -1535,7 +1535,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_problema
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -1577,7 +1577,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_problema
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -1619,7 +1619,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_problema
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -1661,7 +1661,7 @@ def test_gls_cli_use_covar_gene_size(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -1704,7 +1704,7 @@ def test_gls_cli_use_covar_gene_size(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -1764,7 +1764,7 @@ def test_gls_cli_use_covar_gene_density(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -1807,7 +1807,7 @@ def test_gls_cli_use_covar_gene_density(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -1871,7 +1871,7 @@ def test_gls_cli_use_covar_gene_n_snps_used_without_cohort_metadata_dir_specifie
     )
     assert r is not None
     assert r.exit_code == 1
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     assert r_output is not None
     assert len(r_output) > 1, r_output
     print(r_output)
@@ -1900,7 +1900,7 @@ def test_gls_cli_use_covar_gene_n_snps_used(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -1947,7 +1947,7 @@ def test_gls_cli_use_covar_gene_n_snps_used(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -2007,7 +2007,7 @@ def test_gls_cli_use_covar_gene_n_snps_used_density(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -2054,7 +2054,7 @@ def test_gls_cli_use_covar_gene_n_snps_used_density(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -2114,7 +2114,7 @@ def test_gls_cli_use_covar_gene_size_and_its_log(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -2161,7 +2161,7 @@ def test_gls_cli_use_covar_gene_size_and_its_log(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -2211,7 +2211,7 @@ def test_gls_cli_use_covar_gene_size_and_its_log(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -2283,7 +2283,7 @@ def test_gls_cli_use_covar_gene_density_and_its_log(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -2330,7 +2330,7 @@ def test_gls_cli_use_covar_gene_density_and_its_log(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -2380,7 +2380,7 @@ def test_gls_cli_use_covar_gene_density_and_its_log(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -2452,7 +2452,7 @@ def test_gls_cli_use_covar_gene_n_snps_used_and_its_log(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -2503,7 +2503,7 @@ def test_gls_cli_use_covar_gene_n_snps_used_and_its_log(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -2557,7 +2557,7 @@ def test_gls_cli_use_covar_gene_n_snps_used_and_its_log(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -2629,7 +2629,7 @@ def test_gls_cli_use_covar_gene_n_snps_used_density_and_its_log(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -2680,7 +2680,7 @@ def test_gls_cli_use_covar_gene_n_snps_used_density_and_its_log(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -2734,7 +2734,7 @@ def test_gls_cli_use_covar_gene_n_snps_used_density_and_its_log(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -2810,7 +2810,7 @@ def test_gls_cli_use_covar_log_without_specifying_original_covariate(
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     assert r_output is not None
     assert len(r_output) > 1, r_output
     print(r_output)
@@ -2840,7 +2840,7 @@ def test_gls_cli_use_covar_all(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -2887,7 +2887,7 @@ def test_gls_cli_use_covar_all(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -2936,7 +2936,7 @@ def test_gls_cli_use_covar_all(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -2989,7 +2989,7 @@ def test_gls_cli_use_covar_all(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -3071,7 +3071,7 @@ def test_gls_cli_use_covar_all_vs_all_specified_separately(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -3129,7 +3129,7 @@ def test_gls_cli_use_covar_all_vs_all_specified_separately(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -3181,7 +3181,7 @@ def test_gls_cli_use_covar_all_vs_all_specified_separately(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -3264,7 +3264,7 @@ def test_gls_cli_use_covar_gene_size_and_gene_density_lv45_random_phenotype_6(
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -3339,7 +3339,7 @@ def test_gls_cli_use_covar_gene_size_and_gene_density_lv455_random_phenotype_6(
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -3416,7 +3416,7 @@ def test_gls_cli_use_covar_gene_size_and_gene_density_lv45_and_lv455_random_phen
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -3487,7 +3487,7 @@ def test_gls_cli_use_covar_debug_use_ols_vs_ols_without_covars(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -3524,7 +3524,7 @@ def test_gls_cli_use_covar_debug_use_ols_vs_ols_without_covars(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -3583,7 +3583,7 @@ def test_gls_cli_use_covar_debug_use_ols_vs_gls(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
@@ -3625,7 +3625,7 @@ def test_gls_cli_use_covar_debug_use_ols_vs_gls(output_file):
 
     )
     assert r is not None
-    r_output = r.stdout.replace(os.linesep, " ")
+    r_output = r.stdout.replace(os.linesep, "")
     print("\n" + r_output)
 
     assert r.exit_code == 0
