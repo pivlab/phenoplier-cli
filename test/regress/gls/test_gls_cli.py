@@ -687,16 +687,16 @@ def test_gls_cli_single_smultixcan_input_debug_use_ols(output_file):
     assert not output_data.isna().any().any()
     ols_results = output_data
     output_file.unlink()
-    #
-    # # results should be different across batches
-    # assert not np.allclose(
-    #     gls_results["beta"].to_numpy(),
-    #     ols_results["beta"].to_numpy(),
-    # )
-    # assert not np.allclose(
-    #     gls_results["pvalue_onesided"].to_numpy(),
-    #     ols_results["pvalue_onesided"].to_numpy(),
-    # )
+
+    # results should be different across batches
+    assert not np.allclose(
+        gls_results["beta"].to_numpy(),
+        ols_results["beta"].to_numpy(),
+    )
+    assert not np.allclose(
+        gls_results["pvalue_onesided"].to_numpy(),
+        ols_results["pvalue_onesided"].to_numpy(),
+    )
 
 
 def test_gls_cli_single_smultixcan_input_debug_use_ols_incompatible_arguments(
