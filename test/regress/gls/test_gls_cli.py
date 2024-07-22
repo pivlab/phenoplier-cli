@@ -339,10 +339,11 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_remove_al
     # run keep-last first, and then check that results with remove-all are different
 
     # with keep-last
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-repeated_gene_names.txt"),
             "-o",
@@ -372,10 +373,11 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_remove_al
     output_file.unlink()
 
     # with remove-all
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-repeated_gene_names.txt"),
             "-o",
@@ -421,10 +423,11 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_remove_al
 
 
 def test_gls_cli_single_smultixcan_input_full_subset_of_lvs(output_file):
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -469,10 +472,11 @@ def test_gls_cli_single_smultixcan_input_full_subset_of_lvs(output_file):
 def test_gls_cli_single_smultixcan_input_full_subset_of_lvs_none_exist_in_models(
         output_file,
 ):
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -496,10 +500,11 @@ def test_gls_cli_single_smultixcan_input_full_subset_of_lvs_none_exist_in_models
 
 
 def test_gls_cli_single_smultixcan_input_full_all_lvs_in_model_file(output_file):
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -542,10 +547,11 @@ def test_gls_cli_single_smultixcan_input_full_all_lvs_in_model_file(output_file)
 
 def test_gls_cli_single_smultixcan_input_full_specify_gene_corrs(output_file):
     # gtex v8 and mashr
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -574,10 +580,11 @@ def test_gls_cli_single_smultixcan_input_full_specify_gene_corrs(output_file):
     output_file.unlink()
 
     # 1000 genomes and elastic net
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -618,10 +625,11 @@ def test_gls_cli_single_smultixcan_input_full_specify_gene_corrs(output_file):
 
 def test_gls_cli_single_smultixcan_input_debug_use_ols(output_file):
     # first, run a standard GLS (using correlation matrix)
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -650,10 +658,11 @@ def test_gls_cli_single_smultixcan_input_debug_use_ols(output_file):
     output_file.unlink()
 
     # now run an OLS model
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -695,10 +704,11 @@ def test_gls_cli_single_smultixcan_input_debug_use_ols(output_file):
 def test_gls_cli_single_smultixcan_input_debug_use_ols_incompatible_arguments(
         output_file,
 ):
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -726,10 +736,11 @@ def test_gls_cli_single_smultixcan_input_debug_use_ols_incompatible_arguments(
 
 def test_gls_cli_use_incompatible_parameters_batch_and_lv_list(output_file):
     # batch 1
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -759,10 +770,11 @@ def test_gls_cli_use_incompatible_parameters_batch_and_lv_list(output_file):
 
 def test_gls_cli_batch_parameters_batch_n_splits_missing(output_file):
     # batch 1
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -786,10 +798,11 @@ def test_gls_cli_batch_parameters_batch_n_splits_missing(output_file):
 
 def test_gls_cli_batch_parameters_batch_id_missing(output_file):
     # batch 1
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -813,10 +826,11 @@ def test_gls_cli_batch_parameters_batch_id_missing(output_file):
 
 def test_gls_cli_batch_parameters_batch_id_value_invalid(output_file):
     # batch id is not an integer
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -840,10 +854,11 @@ def test_gls_cli_batch_parameters_batch_id_value_invalid(output_file):
     assert "error: argument --batch-id" in r_output
 
     # batch id is negative
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -867,10 +882,11 @@ def test_gls_cli_batch_parameters_batch_id_value_invalid(output_file):
     assert "ERROR: --batch-id must be" in r_output
 
     # batch id is zero
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -894,10 +910,11 @@ def test_gls_cli_batch_parameters_batch_id_value_invalid(output_file):
     assert "ERROR: --batch-id must be" in r_output
 
     # batch id is larger than --batch-n-splits
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -923,10 +940,11 @@ def test_gls_cli_batch_parameters_batch_id_value_invalid(output_file):
 
 def test_gls_cli_batch_parameters_batch_n_splits_value_invalid(output_file):
     # batch n splits is not an integer
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -950,10 +968,11 @@ def test_gls_cli_batch_parameters_batch_n_splits_value_invalid(output_file):
     assert "error: argument --batch-n-splits" in r_output
 
     # batch n splits is smaller than batch id
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -977,10 +996,11 @@ def test_gls_cli_batch_parameters_batch_n_splits_value_invalid(output_file):
     assert "ERROR: --batch-id must be <= --batch-n-splits" in r_output
 
     # batch n splits is smaller than batch id
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -1004,10 +1024,11 @@ def test_gls_cli_batch_parameters_batch_n_splits_value_invalid(output_file):
     assert "ERROR: --batch-id must be <= --batch-n-splits" in r_output
 
     # batch n splits larger than LVs in the model
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -1036,10 +1057,11 @@ def test_gls_cli_batch_parameters_batch_n_splits_value_invalid(output_file):
 
 def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits(output_file):
     # batch 1
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -1078,10 +1100,11 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits(output_f
     output_file.unlink()
 
     # batch 2
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -1120,10 +1143,11 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits(output_f
     output_file.unlink()
 
     # batch 3
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -1192,10 +1216,11 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
         output_file,
 ):
     # batch 1
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -1232,10 +1257,11 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
     output_file.unlink()
 
     # batch 2
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -1272,10 +1298,11 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
     output_file.unlink()
 
     # batch 3
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -1312,10 +1339,11 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
     output_file.unlink()
 
     # batch 4
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -1352,10 +1380,11 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
     output_file.unlink()
 
     # batch 5
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -1395,10 +1424,11 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_is_1(
         output_file,
 ):
     # batch 1
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -1445,10 +1475,11 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_problema
     # number of chunks requested by --batch-n-splits
 
     # batch 1
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -1487,10 +1518,11 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_problema
     output_file.unlink()
 
     # batch 2
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -1528,10 +1560,11 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_problema
     output_file.unlink()
 
     # batch 3
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -1569,10 +1602,11 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_problema
     output_file.unlink()
 
     # batch 4
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -1612,10 +1646,11 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_problema
 
 def test_gls_cli_use_covar_gene_size(output_file):
     # run first without covariates
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -1652,10 +1687,11 @@ def test_gls_cli_use_covar_gene_size(output_file):
     output_file.unlink()
 
     # run using gene_size as covariate
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -1713,10 +1749,11 @@ def test_gls_cli_use_covar_gene_size(output_file):
 
 def test_gls_cli_use_covar_gene_density(output_file):
     # run first without covariates
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -1753,10 +1790,11 @@ def test_gls_cli_use_covar_gene_density(output_file):
     output_file.unlink()
 
     # run using gene_density as covariate
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -1815,10 +1853,11 @@ def test_gls_cli_use_covar_gene_density(output_file):
 def test_gls_cli_use_covar_gene_n_snps_used_without_cohort_metadata_dir_specified(
         output_file,
 ):
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -1846,10 +1885,11 @@ def test_gls_cli_use_covar_gene_n_snps_used_without_cohort_metadata_dir_specifie
 
 def test_gls_cli_use_covar_gene_n_snps_used(output_file):
     # run first without covariates
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -1886,10 +1926,11 @@ def test_gls_cli_use_covar_gene_n_snps_used(output_file):
     output_file.unlink()
 
     # run using gene_density as covariate
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -1951,10 +1992,11 @@ def test_gls_cli_use_covar_gene_n_snps_used(output_file):
 
 def test_gls_cli_use_covar_gene_n_snps_used_density(output_file):
     # run first without covariates
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -1991,10 +2033,11 @@ def test_gls_cli_use_covar_gene_n_snps_used_density(output_file):
     output_file.unlink()
 
     # run using gene_n_snps_used_density as covariate
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -2056,10 +2099,11 @@ def test_gls_cli_use_covar_gene_n_snps_used_density(output_file):
 
 def test_gls_cli_use_covar_gene_size_and_its_log(output_file):
     # run first without covariates
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -2100,10 +2144,11 @@ def test_gls_cli_use_covar_gene_size_and_its_log(output_file):
     output_file.unlink()
 
     # run using gene_size as covariate
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -2148,10 +2193,11 @@ def test_gls_cli_use_covar_gene_size_and_its_log(output_file):
     output_file.unlink()
 
     # run using gene_size and gene_size_log
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -2222,10 +2268,11 @@ def test_gls_cli_use_covar_gene_size_and_its_log(output_file):
 
 def test_gls_cli_use_covar_gene_density_and_its_log(output_file):
     # run first without covariates
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -2266,10 +2313,11 @@ def test_gls_cli_use_covar_gene_density_and_its_log(output_file):
     output_file.unlink()
 
     # run using gene_density as covariate
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -2314,10 +2362,11 @@ def test_gls_cli_use_covar_gene_density_and_its_log(output_file):
     output_file.unlink()
 
     # run using gene_density and gene_size_log
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -2388,10 +2437,11 @@ def test_gls_cli_use_covar_gene_density_and_its_log(output_file):
 
 def test_gls_cli_use_covar_gene_n_snps_used_and_its_log(output_file):
     # run first without covariates
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -2432,10 +2482,11 @@ def test_gls_cli_use_covar_gene_n_snps_used_and_its_log(output_file):
     output_file.unlink()
 
     # run using gene_n_snps_used as covariate
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -2484,10 +2535,11 @@ def test_gls_cli_use_covar_gene_n_snps_used_and_its_log(output_file):
     output_file.unlink()
 
     # run using gene_n_snps_used and gene_n_snps_used_log
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -2562,10 +2614,11 @@ def test_gls_cli_use_covar_gene_n_snps_used_and_its_log(output_file):
 
 def test_gls_cli_use_covar_gene_n_snps_used_density_and_its_log(output_file):
     # run first without covariates
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -2606,10 +2659,11 @@ def test_gls_cli_use_covar_gene_n_snps_used_density_and_its_log(output_file):
     output_file.unlink()
 
     # run using gene_n_snps_used_density as covariate
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -2658,10 +2712,11 @@ def test_gls_cli_use_covar_gene_n_snps_used_density_and_its_log(output_file):
     output_file.unlink()
 
     # run using gene_n_snps_used_density and gene_n_snps_used_density_log
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -2737,10 +2792,11 @@ def test_gls_cli_use_covar_gene_n_snps_used_density_and_its_log(output_file):
 def test_gls_cli_use_covar_log_without_specifying_original_covariate(
         output_file,
 ):
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -2769,10 +2825,11 @@ def test_gls_cli_use_covar_log_without_specifying_original_covariate(
 
 def test_gls_cli_use_covar_all(output_file):
     # run first without covariates
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -2813,10 +2870,11 @@ def test_gls_cli_use_covar_all(output_file):
     output_file.unlink()
 
     # run using gene_density as covariate
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -2861,10 +2919,11 @@ def test_gls_cli_use_covar_all(output_file):
     output_file.unlink()
 
     # run using gene_size as covariate
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -2909,10 +2968,11 @@ def test_gls_cli_use_covar_all(output_file):
     output_file.unlink()
 
     # run using all available covars
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -2996,10 +3056,11 @@ def test_gls_cli_use_covar_all(output_file):
 
 def test_gls_cli_use_covar_all_vs_all_specified_separately(output_file):
     # run first without covariates
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -3040,10 +3101,11 @@ def test_gls_cli_use_covar_all_vs_all_specified_separately(output_file):
     output_file.unlink()
 
     # run using all covariates specified separately
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -3098,10 +3160,11 @@ def test_gls_cli_use_covar_all_vs_all_specified_separately(output_file):
     output_file.unlink()
 
     # run using all available covars
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -3182,10 +3245,11 @@ def test_gls_cli_use_covar_gene_size_and_gene_density_lv45_random_phenotype_6(
     # in this test, I make sure that the output values are the expected ones
     # generated in notebook nbs/15_gsa_gls/misc/10_10-gls-generate_cases-cases.ipynb
     # run using all covariates specified separately
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno6-gtex_v8-mashr-smultixcan.txt.gz"),
             "-o",
@@ -3257,10 +3321,11 @@ def test_gls_cli_use_covar_gene_size_and_gene_density_lv455_random_phenotype_6(
     # in this test, I make sure that the output values are the expected ones
     # generated in notebook nbs/15_gsa_gls/misc/10_10-gls-generate_cases-cases.ipynb
     # run using all covariates specified separately
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno6-gtex_v8-mashr-smultixcan.txt.gz"),
             "-o",
@@ -3332,10 +3397,11 @@ def test_gls_cli_use_covar_gene_size_and_gene_density_lv45_and_lv455_random_phen
     #
     # the difference with the previous test, is that this one computes two LVs
     # in the same run, checking results are the same as if run separately
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno6-gtex_v8-mashr-smultixcan.txt.gz"),
             "-o",
@@ -3409,10 +3475,11 @@ def test_gls_cli_use_covar_debug_use_ols_vs_ols_without_covars(output_file):
     # tests that covars are used when debug_use_ols is employed
 
     # first, run OLS without covars
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -3439,10 +3506,11 @@ def test_gls_cli_use_covar_debug_use_ols_vs_ols_without_covars(output_file):
     output_file.unlink()
 
     # now run an OLS with covars
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -3496,10 +3564,11 @@ def test_gls_cli_use_covar_debug_use_ols_vs_gls(output_file):
 
     # first, run GLS with covars
     # run using all available covars
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
@@ -3538,10 +3607,11 @@ def test_gls_cli_use_covar_debug_use_ols_vs_gls(output_file):
     output_file.unlink()
 
     # now run an OLS with covars
-    r = subprocess.run(
+    r = runner.invoke(
+        cli.app,
         [
-            "python",
-            GLS_CLI_PATH,
+            "run",
+            "regression",
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
             "-o",
