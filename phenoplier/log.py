@@ -24,11 +24,12 @@ def config_logger():
     logger.addHandler(ch)
 
 
-def print_and_log(message: str, verbose: bool, level: int = logging.INFO, logger: logging.Logger = None):
+def print_and_log(message: str, log_message, verbose: bool, level: int = logging.INFO, logger: logging.Logger = None):
     """
     Prints and logs a message.
 
     :param message: message to print and log.
+    :param log_message: message to log. Used if message contains rich text formatting.
     :param verbose: if True, and the level is DEBUG, the message is printed to stdout.
     :param level: logging level.
     :param logger: logger instance.
