@@ -92,7 +92,7 @@ def regression(
         dup_genes_action:       Annotated[DUP_GENE_ACTIONS, Args.DUP_GENES_ACTION.value] = DUP_GENE_ACTIONS.no_action,
         covars:                 Annotated[Optional[str], Args.COVARS.value] = None,
         cohort_metadata_dir:    Annotated[Optional[str], Args.COHORT_METADATA_DIR.value] = None,
-        lv_list:                Annotated[Optional[List[str]], Args.LV_LIST.value] = None,
+        lv_list:                Annotated[Optional[str], Args.LV_LIST.value] = None,
         lv_model_file:          Annotated[Optional[Path], Args.LV_MODEL_FILE.value] = None,
         batch_id:               Annotated[Optional[int], Args.BATCH_ID.value] = None,
         batch_n_splits:         Annotated[Optional[int], Args.BATCH_N_SPLITS.value] = None,
@@ -387,7 +387,7 @@ def regression(
 
     full_lvs_set = set(full_lvs_list)
     # logger.info(f"{len(full_lvs_set)} LVs (gene modules) were found in LV model")
-    print((f"{len(full_lvs_set)} LVs (gene modules) were found in LV model"))
+    print(f"{len(full_lvs_set)} LVs (gene modules) were found in LV model")
 
     if lv_list:
         selected_lvs = [lv for lv in lv_list if lv in full_lvs_set]

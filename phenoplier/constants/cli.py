@@ -104,6 +104,10 @@ class Corr_Preprocess_Args(Enum):
     OUTPUT_DIR = typer.Option("--output-dir", "-o", help="Output directory for the output results. This argument supersedes the project configuration.")
 
 
+def spaced_list(raw: str) -> list[str]:
+    return raw.split(" ")
+
+
 class Regression_Args(Enum):
     INPUT_FILE = typer.Option("--input-file", "-i",
                               help="File path to S-MultiXcan result file (tab-separated and with at least columns "
@@ -144,7 +148,8 @@ class Regression_Args(Enum):
 
     LV_LIST = typer.Option("--lv-list", "-l",
                            help="List of LV (gene modules) identifiers on which an association will be computed. All "
-                                "the rest not in the list are ignored.")
+                                "the rest not in the list are ignored. Separate them by spaces.",
+                           parser=spaced_list)
 
     LV_MODEL_FILE = typer.Option("--lv-model-file", "-f",
                                  help="A file containing the LV model. It has to be in pickle format, with gene "
