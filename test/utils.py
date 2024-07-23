@@ -199,3 +199,12 @@ def compare_npz_files_in_dirs(dir1: Path, dir2: Path,
             return False, "Include file(s) not found in both directories."
 
     return True, "All files are equal or close in value."
+
+
+def skip_test_on_ci():
+    """
+    Skip the test if running on CI.
+    """
+    if os.getenv("GITHUB_ACTIONS") == "true":
+        return True
+    return False
