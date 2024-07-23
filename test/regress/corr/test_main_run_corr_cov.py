@@ -27,7 +27,7 @@ output_dir_base = get_test_output_dir(Path(__file__))
 
 
 @mark.skipif(IN_GITHUB_ACTIONS, reason="Slow and computationally expensive test, skip in GitHub Actions")
-@mark.skip_test_if_env('dev')
+@mark.corr
 # Parameterize the test cases
 @mark.parametrize(
     "reference_panel, eqtl_model, output_dir",
