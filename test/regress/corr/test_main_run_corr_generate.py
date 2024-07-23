@@ -33,6 +33,7 @@ test_data_dir = Path(conf.TEST_DIR) / "data/gene-corr/99_all_results/mashr/"
 
 
 @mark.skipif(IN_GITHUB_ACTIONS, reason="Slow and computationally expensive test, skip in GitHub Actions")
+@mark.corr
 @mark.order(after="test_main_run_corr_filter::test_cli_command")
 # Parameterize the test cases
 @mark.parametrize(

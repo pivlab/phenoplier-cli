@@ -34,6 +34,7 @@ chromosome_to_test = random.randint(1, 22)
 
 
 @mark.skipif(IN_GITHUB_ACTIONS, reason="Slow and computationally expensive test, skip in GitHub Actions")
+@mark.corr
 @mark.order(after="test_main_run_corr_preprocess::test_cli_command")
 # Parameterize the test cases
 @mark.parametrize(
