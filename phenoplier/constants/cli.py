@@ -1,7 +1,6 @@
 """
 This module contains constants for the CLI commands. Mostly, it contains help messages for the CLI arguments.
 """
-
 from enum import Enum
 from typing import Annotated, List
 
@@ -13,6 +12,11 @@ from phenoplier.commands.util.enums import CovarOptions, Cohort
 class Regression_Defaults(Enum):
     COVARS = "gene_size gene_size_log gene_density gene_density_log"
 
+# Const help messages for the main CLI arguments
+class Cli(Enum):
+    VERSION = "Print out the app's version."
+
+# Command Group: run gene-corr
 
 # Const help messages for common arguments
 class Common_Args(Enum):
@@ -24,9 +28,26 @@ class Common_Args(Enum):
     EQTL_MODEL = typer.Option("--eqtl-model", "-m", help="Prediction models such as MASHR or ELASTIC_NET.")
 
 
-# Const help messages for the main CLI arguments
-class Cli(Enum):
-    VERSION = "Print out the app's version."
+class Corr_Cov_Args(Enum):
+    REFERENCE_PANEL = Common_Args.REFERENCE_PANEL.value
+    EQTL_MODEL = Common_Args.EQTL_MODEL.value
+    COVARIANCE_MATRIX_DTYPE = typer.Option("--covariance-matrix-dtype", "-t",
+                                           help="The numpy dtype used for the covariance matrix.")
+    PROJECT_DIR = Common_Args.PROJECT_DIR.value
+    OUTPUT_DIR = typer.Option("--output-dir", "-o", help="Output directory for the covariance matrix. This argument "
+                                                         "supersedes the project configuration.")
+
+
+class Corr_Preprocess_Args(Enum):
+    COHORT_NAME = Common_Args.COHORT_NAME.value
+    GWAS_FILE = typer.Option("--gwas-file", "-g", help="GWAS file.")
+    SPREDIXCAN_FOLDER = typer.Option("--spredixcan-folder", "-s", help="S-PrediXcan folder.")
+    SPREDIXCAN_FILE_PATTERN = typer.Option("--spredixcan-file-pattern", "-n", help="S-PrediXcan file pattern.")
+    SMULTIXCAN_FILE = typer.Option("--smultixcan-file", "-f", help="S-MultiXcan file.")
+    REFERENCE_PANEL = Common_Args.REFERENCE_PANEL.value
+    EQTL_MODEL = Common_Args.EQTL_MODEL.value
+    PROJECT_DIR = Common_Args.PROJECT_DIR.value
+    OUTPUT_DIR = typer.Option("--output-dir", "-o", help="Output directory for the output results. This argument supersedes the project configuration.")
 
 
 class Corr_Correlate_Args(Enum):
@@ -45,14 +66,16 @@ class Corr_Correlate_Args(Enum):
     INPUT_DIR = typer.Option("--input-dir", "-i", help="Input data directory containing previous steps' results")
 
 
-class Corr_Cov_Args(Enum):
+class Corr_Postprocess_Args(Enum):
+    COHORT_NAME = Common_Args.COHORT_NAME.value
     REFERENCE_PANEL = Common_Args.REFERENCE_PANEL.value
     EQTL_MODEL = Common_Args.EQTL_MODEL.value
-    COVARIANCE_MATRIX_DTYPE = typer.Option("--covariance-matrix-dtype", "-t",
-                                           help="The numpy dtype used for the covariance matrix.")
+    PLOT_OUTPUT_DIR = typer.Option("--plot-output-dir", "-p", help="Output directory for plots.")
     PROJECT_DIR = Common_Args.PROJECT_DIR.value
-    OUTPUT_DIR = typer.Option("--output-dir", "-o", help="Output directory for the covariance matrix. This argument "
-                                                         "supersedes the project configuration.")
+    OUTPUT_DIR = typer.Option("--output-dir", "-o", help="Output directory for computed correlation matrix. "
+                                                         "This argument supersedes the project configuration.")
+    INPUT_DIR = typer.Option("--input-dir", "-i", help="Input data directory containing previous steps' results")
+    GENES_INFO = typer.Option("--genes-info", "-g", help="Path to the genes information file.")
 
 
 class Corr_Filter_Args(Enum):
@@ -80,31 +103,10 @@ class Corr_Generate_Args(Enum):
     OUTPUT_DIR = typer.Option("--output-dir", "-o", help="Output directory for computed LV-specific correlation matrix. "
                                                          "This argument supersedes the project configuration.")
 
-
-class Corr_Postprocess_Args(Enum):
-    COHORT_NAME = Common_Args.COHORT_NAME.value
-    REFERENCE_PANEL = Common_Args.REFERENCE_PANEL.value
-    EQTL_MODEL = Common_Args.EQTL_MODEL.value
-    PLOT_OUTPUT_DIR = typer.Option("--plot-output-dir", "-p", help="Output directory for plots.")
-    PROJECT_DIR = Common_Args.PROJECT_DIR.value
-    OUTPUT_DIR = typer.Option("--output-dir", "-o", help="Output directory for computed correlation matrix. "
-                                                         "This argument supersedes the project configuration.")
-    INPUT_DIR = typer.Option("--input-dir", "-i", help="Input data directory containing previous steps' results")
-    GENES_INFO = typer.Option("--genes-info", "-g", help="Path to the genes information file.")
-
-class Corr_Preprocess_Args(Enum):
-    COHORT_NAME = Common_Args.COHORT_NAME.value
-    GWAS_FILE = typer.Option("--gwas-file", "-g", help="GWAS file.")
-    SPREDIXCAN_FOLDER = typer.Option("--spredixcan-folder", "-s", help="S-PrediXcan folder.")
-    SPREDIXCAN_FILE_PATTERN = typer.Option("--spredixcan-file-pattern", "-n", help="S-PrediXcan file pattern.")
-    SMULTIXCAN_FILE = typer.Option("--smultixcan-file", "-f", help="S-MultiXcan file.")
-    REFERENCE_PANEL = Common_Args.REFERENCE_PANEL.value
-    EQTL_MODEL = Common_Args.EQTL_MODEL.value
-    PROJECT_DIR = Common_Args.PROJECT_DIR.value
-    OUTPUT_DIR = typer.Option("--output-dir", "-o", help="Output directory for the output results. This argument supersedes the project configuration.")
-
+# Command Group: run regression
 
 def spaced_list(raw: str) -> list[str]:
+    """Parse a string with space-separated values into a list of strings."""
     return raw.split(" ")
 
 

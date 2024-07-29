@@ -14,6 +14,7 @@ from phenoplier.commands.get import get
 from phenoplier.commands.run.regression import regression
 from phenoplier.config import settings
 from phenoplier.constants.cli import Common_Args, Cli
+from phenoplier.commands.run.correlation.pipeline import pipeline
 from phenoplier.commands.run.correlation.cov import cov
 from phenoplier.commands.run.correlation.preprocess import preprocess
 from phenoplier.commands.run.correlation.correlate import correlate
@@ -37,13 +38,16 @@ app = typer.Typer(
 # Define the subcommands
 cmd_group_run = typer.Typer(
     context_settings={"help_option_names": ["-h", "--help"]},
-    help="Execute a specific Phenoplier pipeline."
+    help="Run a specific Phenoplier functionality."
 )
 cmd_group_gene_corr = typer.Typer(
     context_settings={"help_option_names": ["-h", "--help"]},
-    help="Execute a specific Phenoplier pipeline for gene-gene correlation matrix generation.",
+    help="Execute a specific Phenoplier funcionality for the gene-gene correlation matrix generation. Except for the" 
+    "'pipeline' command, all the other commands are orgnized sequentially in text. For example, you need to run the"
+    "'cov' command before the 'preprocess' command, and so on.",
     cls=OrderCommands
 )
+cmd_group_gene_corr.command()(pipeline)
 cmd_group_gene_corr.command()(cov)
 cmd_group_gene_corr.command()(preprocess)
 cmd_group_gene_corr.command()(correlate)
