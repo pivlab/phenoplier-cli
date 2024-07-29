@@ -47,7 +47,8 @@ class Corr_Preprocess_Args(Enum):
     REFERENCE_PANEL = Common_Args.REFERENCE_PANEL.value
     EQTL_MODEL = Common_Args.EQTL_MODEL.value
     PROJECT_DIR = Common_Args.PROJECT_DIR.value
-    OUTPUT_DIR = typer.Option("--output-dir", "-o", help="Output directory for the output results. This argument supersedes the project configuration.")
+    OUTPUT_DIR = typer.Option("--output-dir", "-o", help="Output directory for the output results. This argument "
+                                                         "supersedes the project configuration.")
 
 
 class Corr_Correlate_Args(Enum):
@@ -102,6 +103,20 @@ class Corr_Generate_Args(Enum):
     GENES_SYMBOLS_DIR = typer.Option("--genes-symbols-dir", "-g", help="Path to the genes correlation symbols folder.")
     OUTPUT_DIR = typer.Option("--output-dir", "-o", help="Output directory for computed LV-specific correlation matrix. "
                                                          "This argument supersedes the project configuration.")
+
+
+class Corr_Pipeline_Args(Enum):
+    COHORT_NAME = Common_Args.COHORT_NAME.value
+    GWAS_FILE = typer.Option("--gwas-file", "-g", help="GWAS file.")
+    SPREDIXCAN_FOLDER = typer.Option("--spredixcan-folder", "-s", help="S-PrediXcan folder.")
+    SPREDIXCAN_FILE_PATTERN = typer.Option("--spredixcan-file-pattern", "-n", help="S-PrediXcan file pattern.")
+    SMULTIXCAN_FILE = typer.Option("--smultixcan-file", "-f", help="S-MultiXcan file.")
+    REFERENCE_PANEL = Common_Args.REFERENCE_PANEL.value
+    EQTL_MODEL = Common_Args.EQTL_MODEL.value
+    PROJECT_DIR = Common_Args.PROJECT_DIR.value
+    OUTPUT_DIR = typer.Option("--output-dir", "-o", help="Output directory for the output results. This argument "
+                                                         "supersedes the project configuration.")
+
 
 # Command Group: run regression
 
