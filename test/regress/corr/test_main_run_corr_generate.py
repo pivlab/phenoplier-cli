@@ -19,7 +19,7 @@ _BASE_COMMAND = (
     "run gene-corr generate "
     "-c {cohort} "
     "-r {reference_panel} "
-    "-m {eqtl_models} "
+    "-m {eqtl_model} "
     "-l {lv_code} "
     "-e {lv_percentile} "
     "-g {genes_symbols_dir} "
@@ -37,7 +37,7 @@ test_data_dir = Path(conf.TEST_DIR) / "data/gene-corr/99_all_results/mashr/"
 @mark.order(after="test_main_run_corr_filter::test_cli_command")
 # Parameterize the test cases
 @mark.parametrize(
-    "cohort, reference_panel, eqtl_models, lv_code, lv_percentile, genes_symbols_dir, output_dir",
+    "cohort, reference_panel, eqtl_model, lv_code, lv_percentile, genes_symbols_dir, output_dir",
     [
         (
                 "phenomexcan_rapid_gwas",
@@ -52,12 +52,12 @@ test_data_dir = Path(conf.TEST_DIR) / "data/gene-corr/99_all_results/mashr/"
         for lv_code in random.sample(range(1, 988), 5)
     ]
 )
-def test_cli_command(cohort, reference_panel, eqtl_models, lv_code, lv_percentile, genes_symbols_dir, output_dir):
+def test_cli_command(cohort, reference_panel, eqtl_model, lv_code, lv_percentile, genes_symbols_dir, output_dir):
     # Build the command
     command = _BASE_COMMAND.format(
         cohort=cohort,
         reference_panel=reference_panel,
-        eqtl_models=eqtl_models,
+        eqtl_model=eqtl_model,
         lv_code=lv_code,
         lv_percentile=lv_percentile,
         genes_symbols_dir=genes_symbols_dir,
