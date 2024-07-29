@@ -19,7 +19,7 @@ _BASE_COMMAND = (
     "run gene-corr correlate "
     "-c {cohort} "
     "-r {reference_panel} "
-    "-m {eqtl_models} "
+    "-m {eqtl_model} "
     "-s {chromosome} "
     "-i {input_dir} "
     "-o {output_dir} "
@@ -38,7 +38,7 @@ chromosome_to_test = random.randint(1, 22)
 @mark.order(after="test_main_run_corr_preprocess::test_cli_command")
 # Parameterize the test cases
 @mark.parametrize(
-    "cohort, reference_panel, eqtl_models, chromosome, input_dir, output_dir",
+    "cohort, reference_panel, eqtl_model, chromosome, input_dir, output_dir",
     [
         (
                 "phenomexcan_rapid_gwas",
@@ -51,12 +51,12 @@ chromosome_to_test = random.randint(1, 22)
         # Add more test cases here as needed
     ]
 )
-def test_cli_command(cohort, reference_panel, eqtl_models, chromosome, input_dir, output_dir):
+def test_cli_command(cohort, reference_panel, eqtl_model, chromosome, input_dir, output_dir):
     # Build the command
     command = _BASE_COMMAND.format(
         cohort=cohort,
         reference_panel=reference_panel,
-        eqtl_models=eqtl_models,
+        eqtl_model=eqtl_model,
         chromosome=chromosome,
         input_dir=input_dir,
         output_dir=output_dir,

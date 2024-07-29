@@ -23,7 +23,7 @@ _BASE_COMMAND = (
     "-n {output_file_name} "
     "-f {smultixcan_file} "
     "-r {reference_panel} "
-    "-m {eqtl_models} "
+    "-m {eqtl_model} "
     "-o {output_dir}"
 )
 
@@ -37,7 +37,7 @@ test_data_dir = Path(conf.TEST_DIR) / "data/gene-corr/99_all_results/mashr/"
 @mark.corr
 # Parameterize the test cases
 @mark.parametrize(
-    "cohort, gwas_file, spredixcan_dir, output_file_name, smultixcan_file, reference_panel, eqtl_models, output_dir",
+    "cohort, gwas_file, spredixcan_dir, output_file_name, smultixcan_file, reference_panel, eqtl_model, output_dir",
     [
         (
                 "phenomexcan_rapid_gwas",
@@ -53,7 +53,7 @@ test_data_dir = Path(conf.TEST_DIR) / "data/gene-corr/99_all_results/mashr/"
     ]
 )
 def test_cli_command(cohort, gwas_file, spredixcan_dir, output_file_name, smultixcan_file, reference_panel,
-                     eqtl_models, output_dir):
+                     eqtl_model, output_dir):
     # Build the command
     command = _BASE_COMMAND.format(
         cohort=cohort,
@@ -62,7 +62,7 @@ def test_cli_command(cohort, gwas_file, spredixcan_dir, output_file_name, smulti
         output_file_name=output_file_name,
         smultixcan_file=smultixcan_file,
         reference_panel=reference_panel,
-        eqtl_models=eqtl_models,
+        eqtl_model=eqtl_model,
         output_dir=output_dir,
     )
 
