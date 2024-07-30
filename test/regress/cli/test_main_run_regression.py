@@ -7,7 +7,6 @@ import numpy as np
 import pandas as pd
 import pytest
 
-import phenoplier.gls_cli as gls_cli
 from typer.testing import CliRunner
 import typer.core
 
@@ -17,9 +16,6 @@ from phenoplier.constants.message import RegressionError as err
 from phenoplier.constants.message import RegressionInfo as info
 from test.utils import get_test_output_dir
 
-GLS_CLI_PATH = Path(gls_cli.__file__).resolve()
-assert GLS_CLI_PATH is not None
-assert GLS_CLI_PATH.exists()
 
 TEST_DIR = settings.TEST_DIR
 DATA_DIR = Path(TEST_DIR, "data", "gls").resolve()
