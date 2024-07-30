@@ -58,7 +58,7 @@ def compute_chol_inv(lv_code, gene_corrs_dict, multiplier_z, output_dir_base, re
 
 
 def generate(
-        cohort_name: Annotated[Cohort, Args.COHORT_NAME.value],
+        cohort: Annotated[Cohort, Args.COHORT_NAME.value],
         reference_panel: Annotated[RefPanel, Args.REFERENCE_PANEL.value],
         eqtl_model: Annotated[EqtlModel, Args.EQTL_MODEL.value],
         lv_code: Annotated[int, Args.LV_CODE.value],
@@ -81,7 +81,7 @@ def generate(
                 Path(conf.RESULTS["GLS"])
                 / "gene_corrs"
                 / "cohorts"
-                / cohort_name
+                / cohort
                 / reference_panel.lower()
                 / eqtl_model.lower()
         )

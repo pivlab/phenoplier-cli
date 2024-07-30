@@ -17,27 +17,27 @@ from phenoplier.correlations import (
 
 
 def filter(
-        cohort_name:        Annotated[Cohort, Args.COHORT_NAME.value],
+        cohort:             Annotated[Cohort, Args.COHORT_NAME.value],
         reference_panel:    Annotated[RefPanel, Args.REFERENCE_PANEL.value],
         eqtl_model:         Annotated[EqtlModel, Args.EQTL_MODEL.value],
         distances:          Annotated[List[float], Args.DISTANCES.value] = [10, 5, 2],
-        project_dir:        Annotated[Path, Args.PROJECT_DIR.value] = conf.CURRENT_DIR,
-        genes_symbols:         Annotated[Path, Args.GENES_SYMBOLS.value] = None,
+        genes_symbols:      Annotated[Path, Args.GENES_SYMBOLS.value] = None,
         output_dir:         Annotated[Path, Args.OUTPUT_DIR.value] = None,
+        project_dir:        Annotated[Path, Args.PROJECT_DIR.value] = conf.CURRENT_DIR,
 ):
     """
     Reads the correlation matrix generated and creates new matrices with different "within distances" across genes.
     For example, it generates a new correlation matrix with only genes within a distance of 10mb.
     """
     load_settings_files(project_dir)
-    cohort_name = cohort_name.value
+    cohort = cohort.value
 
     if output_dir is None:
         output_dir_base = (
                 Path(conf.RESULTS["GLS"])
                 / "gene_corrs"
                 / "cohorts"
-                / cohort_name
+                / cohort
                 / reference_panel.lower()
                 / eqtl_model.lower()
         )

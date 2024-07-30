@@ -56,7 +56,7 @@ class Corr_Correlate_Args(Enum):
     REFERENCE_PANEL = Common_Args.REFERENCE_PANEL.value
     EQTL_MODEL = Common_Args.EQTL_MODEL.value
     CHROMOSOME = typer.Option("--chromosome", "-s", help="Chromosome number (1-22).")
-    SMULTIXCAN_CONDITION_NUMBER = typer.Option("--smultixcan-condition-number", "-n",
+    SMULTIXCAN_CONDITION_NUMBER = typer.Option("--smultixcan-condition-number", "-num",
                                                help="S-MultiXcan condition number.")
     COMPUTE_WITHIN_DISTANCE = typer.Option("--compute-correlations-within-distance", "-w",
                                            help="Compute correlations within distance.")

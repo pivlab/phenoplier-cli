@@ -17,15 +17,15 @@ from phenoplier.constants.cli import Corr_Preprocess_Args as Args
 
 # Todo: Validate reference_panel, check if folder exists. Or change it to a path argument?
 def preprocess(
-        cohort_name:                Annotated[Cohort, Args.COHORT_NAME.value],
+        cohort:                     Annotated[Cohort, Args.COHORT_NAME.value],
+        reference_panel:            Annotated[RefPanel, Args.REFERENCE_PANEL.value],
+        eqtl_model:                 Annotated[EqtlModel, Args.EQTL_MODEL.value],
         gwas_file:                  Annotated[Path, Args.GWAS_FILE.value],
         spredixcan_folder:          Annotated[Path, Args.SPREDIXCAN_FOLDER.value],
         spredixcan_file_pattern:    Annotated[str, Args.SPREDIXCAN_FILE_PATTERN.value],
         smultixcan_file:            Annotated[Path, Args.SMULTIXCAN_FILE.value],
-        reference_panel:            Annotated[RefPanel, Args.REFERENCE_PANEL.value],
-        eqtl_model:                 Annotated[EqtlModel, Args.EQTL_MODEL.value],
         project_dir:                Annotated[Path, Args.PROJECT_DIR.value] = conf.CURRENT_DIR,
-        output_dir: Annotated[Path, Args.OUTPUT_DIR.value] = None,
+        output_dir:                 Annotated[Path, Args.OUTPUT_DIR.value] = None,
 ):
     """
     Compiles information about the GWAS and TWAS for a particular cohort. For example, the set of GWAS variants, variance of predicted expression of genes, etc.
@@ -36,8 +36,8 @@ def preprocess(
     print(Text("[--- Info ---]", style="blue"))
 
     # Cohort name processing
-    cohort_name = cohort_name.lower()
-    print(f"Cohort name: {cohort_name}")
+    cohort = cohort.lower()
+    print(f"Cohort name: {cohort}")
 
     # Reference panel processing
     reference_panel = reference_panel.lower()
@@ -75,7 +75,7 @@ def preprocess(
                 Path(conf.RESULTS["GLS"])
                 / "gene_corrs"
                 / "cohorts"
-                / cohort_name
+                / cohort
                 / reference_panel.lower()
                 / eqtl_model.lower()
         )
