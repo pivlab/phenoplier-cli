@@ -2,27 +2,27 @@
 This module contains enums used by the CLI commands.
 """
 
-from enum import Enum
+from enum import Enum, StrEnum
 
 
-class Cohort(str, Enum):
+class Cohort(StrEnum):
     _1000g_eur = "1000g_eur"
     phenomexcan_rapid_gwas = "phenomexcan_rapid_gwas"
     phenomexcan_astle = "phenomexcan_astle"
     phenomexcan_other = "phenomexcan_other"
 
 
-class RefPanel(str, Enum):
+class RefPanel(StrEnum):
     _1000g = "1000G"
     gtex_v8 = "GTEX_V8"
 
 
-class EqtlModel(str, Enum):
+class EqtlModel(StrEnum):
     mashr = "MASHR"
     elastic_net = "ELASTIC_NET"
 
 
-class MatrixDtype(str, Enum):
+class MatrixDtype(StrEnum):
     f32 = "float32"
     f64 = "float64"
 

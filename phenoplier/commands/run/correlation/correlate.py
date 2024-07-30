@@ -1,5 +1,6 @@
 import traceback
 import warnings
+import logging
 from typing import Annotated
 from pathlib import Path
 
@@ -15,59 +16,66 @@ from phenoplier.commands.util.enums import Cohort, RefPanel, EqtlModel
 from phenoplier.constants.cli import Corr_Correlate_Args as Args
 
 
+logger = logging.getLogger(__name__)
+
 def correlate(
-        cohort_name:                    Annotated[Cohort, Args.COHORT_NAME.value],
+        cohort:                         Annotated[Cohort, Args.COHORT_NAME.value],
         reference_panel:                Annotated[RefPanel, Args.REFERENCE_PANEL.value],
         eqtl_model:                     Annotated[EqtlModel, Args.EQTL_MODEL.value],
         chromosome:                     Annotated[int, Args.CHROMOSOME.value],
         smultixcan_condition_number:    Annotated[int, Args.SMULTIXCAN_CONDITION_NUMBER.value] = 30,
         compute_within_distance:        Annotated[bool, Args.COMPUTE_WITHIN_DISTANCE.value] = False,
         debug_mode:                     Annotated[bool, Args.DEBUG_MODE.value] = False,
-        project_dir:                    Annotated[Path, Args.PROJECT_DIR.value] = conf.CURRENT_DIR,
         input_dir:                      Annotated[Path, Args.INPUT_DIR.value] = None,
         output_dir:                     Annotated[Path, Args.OUTPUT_DIR.value] = None,
+        project_dir:                    Annotated[Path, Args.PROJECT_DIR.value] = conf.CURRENT_DIR,
 ):
     """
     Computes predicted expression correlations between all genes in the MultiPLIER models.
     """
 
     load_settings_files(project_dir)
-    cohort_name = cohort_name.lower()
+    cohort = cohort.lower()
     eqtl_model = eqtl_model.value
     warnings.filterwarnings("error")
 
     if not 1 <= chromosome <= 22:
         raise ValueError("Chromosome number must be between 1 and 22")
 
-    cohort_name = cohort_name.lower()
+    cohort = cohort.lower()
     eqtl_model_files_prefix = conf.TWAS["PREDICTION_MODELS"][f"{eqtl_model}_PREFIX"]
 
     # Output messages
-    print(f"Cohort name: {cohort_name}")
-    print(f"Reference panel: {reference_panel}")
-    print(f"eQTL model: {eqtl_model}) / {eqtl_model_files_prefix}")
-    print(f"Chromosome: {chromosome}")
-    print(f"S-MultiXcan condition number: {smultixcan_condition_number}")
+    logger.info(f"Cohort name: {cohort}")
+    logger.info(f"Reference panel: {reference_panel}")
+    logger.info(f"eQTL model: {eqtl_model}) / {eqtl_model_files_prefix}")
+    logger.info(f"Chromosome: {chromosome}")
+    logger.info(f"S-MultiXcan condition number: {smultixcan_condition_number}")
     if compute_within_distance:
-        print("Compute correlations within distance")
+        logger.info("Compute correlations within distance")
 
-    if output_dir is None:
+    if not output_dir:
         output_dir_base = (
                 Path(conf.RESULTS["GLS"])
                 / "gene_corrs"
                 / "cohorts"
-                / cohort_name
+                / cohort
                 / reference_panel.lower()
                 / eqtl_model.lower()
         )
     else:
         output_dir_base = output_dir
     output_dir_base.mkdir(parents=True, exist_ok=True)
-    print(f"Using output directory: {output_dir_base}")
+    logger.info(f"Using output directory: {output_dir_base}")
 
     # Load previous matrix generation pipeline results
-    pre_results_dir = output_dir_base if input_dir is None else input_dir
-    with open(pre_results_dir / "gwas_variant_ids.pkl", "rb") as handle:
+    pre_results_dir = output_dir_base if input_dir else input_dir
+    input_file = Path(pre_results_dir) / "gwas_variant_ids.pkl"
+    if not input_file.exists():
+        err_msg = f"Input file not found: {input_file}"
+        logger.exception(err_msg)
+        raise FileNotFoundError(err_msg)
+    with open(input_file, "rb") as handle:
         gwas_variants_ids_set = pickle.load(handle)
 
     spredixcan_genes_models = pd.read_pickle(pre_results_dir / "gene_tissues.pkl")
@@ -123,22 +131,22 @@ def correlate(
                     if not debug_mode:
                         raise e
 
-                    print(
+                    logger.info(
                         f"RuntimeWarning for genes {gene1_obj.ensembl_id} and {gene2_obj.ensembl_id}",
                         flush=True,
                     )
-                    print(traceback.format_exc(), flush=True)
+                    logger.info(traceback.format_exc(), flush=True)
 
                     gene_corrs.append(np.nan)
                 except Exception as e:
                     if not debug_mode:
                         raise e
 
-                    print(
+                    logger.info(
                         f"Exception for genes {gene1_obj.ensembl_id} and {gene2_obj.ensembl_id}",
                         flush=True,
                     )
-                    print(traceback.format_exc(), flush=True)
+                    logger.info(traceback.format_exc(), flush=True)
 
                     gene_corrs.append(np.nan)
 
@@ -157,12 +165,12 @@ def correlate(
     try:
         chol_mat = np.linalg.cholesky(gene_corrs_df.to_numpy())
         cov_inv = np.linalg.inv(chol_mat)
-        # print("Works!")
+        # logger.info("Works!")
     except Exception as e:
-        print(f"Cholesky decomposition failed: {str(e)}")
+        logger.info(f"Cholesky decomposition failed: {str(e)}")
 
     try:
         cholsigmainv = np.linalg.cholesky(np.linalg.inv(gene_corrs_df.to_numpy())).T
-        # print("Works!")
+        # logger.info("Works!")
     except Exception as e:
-        print(f"Cholesky decomposition failed (statsmodels.GLS): {str(e)}")
+        logger.info(f"Cholesky decomposition failed (statsmodels.GLS): {str(e)}")

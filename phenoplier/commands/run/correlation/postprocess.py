@@ -18,11 +18,11 @@ from phenoplier.correlations import (
 )
 
 
-def validate_inputs(cohort_name, reference_panel, eqtl_model):
-    assert cohort_name is not None and len(cohort_name) > 0, "A cohort name must be given"
+def validate_inputs(cohort, reference_panel, eqtl_model):
+    assert cohort is not None and len(cohort) > 0, "A cohort name must be given"
     assert reference_panel is not None and len(reference_panel) > 0, "A reference panel must be given"
     assert eqtl_model is not None and len(eqtl_model) > 0, "A prediction/eQTL model must be given"
-    return cohort_name.lower(), reference_panel, eqtl_model
+    return cohort.lower(), reference_panel, eqtl_model
 
 
 def plot_distribution_and_heatmap(full_corr_matrix, output_dir: Path):
@@ -53,7 +53,7 @@ def plot_distribution_and_heatmap(full_corr_matrix, output_dir: Path):
 
 
 def postprocess(
-        cohort_name:        Annotated[Cohort, Args.COHORT_NAME.value],
+        cohort:        Annotated[Cohort, Args.COHORT_NAME.value],
         reference_panel:    Annotated[RefPanel, Args.REFERENCE_PANEL.value],
         eqtl_model:         Annotated[EqtlModel, Args.EQTL_MODEL.value],
         plot_output_dir:    Annotated[Path, Args.PLOT_OUTPUT_DIR.value] = None,
@@ -67,14 +67,14 @@ def postprocess(
     correlation matrix with all genes.
     """
     load_settings_files(project_dir)
-    cohort_name = cohort_name.value
+    cohort = cohort.value
 
     if output_dir is None:
         output_dir_base = (
             Path(conf.RESULTS["GLS"])
             / "gene_corrs"
             / "cohorts"
-            / cohort_name
+            / cohort
             / reference_panel.lower()
             / eqtl_model.lower()
         )
