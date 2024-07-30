@@ -81,5 +81,5 @@ jobs:
         run: |
           export ENV_FOR_DYNACONF=test
           source .venv/bin/activate
-          PYTHONPATH=. pytest -rs --color=yes test/
-          # coverage report
+          PYTHONPATH=. coverage run -m pytest -rs --color=yes test/
+          coverage report -m
