@@ -7,7 +7,7 @@ runner = CliRunner()
 
 
 @mark.parametrize("options, expected_output", [
-    (["run --help", "run -h"], "Execute a specific Phenoplier pipeline."),
+    (["run --help", "run -h"], "Execute a specific Phenoplier functionality"),
 ])
 def test_options(options, expected_output):
     for i in range(len(options)):

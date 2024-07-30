@@ -42,8 +42,8 @@ cmd_group_run = typer.Typer(
 )
 cmd_group_gene_corr = typer.Typer(
     context_settings={"help_option_names": ["-h", "--help"]},
-    help="Execute a specific Phenoplier funcionality for the gene-gene correlation matrix generation. Except for the" 
-    "'pipeline' command, all the other commands are orgnized sequentially in text. For example, you need to run the"
+    help="Execute a specific Phenoplier functionality for the gene-gene correlation matrix generation. Except for the" 
+    "'pipeline' command, all the other commands are organized sequentially in text. For example, you need to run the"
     "'cov' command before the 'preprocess' command, and so on.",
     cls=OrderCommands
 )
