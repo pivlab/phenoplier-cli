@@ -86,8 +86,8 @@ def pipeline(
     #     logger.error(msg)
     #     exit(1)
     #
-    # logger.info("Running subroutine <correlate>...")
-    logger.error(output_dir)
+
+    logger.info("Running subroutine <correlate>...")
 
     def run_correlate(chromosome):
         suc, msg = invoke_corr_correlate(
@@ -109,7 +109,7 @@ def pipeline(
             exit(1)
         return suc
 
-    chromosomes = range(1, 2)
+    chromosomes = [1]
     # Use ThreadPoolExecutor for multithreading
     with concurrent.futures.ThreadPoolExecutor() as executor:
         # Start the operations and mark each future with its chromosome
