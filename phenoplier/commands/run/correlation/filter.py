@@ -32,7 +32,7 @@ def filter(
     load_settings_files(project_dir)
     cohort = cohort.value
 
-    if output_dir is None:
+    if not output_dir:
         output_dir_base = (
                 Path(conf.RESULTS["GLS"])
                 / "gene_corrs"

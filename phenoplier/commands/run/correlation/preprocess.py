@@ -70,7 +70,7 @@ def preprocess(
     eqtl_model = eqtl_model.value
     print(f"eQTL model: {eqtl_model}")
 
-    if output_dir is None:
+    if not output_dir:
         output_dir_base = (
                 Path(conf.RESULTS["GLS"])
                 / "gene_corrs"

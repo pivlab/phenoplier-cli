@@ -69,7 +69,7 @@ def postprocess(
     load_settings_files(project_dir)
     cohort = cohort.value
 
-    if output_dir is None:
+    if not output_dir:
         output_dir_base = (
             Path(conf.RESULTS["GLS"])
             / "gene_corrs"
@@ -84,7 +84,7 @@ def postprocess(
     output_dir_base.mkdir(parents=True, exist_ok=True)
     print(f"Using output dir base: {output_dir_base}")
     # Check input dir
-    input_dir_ = output_dir_base / "by_chr" if input_dir is None else input_dir
+    input_dir_ = output_dir_base / "by_chr" if input_dir else input_dir
     if not input_dir_.exists():
         raise ValueError(f"Gene correlations input dir does not exist: {input_dir_}")
     print(f"Gene correlations input dir: {input_dir_}")
