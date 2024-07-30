@@ -67,7 +67,7 @@ def cov(
     print(f"Using eQTL model: {eqtl_model} / {eqtl_model_files_prefix}")
 
     # Set up output directory
-    if output_dir is None:
+    if not output_dir:
         output_dir_base = (
                 Path(conf.RESULTS["GLS"])
                 / "gene_corrs"

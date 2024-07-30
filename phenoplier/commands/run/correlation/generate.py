@@ -63,9 +63,9 @@ def generate(
         eqtl_model: Annotated[EqtlModel, Args.EQTL_MODEL.value],
         lv_code: Annotated[int, Args.LV_CODE.value],
         lv_percentile: Annotated[float, Args.LV_PERCENTILE.value] = 0.05,
-        project_dir: Annotated[Path, Args.PROJECT_DIR.value] = conf.CURRENT_DIR,
         genes_symbols_dir: Annotated[Path, Args.GENES_SYMBOLS_DIR.value] = None,
         output_dir: Annotated[Path, Args.OUTPUT_DIR.value] = None,
+        project_dir: Annotated[Path, Args.PROJECT_DIR.value] = conf.CURRENT_DIR,
 ):
     """
     Computes an LV-specific correlation matrix by using the top genes in that LV only.
@@ -76,7 +76,7 @@ def generate(
     lv_code = "LV" + str(lv_code)
     load_settings_files(project_dir)
 
-    if output_dir is None:
+    if not output_dir:
         output_dir_base = (
                 Path(conf.RESULTS["GLS"])
                 / "gene_corrs"
