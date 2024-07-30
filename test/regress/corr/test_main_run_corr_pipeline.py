@@ -22,10 +22,10 @@ _BASE_COMMAND = (
     "-r {reference_panel} "
     "-m {eqtl_model} "
     "-g {gwas_file} "
-    "-s {spredixcan_dir} "
-    "-n {output_file_name} "
+    "-s {spredixcan_folder} "
+    "-n {spredixcan_file_pattern} "
     "-f {smultixcan_file} "
-    # "-o {output_dir}"
+    "-o {output_dir} "
 )
 
 # Define the test output directory
@@ -38,43 +38,43 @@ test_data_dir = Path(conf.TEST_DIR) / "data/gene-corr/99_all_results/mashr/"
 @mark.corr
 # Parameterize the test cases
 @mark.parametrize(
-    "cohort, gwas_file, spredixcan_dir, output_file_name, smultixcan_file, reference_panel, eqtl_model, output_dir",
+    "cohort, reference_panel, eqtl_model, "  # Command options
+    "gwas_file, spredixcan_folder, spredixcan_file_pattern, smultixcan_file, "  # Preprocess options
+    "output_dir",  # Command options with default values
     [
         (
                 "phenomexcan_rapid_gwas",
+                "GTEX_V8",
+                "MASHR",
                 "/media/haoyu/extradrive1/alpine_data/pivlab/data/phenoplier/data/phenomexcan/gwas_parsing/full/22617_7112.txt.gz",
                 "/media/haoyu/extradrive1/alpine_data/pivlab/data/phenoplier/data/phenomexcan/gene_assoc/spredixcan/rapid_gwas_project/22617_7112",
                 "22617_7112-gtex_v8-{tissue}-2018_10.csv",
                 "/media/haoyu/extradrive1/alpine_data/pivlab/data/phenoplier/data/phenomexcan/gene_assoc/smultixcan/rapid_gwas_project/smultixcan_22617_7112_ccn30.tsv.gz",
-                "GTEX_V8",
-                "MASHR",
                 output_dir_base
         ),
         # Add more test cases here as needed
     ]
 )
-def test_cli_command(cohort, gwas_file, spredixcan_dir, output_file_name, smultixcan_file, reference_panel,
-                     eqtl_model, output_dir):
+def test_cli_command(cohort,
+                     reference_panel,
+                     eqtl_model,
+                     gwas_file,
+                     spredixcan_folder,
+                     spredixcan_file_pattern,
+                     smultixcan_file,
+                     output_dir):
     # -p <project_dir> is omitted here
-    suc, msg = invoke_corr_preprocess(
+    command = _BASE_COMMAND.format(
         cohort=cohort,
-        gwas_file=gwas_file,
-        spredixcan_dir=spredixcan_dir,
-        output_file_name=output_file_name,
-        smultixcan_file=smultixcan_file,
         reference_panel=reference_panel,
         eqtl_model=eqtl_model,
-        output_dir = output_dir,
+        gwas_file=gwas_file,
+        spredixcan_folder=spredixcan_folder,
+        spredixcan_file_pattern=spredixcan_file_pattern,
+        smultixcan_file=smultixcan_file,
+        output_dir=output_dir,
     )
-    assert suc, msg
-
-    # gene_tissues_filename = "gene_tissues.pkl"
-    # test_gene_tissues = output_dir / gene_tissues_filename
-    # ref_gene_tissues = test_data_dir / gene_tissues_filename
-    # # Assert the output files exist
-    # assert test_gene_tissues.exists(), f"gene-tissues.pkl not found in {output_dir}"
-    # # Load the pickled dataframes
-    # df1 = load_pickle(test_gene_tissues)
-    # df2 = load_pickle(ref_gene_tissues)
-    # # Assert the output matches the expected output
-    # assert compare_dataframes_equal(df1, df2), f"Output file {gene_tissues_filename} does not match expected output"
+    print(output_dir)
+    print(f"Testing command: {command}")
+    result = runner.invoke(cli.app, command)
+    assert result.exit_code == 0, f"Command failed with exit code {result.exit_code}\nOutput: {result.stdout}"
