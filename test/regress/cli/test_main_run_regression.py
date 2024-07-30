@@ -2940,7 +2940,8 @@ def test_gls_cli_use_covar_all(output_file):
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using covariates: " in r_output
-    assert all(c in r_output for c in gls_cli.COVAR_OPTIONS if c != "all")
+    from phenoplier.commands.util.enums import CovarOptions
+    assert all(c.value in r_output for c in CovarOptions if c != CovarOptions.ALL and c != CovarOptions.DEFAULT), r_output
 
     assert output_file.exists()
     results_covar_all = pd.read_csv(output_file, sep="\t")
