@@ -1,2 +1,2 @@
 __name__ = "phenoplier"
-__version__ = "0.2.4a2"
+__version__ = "0.2.4a6"
