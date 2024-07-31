@@ -87,8 +87,10 @@ def preprocess(
     # Data Loading
     print(Text("[--- Data Loading ---]", style="blue"))
     # Load MultiPLIER Z genes
+    multiplier_z = pd.read_pickle(conf.GENE_MODULE_MODEL["MODEL_Z_MATRIX_FILE"])
+    multiplier_z = pd.DataFrame.from_dict(multiplier_z['data'])
     print(f"Loading MultiPLIER Z genes from: {conf.GENE_MODULE_MODEL['MODEL_Z_MATRIX_FILE']}")
-    multiplier_z_genes = pd.read_pickle(conf.GENE_MODULE_MODEL["MODEL_Z_MATRIX_FILE"]).index.tolist()
+    multiplier_z_genes = multiplier_z.index.tolist()
     if len(multiplier_z_genes) != len(set(multiplier_z_genes)):
         raise ValueError("MultiPLIER Z genes have duplicates.")
     print(f"Done. Number of MultiPLIER Z genes: {len(multiplier_z_genes)}")
