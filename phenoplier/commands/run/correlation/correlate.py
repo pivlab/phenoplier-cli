@@ -69,7 +69,7 @@ def correlate(
     logger.info(f"Using output directory: {output_dir_base}")
 
     # Load previous matrix generation pipeline results
-    pre_results_dir = output_dir_base if input_dir else input_dir
+    pre_results_dir = output_dir_base if not input_dir else input_dir
     input_file = Path(pre_results_dir) / "gwas_variant_ids.pkl"
     if not input_file.exists():
         err_msg = f"Input file not found: {input_file}"

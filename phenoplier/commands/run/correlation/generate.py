@@ -73,6 +73,7 @@ def generate(
 
     eqtl_model = eqtl_model.lower()
     reference_panel = reference_panel.lower()
+    # lv_code = "LV" + str(lv_code)
     lv_code = "LV" + str(lv_code)
     load_settings_files(project_dir)
 
@@ -96,6 +97,10 @@ def generate(
         raise FileNotFoundError(f"No gene_corrs files found in {gene_corrs_dir}")
     # Load the multiplier_z matrix
     multiplier_z = pd.read_pickle(conf.GENE_MODULE_MODEL["MODEL_Z_MATRIX_FILE"])
+    # multiplier_z = pd.DataFrame.from_dict(multiplier_z['data'])
+    print()
+    print(f"LV: {lv_code}")
+    print(f"Using multiplier_z matrix from {conf.GENE_MODULE_MODEL['MODEL_Z_MATRIX_FILE']}")
 
     lvs_chunks = [[lv_code]]
 

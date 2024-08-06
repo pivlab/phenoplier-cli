@@ -52,8 +52,8 @@ def filter(
     gene_objs = [Gene(name=gene_name) for gene_name in gene_corrs.index]
 
     for full_distance in distances:
+        print(f"Using within distance: {full_distance}")
         distance = full_distance / 2.0
-        print(f"Using within distance: {distance}")
 
         genes_within_distance = np.eye(len(gene_objs)).astype(bool)
         for g0_idx in range(len(gene_objs) - 1):
