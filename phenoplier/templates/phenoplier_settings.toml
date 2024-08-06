@@ -22,7 +22,7 @@ BASE_DIR = "@format {this.DATA_DIR}/multiplier"
 # MultiPLIER model files
 MODEL_SUMMARY_FILE = "@format {this.GENE_MODULE_MODEL.BASE_DIR}/multiplier_model_summary.pkl"
 #MODEL_Z_MATRIX_FILE = "@format {this.GENE_MODULE_MODEL.BASE_DIR}/multiplier_model_z.pkl"
-MODEL_Z_MATRIX_FILE = "@format {this.GENE_MODULE_MODEL.BASE_DIR}/htp_plier_model_k0.75_frac1_Zmatrix.pkl"
+MODEL_Z_MATRIX_FILE = "@format {this.GENE_MODULE_MODEL.BASE_DIR}/marc_model_z.pkl"
 MODEL_B_MATRIX_FILE = "@format {this.GENE_MODULE_MODEL.BASE_DIR}/multiplier_model_b.pkl"
 MODEL_U_MATRIX_FILE = "@format {this.GENE_MODULE_MODEL.BASE_DIR}/multiplier_model_u.pkl"
 MODEL_U_AUC_MATRIX_FILE = "@format {this.GENE_MODULE_MODEL.BASE_DIR}/multiplier_model_u_auc.pkl"

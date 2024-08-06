@@ -16,6 +16,7 @@ class DownloadAction(str, Enum):
     test_data = "test_data"
     full_data = "full_data"
     demo_data = "demo_data"
+    smul_data = "smul_data"
 
 
 # Todo: add demo mode, differentiate between test and full data
@@ -38,10 +39,14 @@ full_actions = test_actions + [
     "download_smultixcan_results",
 ]
 
+smul_data = [
+    "download_smultixcan_results",
+]
+
 ActionMap = {
     DownloadAction.test_data: test_actions,
     DownloadAction.full_data: full_actions,
-    # DownloadAction.demo_data: test_actions,
+    DownloadAction.smul_data: smul_data,
 }
 
 
