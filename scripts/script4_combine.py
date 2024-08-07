@@ -22,10 +22,10 @@ def tsv():
     r.to_csv("/tmp/phenoplier/results/gls/lv1-lv76-all-traits.tsv", sep="\t", index=False)
 
 
-def pickle():
-    INPUT_SMULTIXCAN_DIR = "/tmp/phenoplier/results/gls/lv1-lv76-all-traits"
+def pickle(intput_dir: Path, output_dir: Path):
+    # INPUT_SMULTIXCAN_DIR = "/tmp/phenoplier/results/gls/lv1-lv76-all-traits"
 
-    results_files = list(Path(INPUT_SMULTIXCAN_DIR).rglob("*.tsv.gz"))
+    results_files = list(intput_dir.rglob("*.tsv.gz"))
     pheno_pattern = re.compile(r"gls_phenoplier-(?P<pheno_code>.+).tsv.gz")
     pheno_codes = [pheno_pattern.search(f.name).group("pheno_code") for f in results_files]
 
@@ -33,7 +33,7 @@ def pickle():
     data_dict = {}
 
     # Read each file and store in the dictionary with filename as key
-    for f in glob("/tmp/phenoplier/results/gls/lv1-lv76-all-traits/*.tsv.gz"):
+    for f in glob(str(input_dir) + "/*.tsv.gz"):
         df = pd.read_csv(f, sep="\t")
         match = pheno_pattern.search(f)
         assert match
@@ -43,9 +43,13 @@ def pickle():
 
     # Save the dictionary of dataframes as a pickle file
     assert len(data_dict.keys()) == 4049, len(data_dict.keys())
-    with open("/tmp/phenoplier/results/gls/lv1-lv76-all-traits.pkl", "wb") as handle:
+    with open(output_dir, "wb") as handle:
         pd.to_pickle(data_dict, handle)
 
 
 if __name__ == "__main__":
-    pickle()
+    # input = Path("/tmp/phenoplier/results/gls/lv1-lv76-all-traits.pkl")
+    input_dir = Path("/tmp/phenoplier/results/gls/all-LVs-all-traits")
+    output_dir = Path("/tmp/phenoplier/results/gls/all-LVs-all-traits.pkl")
+    pickle(input_dir, output_dir)
+
