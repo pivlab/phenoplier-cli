@@ -88,7 +88,7 @@ def preprocess(
     print(Text("[--- Data Loading ---]", style="blue"))
     # Load MultiPLIER Z genes
     multiplier_z = pd.read_pickle(conf.GENE_MODULE_MODEL["MODEL_Z_MATRIX_FILE"])
-    multiplier_z = pd.DataFrame.from_dict(multiplier_z['data'])
+    # multiplier_z = pd.DataFrame.from_dict(multiplier_z['data'])
     print(f"Loading MultiPLIER Z genes from: {conf.GENE_MODULE_MODEL['MODEL_Z_MATRIX_FILE']}")
     multiplier_z_genes = multiplier_z.index.tolist()
     if len(multiplier_z_genes) != len(set(multiplier_z_genes)):
@@ -211,23 +211,24 @@ def preprocess(
                 tissue_variances[tissue] = tissue_var
         return tissue_variances
 
-    with Progress(
-        SpinnerColumn(),
-        TextColumn("[progress.description]{task.description}"),
-    ) as progress:
-        progress.add_task(description="Computing gene variances (this step takes some time)...", total=None)
-        spredixcan_genes_tissues_variance = spredixcan_genes_models.apply(_get_gene_variances, axis=1)
-        spredixcan_genes_models = spredixcan_genes_models.join(
-            spredixcan_genes_tissues_variance.rename("tissues_variances"))
+# Todo: check if this routine is necessary
+    # with Progress(
+    #     SpinnerColumn(),
+    #     TextColumn("[progress.description]{task.description}"),
+    # ) as progress:
+    #     progress.add_task(description="Computing gene variances (this step takes some time)...", total=None)
+    #     spredixcan_genes_tissues_variance = spredixcan_genes_models.apply(_get_gene_variances, axis=1)
+    #     spredixcan_genes_models = spredixcan_genes_models.join(
+    #         spredixcan_genes_tissues_variance.rename("tissues_variances"))
 
-        spredixcan_genes_sum_of_n_snps_used = spredixcan_dfs.groupby("gene_id")["n_snps_used"].sum().rename(
-            "n_snps_used_sum")
-        spredixcan_genes_models = spredixcan_genes_models.join(spredixcan_genes_sum_of_n_snps_used)
+    #     spredixcan_genes_sum_of_n_snps_used = spredixcan_dfs.groupby("gene_id")["n_snps_used"].sum().rename(
+    #         "n_snps_used_sum")
+    #     spredixcan_genes_models = spredixcan_genes_models.join(spredixcan_genes_sum_of_n_snps_used)
 
-        spredixcan_genes_sum_of_n_snps_in_model = spredixcan_dfs.groupby("gene_id")["n_snps_in_model"].sum().rename(
-            "n_snps_in_model_sum")
-        spredixcan_genes_models = spredixcan_genes_models.join(spredixcan_genes_sum_of_n_snps_in_model)
+    #     spredixcan_genes_sum_of_n_snps_in_model = spredixcan_dfs.groupby("gene_id")["n_snps_in_model"].sum().rename(
+    #         "n_snps_in_model_sum")
+    #     spredixcan_genes_models = spredixcan_genes_models.join(spredixcan_genes_sum_of_n_snps_in_model)
 
-        output_file = output_dir_base / "spredixcan_genes_models.pkl"
-        spredixcan_genes_models.to_pickle(output_file)
-    print(f"Done. Spreadixcan genes models saved in: {output_file}")
+    #     output_file = output_dir_base / "spredixcan_genes_models.pkl"
+    #     spredixcan_genes_models.to_pickle(output_file)
+    # print(f"Done. Spreadixcan genes models saved in: {output_file}")

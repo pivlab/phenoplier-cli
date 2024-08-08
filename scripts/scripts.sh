@@ -123,6 +123,7 @@ bash ${CODE_DIR}/01_gls_phenoplier.sh \
   --output-file ${OUTPUT_DIR}/gls_phenoplier-${pheno_id}.tsv.gz
 
 #LV1, LV3, LV28, LV34, LV37, LV43, LV76
+# 1, 3, 28, 34, 37, 43, 76
 
 21001_raw, 23104_raw, E4_OBESITY, NAFLD, 20002_1223, E66, E4_OBESITYNAS, 21002_raw, 3160_raw
 

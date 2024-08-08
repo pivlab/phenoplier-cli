@@ -8,6 +8,7 @@ import tempfile
 import subprocess
 import tarfile
 import logging
+import zipfile
 from collections import defaultdict
 from pathlib import Path
 from typing import Dict
@@ -77,6 +78,17 @@ class Downloader:
         "full": {},  # empty means all actions/methods
     }
 
+    def download_smultiscan_results_zip(**kwargs):
+        output_file = conf.TWAS["SMULTIXCAN_DATA_RAPID_GWAS_ZIP"]
+        curl(
+            "https://zenodo.org/records/13274496/files/rapid_gwas.zip?download=1",
+            output_file,
+            "97b5938db1c3508fdd5aecea2f555a80",
+            logger=logger,
+        )
+        with zipfile.ZipFile(conf.TWAS["SMULTIXCAN_DATA_RAPID_GWAS_ZIP"], 'r') as zip_ref:
+            zip_ref.extractall(conf.TWAS["SMULTIXCAN_DATA_BASE_DIR"])
+        
 
     def download_smultixcan_results(**kwargs):
         def _download_pheno(pheno, output_file):
@@ -182,7 +194,7 @@ class Downloader:
             "cba910ee6f93eaed9d318edcd3f1ce18",
             logger=logger,
         )
-
+        
     def download_phenomexcan_rapid_gwas_data_dict_file(**kwargs):
         output_file = conf.TWAS["RAPID_GWAS_DATA_DICT_FILE"]
         curl(
