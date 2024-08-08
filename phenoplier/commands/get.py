@@ -17,6 +17,7 @@ class DownloadAction(str, Enum):
     full_data = "full_data"
     demo_data = "demo_data"
     smul_data = "smul_data"
+    t21_data = "t21_data"
 
 
 # Todo: add demo mode, differentiate between test and full data
@@ -43,10 +44,28 @@ smul_data = [
     "download_smultixcan_results",
 ]
 
+t21_actions = [
+    "download_phenomexcan_rapid_gwas_pheno_info",
+    "download_phenomexcan_rapid_gwas_data_dict_file",
+    "download_uk_biobank_coding_3",
+    "download_uk_biobank_coding_6",
+    "download_phenomexcan_gtex_gwas_pheno_info",
+    "download_gene_map_id_to_name",
+    "download_gene_map_name_to_id",
+    "download_biomart_genes_hg38",
+    # "download_multiplier_model_z_pkl",
+    # "download_snps_covariance_gtex_mashr",
+    # "download_snps_covariance_1000g_mashr",
+    "download_predixcan_mashr_prediction_models",
+    # "download_smultixcan_results",
+    "download_smultiscan_results_zip",
+]
+
 ActionMap = {
     DownloadAction.test_data: test_actions,
     DownloadAction.full_data: full_actions,
     DownloadAction.smul_data: smul_data,
+    DownloadAction.t21_data: t21_actions,
 }
 
 

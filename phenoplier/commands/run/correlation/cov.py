@@ -112,7 +112,7 @@ def cov(
     all_snps_in_models = set(all_gene_snps["varID"].unique())
 
     multiplier_z = pd.read_pickle(conf.GENE_MODULE_MODEL["MODEL_Z_MATRIX_FILE"])
-    multiplier_z = pd.DataFrame.from_dict(multiplier_z['data'])
+    # multiplier_z = pd.DataFrame.from_dict(multiplier_z['data'])
     print(f"Using multiplier z: {conf.GENE_MODULE_MODEL["MODEL_Z_MATRIX_FILE"]}")
     # multiplier_z_marc = pd.read_pickle(conf.GENE_MODULE_MODEL["MODEL_Z_MATRIX_FILE_M"])
     # multiplier_z_marc = pd.DataFrame.from_dict(multiplier_z_marc['data'])
