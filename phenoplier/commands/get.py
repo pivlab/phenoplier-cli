@@ -34,6 +34,7 @@ test_actions = [
     "download_snps_covariance_gtex_mashr",
     "download_snps_covariance_1000g_mashr",
     "download_predixcan_mashr_prediction_models",
+    "download_reference_panel_gtex_v8"
 ]
 
 full_actions = test_actions + [
@@ -54,11 +55,12 @@ t21_actions = [
     "download_gene_map_name_to_id",
     "download_biomart_genes_hg38",
     # "download_multiplier_model_z_pkl",
-    # "download_snps_covariance_gtex_mashr",
+    "download_snps_covariance_gtex_mashr",
     # "download_snps_covariance_1000g_mashr",
     "download_predixcan_mashr_prediction_models",
     # "download_smultixcan_results",
     "download_smultiscan_results_zip",
+    "download_reference_panel_gtex_v8",
 ]
 
 ActionMap = {
