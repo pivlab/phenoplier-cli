@@ -80,10 +80,10 @@ class Downloader:
 
 
     def download_reference_panel_gtex_v8(**kwargs):
-        output_path = Path(conf.TWAS.LD_BLOCKS.GTEX_V8_GENOTYPE_DIR)
+        output_path = Path(conf.TWAS.LD_BLOCKS.GTEX_V8_GENOTYPE_DIR).parent
         output_file = output_path / "reference_panel_gtex_v8.zip"
         curl(
-            "https://zenodo.org/records/13274496/files/rapid_gwas.zip?download=1",
+            "https://zenodo.org/records/13308735/files/reference_panel_gtex_v8.zip?download=1",
             output_file,
             "ab12073a94ee71d57f6953881caa3c5e",
             logger=logger,
