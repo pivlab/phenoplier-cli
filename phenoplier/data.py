@@ -78,6 +78,19 @@ class Downloader:
         "full": {},  # empty means all actions/methods
     }
 
+
+    def download_reference_panel_gtex_v8(**kwargs):
+        output_path = Path(conf.TWAS.LD_BLOCKS.GTEX_V8_GENOTYPE_DIR)
+        output_file = output_path / "reference_panel_gtex_v8.zip"
+        curl(
+            "https://zenodo.org/records/13274496/files/rapid_gwas.zip?download=1",
+            output_file,
+            "ab12073a94ee71d57f6953881caa3c5e",
+            logger=logger,
+        )
+        with zipfile.ZipFile(output_file, 'r') as zip_ref:
+            zip_ref.extractall(output_path)
+
     def download_smultiscan_results_zip(**kwargs):
         output_file = conf.TWAS["SMULTIXCAN_DATA_RAPID_GWAS_ZIP"]
         curl(
