@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Annotated
 
 import pandas as pd
+import numpy as np
 import typer
 import pickle
 from rich import print
@@ -119,6 +120,9 @@ def preprocess(
     print("Done.")
 
     # Data Processing
+    # global spredixcan_genes_models
+    # global spredixcan_gene_obj
+
     print(Text("[--- Data Processing ---]", style="blue"))
     with Progress(
             SpinnerColumn(),
@@ -228,10 +232,12 @@ def preprocess(
         # save output
         spredixcan_genes_models.to_pickle(output_dir_base / "gene_tissues.pkl")
 
-        spredixcan_gene_obj = {gene_id: Gene(ensembl_id=gene_id) for gene_id in spredixcan_genes_models.index}
     print("Done")
-    # Todo: resume here
+
     def _get_gene_pc_variance(gene_row):
+        """
+        Add genes' variance captured by principal components
+        """
         gene_id = gene_row.name
         gene_tissues = gene_row["tissue"]
         gene_obj = spredixcan_gene_obj[gene_id]
@@ -242,18 +248,6 @@ def preprocess(
             model_type=eqtl_model,
         )
         return s
-
-    with Progress(
-            SpinnerColumn(),
-            TextColumn("[progress.description]{task.description}"),
-    ) as progress:
-        progress.add_task(description="Computing gene PC variances (this step takes some time)...", total=None)
-        # Add covariates based on S-PrediXcan results
-
-        spredixcan_genes_tissues_pc_variance = spredixcan_genes_models.apply(_get_gene_pc_variance, axis=1)
-        spredixcan_genes_models = spredixcan_genes_models.join(
-            spredixcan_genes_tissues_pc_variance.rename("tissues_pc_variances"))
-    print("Done")
 
     def _get_gene_variances(gene_row):
         gene_id = gene_row.name
@@ -271,24 +265,154 @@ def preprocess(
                 tissue_variances[tissue] = tissue_var
         return tissue_variances
 
-# Todo: check if this routine is necessary
-# with Progress(
-#     SpinnerColumn(),
-#     TextColumn("[progress.description]{task.description}"),
-# ) as progress:
-#     progress.add_task(description="Computing gene variances (this step takes some time)...", total=None)
-#     spredixcan_genes_tissues_variance = spredixcan_genes_models.apply(_get_gene_variances, axis=1)
-#     spredixcan_genes_models = spredixcan_genes_models.join(
-#         spredixcan_genes_tissues_variance.rename("tissues_variances"))
+    # Add covariates based on S-PrediXcan results. This extends the previous file with more columns
+    with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+    ) as progress:
+        progress.add_task(description="Adding covariates based on S-PrediXcan results (this step takes some time)...", total=None)
+        # Get gene's objects
+        spredixcan_gene_obj = {gene_id: Gene(ensembl_id=gene_id) for gene_id in spredixcan_genes_models.index}
 
-#     spredixcan_genes_sum_of_n_snps_used = spredixcan_dfs.groupby("gene_id")["n_snps_used"].sum().rename(
-#         "n_snps_used_sum")
-#     spredixcan_genes_models = spredixcan_genes_models.join(spredixcan_genes_sum_of_n_snps_used)
+        # Add genes' variance captured by principal components
+        spredixcan_genes_tissues_pc_variance = spredixcan_genes_models.apply(_get_gene_pc_variance, axis=1)
+        # add to spredixcan_genes_models
+        spredixcan_genes_models = spredixcan_genes_models.join(
+            spredixcan_genes_tissues_pc_variance.rename("tissues_pc_variances"))
 
-#     spredixcan_genes_sum_of_n_snps_in_model = spredixcan_dfs.groupby("gene_id")["n_snps_in_model"].sum().rename(
-#         "n_snps_in_model_sum")
-#     spredixcan_genes_models = spredixcan_genes_models.join(spredixcan_genes_sum_of_n_snps_in_model)
+        # Add gene variance per tissue
+        spredixcan_genes_tissues_variance = spredixcan_genes_models.apply(_get_gene_variances, axis=1)
+        # data validation
+        if not spredixcan_genes_tissues_variance.loc["ENSG00000000419"]:
+            raise ValueError()
+        # add to spredixcan_genes_models
+        spredixcan_genes_models = spredixcan_genes_models.join(
+            spredixcan_genes_tissues_variance.rename("tissues_variances"))
 
-#     output_file = output_dir_base / "spredixcan_genes_models.pkl"
-#     spredixcan_genes_models.to_pickle(output_file)
-# print(f"Done. Spreadixcan genes models saved in: {output_file}")
+        # Count number of SNPs predictors used across tissue models
+        spredixcan_genes_sum_of_n_snps_used = spredixcan_dfs.groupby("gene_id")["n_snps_used"].sum().rename(
+            "n_snps_used_sum")
+        # add sum of snps used to spredixcan_genes_models
+        spredixcan_genes_models = spredixcan_genes_models.join(
+            spredixcan_genes_sum_of_n_snps_used
+        )
+
+        # Count number of SNPs predictors in models across tissue models
+        spredixcan_genes_sum_of_n_snps_in_model = (
+            spredixcan_dfs.groupby("gene_id")["n_snps_in_model"]
+            .sum()
+            .rename("n_snps_in_model_sum")
+        )
+        # add sum of snps in model to spredixcan_genes_models
+        spredixcan_genes_models = spredixcan_genes_models.join(
+            spredixcan_genes_sum_of_n_snps_in_model
+        )
+    print("Done")
+
+    # Summarize prediction models for each gene
+    def _summarize_gene_models(gene_id):
+        """
+        For a given gene ID, it returns a dataframe with predictor SNPs in rows and tissues in columns, where
+        values are the weights of SNPs in those tissues.
+        It can contain NaNs.
+        """
+        gene_obj = spredixcan_gene_obj[gene_id]
+        gene_tissues = spredixcan_genes_models.loc[gene_id, "tissue"]
+
+        gene_models = {}
+        gene_unique_snps = set()
+        for t in gene_tissues:
+            gene_model = gene_obj.get_prediction_weights(tissue=t, model_type=eqtl_model)
+            gene_models[t] = gene_model
+
+            gene_unique_snps.update(set(gene_model.index))
+
+        df = pd.DataFrame(
+            data=np.nan, index=list(gene_unique_snps), columns=list(gene_tissues)
+        )
+
+        for t in df.columns:
+            for snp in df.index:
+                gene_model = gene_models[t]
+
+                if snp in gene_model.index:
+                    df.loc[snp, t] = gene_model.loc[snp]
+
+        return df
+
+    print(Text("[--- Result Generation ---]", style="blue"))
+    with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+    ) as progress:
+        progress.add_task(description="Summarizing prediction models for each gene ...", total=None)
+
+        gene_models = {}
+        for gene_id in spredixcan_genes_models.index:
+            gene_models[gene_id] = _summarize_gene_models(gene_id)
+        # save results
+        import gzip
+        output_file = output_dir_base / "gene_tissues_models.pkl.gz"
+        with gzip.GzipFile(output_file, "w") as f:
+            pickle.dump(gene_models, f)
+        # validate output
+        with gzip.GzipFile(output_file, "r") as f:
+            _tmp = pickle.load(f)
+        if not len(gene_models) == len(_tmp):
+            raise ValueError()
+        if not gene_models["ENSG00000000419"].equals(_tmp["ENSG00000000419"]):
+            raise ValueError()
+
+    print(f"Done. Gene tissues models saved in: {output_file}")
+
+    # Count number of unique SNPs predictors used and available across tissue models
+    def _count_unique_snps(gene_id):
+        """
+        For a gene_id, it counts unique SNPs in all models and their intersection with GWAS SNPs (therefore, used by S-PrediXcan).
+        """
+        gene_tissues = spredixcan_genes_models.loc[gene_id, "tissue"]
+
+        gene_unique_snps = set()
+        for t in gene_tissues:
+            t_snps = set(gene_models[gene_id].index)
+            gene_unique_snps.update(t_snps)
+
+        gene_unique_snps_in_gwas = gwas_variants_ids_set.intersection(gene_unique_snps)
+
+        return pd.Series(
+            {
+                "unique_n_snps_in_model": len(gene_unique_snps),
+                "unique_n_snps_used": len(gene_unique_snps_in_gwas),
+            }
+        )
+
+    with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+    ) as progress:
+        progress.add_task(description="Counting number of unique SNPs predictors used and available across tissue "
+                                      "models ...", total=None)
+
+        # get unique snps for all genes
+        spredixcan_genes_unique_n_snps = spredixcan_genes_models.groupby("gene_id").apply(
+            lambda x: _count_unique_snps(x.name)
+        )
+
+        if not (
+                spredixcan_genes_unique_n_snps["unique_n_snps_in_model"]
+                >= spredixcan_genes_unique_n_snps["unique_n_snps_used"]
+        ).all():
+            raise ValueError(
+                "Number of unique SNPs in the model must be greater than or equal to the number of unique SNPs used.")
+        # add unique snps to spredixcan_genes_models
+        spredixcan_genes_models = spredixcan_genes_models.join(spredixcan_genes_unique_n_snps)
+        # save
+        # this is important, other scripts depend on gene_name to be unique
+        if not spredixcan_genes_models["gene_name"].is_unique:
+            raise ValueError("Duplicate gene names found.")
+        if spredixcan_genes_models.isna().any(None):
+            raise ValueError("NaN values found")
+
+        output_file = output_dir_base / "gene_tissues.pkl"
+        spredixcan_genes_models.to_pickle(output_file)
+    print(f"Done. Gene tissues saved in: {output_file}")
