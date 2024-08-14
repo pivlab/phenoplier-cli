@@ -2,7 +2,7 @@ import pytest
 import numpy as np
 import pandas as pd
 
-from phenoplier.commands.run.correlation.cov import covariance
+from phenoplier.commands.run.correlation.cov import covariance, compute_snps_cov
 
 
 @pytest.fixture
@@ -53,3 +53,4 @@ def test_covariance_constant_values(generate_test_data):
     result = covariance(constant_df, np.float64)
     expected = constant_df.cov()
     pd.testing.assert_frame_equal(result, expected, rtol=1e-10, atol=1e-10)
+

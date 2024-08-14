@@ -94,7 +94,7 @@ def cov(
     if len(mashr_models_db_files) != NUM_MAX_FILES:
         raise ValueError(f"Number of MASHR models is not {NUM_MAX_FILES}: {len(mashr_models_db_files)}")
     
-
+    # Gett SNPs in predictions models
     all_variants_ids = []
 
     for m in mashr_models_db_files:
@@ -111,13 +111,13 @@ def cov(
     all_gene_snps = pd.concat(all_variants_ids, ignore_index=True)
     all_snps_in_models = set(all_gene_snps["varID"].unique())
 
+    # MultiPLIER Z
     multiplier_z = pd.read_pickle(conf.GENE_MODULE_MODEL["MODEL_Z_MATRIX_FILE"])
-    # multiplier_z = pd.DataFrame.from_dict(multiplier_z['data'])
     print(f"Using multiplier z: {conf.GENE_MODULE_MODEL["MODEL_Z_MATRIX_FILE"]}")
-    # multiplier_z_marc = pd.read_pickle(conf.GENE_MODULE_MODEL["MODEL_Z_MATRIX_FILE_M"])
-    # multiplier_z_marc = pd.DataFrame.from_dict(multiplier_z_marc['data'])
-    # print(f"Using multiplier z: {conf.GENE_MODULE_MODEL["MODEL_Z_MATRIX_FILE_M"]}")
-    variants_metadata = pd.read_parquet(get_reference_panel_file(reference_panel_dir, "_metadata"), columns=["id"])
+
+    # Reference panel variants metadata
+    ref_panel_input = get_reference_panel_file(reference_panel_dir, "_metadata")
+    variants_metadata = pd.read_parquet(ref_panel_input, columns=["id"])
     variants_ids_with_genotype = set(variants_metadata["id"])
 
     n_snps_in_models = len(all_snps_in_models)
@@ -126,12 +126,15 @@ def cov(
     print(f"Number of SNPs in reference panel: {n_snps_in_ref_panel}")
     print(f"Fraction of SNPs in reference panel: {n_snps_in_ref_panel / n_snps_in_models}")
 
+    # Get final list of genes in MultiPLIER
     genes_in_z = [
         Gene(name=gene_name).ensembl_id
         for gene_name in multiplier_z.index
         if gene_name in Gene.GENE_NAME_TO_ID_MAP()
     ]
     genes_in_z = set(genes_in_z)
+    print(f"Number of genes in the MultiPLIER Z model: {len(genes_in_z)}")
+    # keep genes in MultiPLIER only
     all_gene_snps = all_gene_snps[all_gene_snps["gene"].isin(genes_in_z)]
 
     all_snps_in_models_multiplier = set(all_gene_snps["varID"])
@@ -141,9 +144,17 @@ def cov(
     print(f"Number of SNPs in reference panel (MultiPLIER genes): {n_snps_in_ref_panel}")
     print(f"Fraction of SNPs in reference panel (MultiPLIER genes): {n_snps_in_ref_panel / n_snps_in_models}")
 
+    # Preprocess SNPs data
     variants_ld_block_df = all_gene_snps[["varID"]].drop_duplicates()
     variants_info = variants_ld_block_df["varID"].str.split("_", expand=True)
+    # validate data
+    if not variants_ld_block_df.shape[0] == variants_info.shape[0]:
+        raise ValueError("Dataframes do not have the same number of rows")
     variants_ld_block_df = variants_ld_block_df.join(variants_info)[["varID", 0, 1, 2, 3]]
+    # validate data again
+    if not variants_ld_block_df.shape[0] == variants_info.shape[0]:
+        raise ValueError("Dataframes do not have the same number of rows")
+
     variants_ld_block_df = variants_ld_block_df.rename(
         columns={
             0: "chr",
@@ -155,6 +166,7 @@ def cov(
     variants_ld_block_df["chr"] = variants_ld_block_df["chr"].apply(lambda x: int(x[3:]))
     variants_ld_block_df["position"] = variants_ld_block_df["position"].astype(int)
 
+    # Compute covariance for each chromosome block
     output_file_name_template = f"{conf.TWAS["LD_BLOCKS"]["OUTPUT_FILE_NAME"]}"
     output_file = output_dir_base / output_file_name_template.format(prefix="", suffix="")
     print(f"Output file: {output_file}")
