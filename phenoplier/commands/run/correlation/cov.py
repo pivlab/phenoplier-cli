@@ -167,10 +167,23 @@ def cov(
     variants_ld_block_df["position"] = variants_ld_block_df["position"].astype(int)
 
     # Compute covariance for each chromosome block
+    # ad-hoc testing
+    _tmp_snps = variants_ld_block_df[variants_ld_block_df["chr"] == 22]
+    if not _tmp_snps.shape[0] > 0:
+        raise ValueError("No SNPs for chromosome 22")
+    n_expected = len(set(_tmp_snps["varID"]).intersection(variants_ids_with_genotype))
+    _tmp = compute_snps_cov(_tmp_snps)
+    if not _tmp.shape == (n_expected, n_expected):
+        raise ValueError("Unexpected shape")
+    if _tmp.isna().any().any():
+        raise ValueError("Unexpected NA values")
+    del _tmp, _tmp_snps
+
     output_file_name_template = f"{conf.TWAS["LD_BLOCKS"]["OUTPUT_FILE_NAME"]}"
     output_file = output_dir_base / output_file_name_template.format(prefix="", suffix="")
     print(f"Output file: {output_file}")
 
+    # Compute covariance and save
     with pd.HDFStore(output_file, mode="w", complevel=4) as store:
         pbar = tqdm(
             variants_ld_block_df.groupby("chr"),
@@ -193,11 +206,15 @@ def cov(
 
     # Ad-hot tests
     _tmp = variants_ld_block_df[variants_ld_block_df["chr"] == 1]
-    assert _tmp.shape[0] > 0
+    if not _tmp.shape[0] > 0:
+        raise ValueError("No SNPs for chromosome 1")
     n_expected = len(set(_tmp["varID"]).intersection(variants_ids_with_genotype))
-    assert n_expected > 0
-    
+    if not n_expected > 0:
+        raise ValueError("No SNPs for chromosome 1")
+
     with pd.HDFStore(output_file, mode="r") as store:
         df = store["chr1"]
-        assert df.shape == (n_expected, n_expected)
-        assert not df.isna().any().any()
+        if not df.shape == (n_expected, n_expected):
+            raise ValueError("Unexpected shape")
+        if df.isna().any().any():
+            raise ValueError("Unexpected NA values")
