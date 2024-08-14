@@ -167,12 +167,12 @@ def cov(
     variants_ld_block_df["position"] = variants_ld_block_df["position"].astype(int)
 
     # Compute covariance for each chromosome block
-    # ad-hoc testing
+    # ad-hoc tests
     _tmp_snps = variants_ld_block_df[variants_ld_block_df["chr"] == 22]
     if not _tmp_snps.shape[0] > 0:
         raise ValueError("No SNPs for chromosome 22")
     n_expected = len(set(_tmp_snps["varID"]).intersection(variants_ids_with_genotype))
-    _tmp = compute_snps_cov(_tmp_snps)
+    _tmp = compute_snps_cov(_tmp_snps, reference_panel_dir, variants_ids_with_genotype, cov_dtype)
     if not _tmp.shape == (n_expected, n_expected):
         raise ValueError("Unexpected shape")
     if _tmp.isna().any().any():
