@@ -1,12 +1,21 @@
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 
 import numpy as np
+import pandas as pd
 import h5py
-from pytest import mark, raises
+from pytest import mark, raises, fixture
 
-from test.utils import get_test_output_dir, compare_hdf5_files
 from phenoplier.config import settings as conf
-from test.utils import compare_npz_files, compare_npz_files_in_dirs
+from test.utils import (
+    get_test_output_dir,
+    compare_npz_files,
+    compare_npz_files_in_dirs,
+    _list_hdf_keys,
+    _are_close_hdf5_files,
+    are_hdf5_files_close,
+    are_non_numeric_df_equal,
+)
 
 _test_output_dir = conf.TEST_OUTPUT_DIR
 
@@ -24,39 +33,6 @@ def test_get_test_output_dir(relative_test_path: Path):
     out_dir = get_test_output_dir(absolute_test_path)
     expected = Path(_test_output_dir) / relative_test_path.with_suffix("")
     assert out_dir == expected
-
-
-def test_compare_hdf5_files0():
-    outdir = get_test_output_dir(__file__)
-    # Both files exist and are equal
-    non_existing_file1 = Path(outdir, "non_existing_file1.h5")
-    non_existing_file2 = Path(outdir, "non_existing_file2.h5")
-    with raises(FileNotFoundError):
-        compare_hdf5_files(non_existing_file1, non_existing_file2)
-    # Create test HDF5 files
-    # existing_file1 and existing_file2 are equal
-    existing_file1 = Path(outdir, "existing_file1.h5")
-    existing_file2 = Path(outdir, "existing_file2.h5")
-    diff_file = Path(outdir, "diff_file.h5")
-    data = np.arange(100).reshape(10, 10)
-    diff_data = np.arange(100).reshape(10, 10) + 1
-    # Create an HDF5 file
-    with h5py.File(str(existing_file1), 'w') as h5file1, \
-            h5py.File(str(existing_file2), 'w') as h5file2, \
-            h5py.File(str(diff_file), 'w') as h5file_diff:
-        # Create a dataset in the file
-        h5file1.create_dataset('dataset1', data=data)
-        # Only file1 exists
-        with raises(FileNotFoundError):
-            compare_hdf5_files(Path(h5file1.filename), non_existing_file2)
-        # Both files exist and are equal
-        h5file2.create_dataset('dataset1', data=data)
-        h5file_diff.create_dataset('dataset1', data=diff_data)
-    # Compare the identical files
-    assert compare_hdf5_files(existing_file1, existing_file2) is True
-    # Compare the different files
-    assert compare_hdf5_files(existing_file1, diff_file) is False
-    assert compare_hdf5_files(existing_file2, diff_file) is False
 
 
 @mark.parametrize("filename1, content1, filename2, content2, expected", [
@@ -126,3 +102,67 @@ def test_compare_npz_files_in_dirs(file_contents1, file_contents2, expected):
     # Compare directories
     result, message = compare_npz_files_in_dirs(dir1, dir2)
     assert result is expected, message
+
+
+@fixture
+def sample_hdf_file():
+    with NamedTemporaryFile(suffix='.h5', delete=False) as tmp:
+        df1 = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6]})
+        df2 = pd.DataFrame({'C': [7, 8, 9], 'D': [10, 11, 12]})
+        metadata = pd.DataFrame({'varID': ['1', '2', '3'], 'info': ['a', 'b', 'c']})
+        with pd.HDFStore(tmp.name, mode='w') as store:
+            store['key1'] = df1
+            store['key2'] = df2
+            store['metadata'] = metadata
+        yield Path(tmp.name)
+    Path(tmp.name).unlink()
+
+
+def test_are_non_numeric_df_equal():
+    df1 = pd.DataFrame({'A': ['a', 'b', 'c']})
+    df2 = pd.DataFrame({'A': ['a', 'b', 'c']})
+    df3 = pd.DataFrame({'A': ['a', 'b', 'd']})
+
+    yes, message = are_non_numeric_df_equal(df1, df2)
+    assert yes, message
+
+    yes, message = are_non_numeric_df_equal(df1, df3)
+    assert not yes, message
+
+
+def test_are_close_hdf5_files(sample_hdf_file):
+    result, message = _are_close_hdf5_files(sample_hdf_file, sample_hdf_file, ("metadata", ))
+    assert result
+    assert message == "Files are close in value."
+
+
+def test_are_close_hdf5_files_with_ignore(sample_hdf_file):
+    result, message = _are_close_hdf5_files(sample_hdf_file, sample_hdf_file, ('key1',"metadata"))
+    assert result
+    assert message == "Files are close in value."
+
+
+def test_are_close_hdf5_files_different():
+    with NamedTemporaryFile(suffix='.h5', delete=False) as tmp1, \
+         NamedTemporaryFile(suffix='.h5', delete=False) as tmp2:
+        df1 = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6]})
+        df2 = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 7]})  # Different value
+        with pd.HDFStore(tmp1.name, mode='w') as store1, \
+             pd.HDFStore(tmp2.name, mode='w') as store2:
+            store1['key1'] = df1
+            store2['key1'] = df2
+        result, message = _are_close_hdf5_files(Path(tmp1.name), Path(tmp2.name), ())
+        assert result == False
+        assert "Values under key key1 in HDF5 files are not close." in message
+    Path(tmp1.name).unlink()
+    Path(tmp2.name).unlink()
+
+
+def test_are_hdf5_files_close_nonexistent():
+    with raises(FileNotFoundError):
+        are_hdf5_files_close(Path('nonexistent1.h5'), Path('nonexistent2.h5'))
+
+
+def test_list_hdf_keys(sample_hdf_file):
+    keys = _list_hdf_keys(sample_hdf_file)
+    assert set(keys) == {'key1', 'key2', 'metadata'}

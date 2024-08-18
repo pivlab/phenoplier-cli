@@ -64,19 +64,69 @@ def _run_h5diff(file1: Path, file2: Path, args: str = "-r") -> tuple[bool, str]:
     return True, "Files are identical"
 
 
-def compare_hdf5_files(file1: Path, file2: Path) -> bool:
+def _list_hdf_keys(file_path: Path) -> list[str]:
+    with pd.HDFStore(file_path, mode='r') as store:
+        return [key.lstrip('/') for key in store.keys()]
+
+
+def are_non_numeric_df_equal(df1: pd.DataFrame, df2: pd.DataFrame) -> Tuple[bool, str]:
+    """
+    Compare two non-numeric dataframes and return True if they are identical,
+    otherwise return False and the error message.
+
+    :param df1: First dataframe.
+    :param df2: Second dataframe.
+    :return: A tuple of (bool, str). The boolean indicates whether the
+             DataFrames are identical, and the string provides details on
+             the difference if they are not.
+    """
+    try:
+        # Use assert_frame_equal to compare the DataFrames
+        pd.testing.assert_frame_equal(df1, df2, check_dtype=False, check_exact=False)
+        return True, "DataFrames are identical."
+
+    except AssertionError as e:
+        return False, str(e)
+
+
+def _are_close_hdf5_files(file1: Path, file2: Path, ignore_fields: Tuple[str]) -> Tuple[bool, str]:
+    """
+    Compare two HDF5 files using h5diff.
+    """
+    # Get the list of keys in the HDF5 files
+    keys1 = _list_hdf_keys(file1)
+    keys2 = _list_hdf_keys(file2)
+
+    # Check if the keys are the same
+    if keys1 != keys2:
+        return False, "Keys in the HDF5 files are not the same."
+
+    # Check if the values are the same
+    for key in keys1:
+        if key in ignore_fields:
+            continue
+        arr1 = pd.read_hdf(file1, key).sort_index(axis=0).sort_index(axis=1).to_numpy()
+        arr2 = pd.read_hdf(file2, key).sort_index(axis=0).sort_index(axis=1).to_numpy()
+        if not np.allclose(arr1, arr2):
+            return False, f"Values under key {key} in HDF5 files are not close."
+
+    return True, "Files are close in value."
+
+
+def are_hdf5_files_close(file1: Path, file2: Path, ignore_fields: Tuple[str] = ()) -> tuple[bool, str]:
     """
     Compare two HDF5 files using h5diff.
 
     :param Path file1: Path to the first HDF5 file.
     :param Path file2: Path to the second HDF5 file.
+    :param Tuple[str] ignore_fields: Tuple of fields to ignore.
     :return: True if the files are identical, False otherwise.
     """
     # Make sure files exist
     if not file1.exists() or not file2.exists():
         raise FileNotFoundError(f"File not found: {file1 if not file1.exists() else file2}")
 
-    return _run_h5diff(file1, file2)[0]
+    return _are_close_hdf5_files(file1, file2, ignore_fields)
 
 
 def compare_dataframes_close(df1: pd.DataFrame, df2: pd.DataFrame) -> bool:
