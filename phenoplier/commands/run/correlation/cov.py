@@ -109,17 +109,27 @@ def cov(
             all_variants_ids.append(df)
 
     all_gene_snps = pd.concat(all_variants_ids, ignore_index=True)
+    print(f"Gene SNPs shape: {all_gene_snps.shape}")
+    print(f"First 5 rows of gene SNPs: {all_gene_snps.head()}")
     all_snps_in_models = set(all_gene_snps["varID"].unique())
 
     # MultiPLIER Z
     multiplier_z = pd.read_pickle(conf.GENE_MODULE_MODEL["MODEL_Z_MATRIX_FILE"])
     print(f"Using multiplier z: {conf.GENE_MODULE_MODEL["MODEL_Z_MATRIX_FILE"]}")
+    print(f"Model Z shape: {multiplier_z.shape}")
+    print(f"First 5 rows of model Z: {multiplier_z.head()}")
 
     # Reference panel variants metadata
     ref_panel_input = get_reference_panel_file(reference_panel_dir, "_metadata")
+    print(f"Reading reference panel metadata from: {ref_panel_input}")
     variants_metadata = pd.read_parquet(ref_panel_input, columns=["id"])
+    print(f"Variants metadata shape: {variants_metadata.shape}")
+    print(f"First 5 rows of variants metadata: {variants_metadata.head()}")
     variants_ids_with_genotype = set(variants_metadata["id"])
+    print(f"Number of variants in reference panel: {len(variants_ids_with_genotype)}")
+    print(f"First 10 variants in reference panel: {list(variants_ids_with_genotype)[:10]}")
 
+    # How many variants in predictions models are present in the reference panel?
     n_snps_in_models = len(all_snps_in_models)
     n_snps_in_ref_panel = len(all_snps_in_models.intersection(variants_ids_with_genotype))
     print(f"Number of SNPs in models: {n_snps_in_models}")
@@ -132,11 +142,15 @@ def cov(
         for gene_name in multiplier_z.index
         if gene_name in Gene.GENE_NAME_TO_ID_MAP()
     ]
-    genes_in_z = set(genes_in_z)
+    print(f"First 5 genes in the MultiPLIER Z model: {genes_in_z[:5]}")
     print(f"Number of genes in the MultiPLIER Z model: {len(genes_in_z)}")
+    genes_in_z = set(genes_in_z)
     # keep genes in MultiPLIER only
+    print(f"All gene SNPs shape: {all_gene_snps.shape}")
     all_gene_snps = all_gene_snps[all_gene_snps["gene"].isin(genes_in_z)]
+    print(f"Keeping only genes in MultiPLIER Z model: {all_gene_snps.shape}")
 
+    # (For MultiPLIER genes): How many variants in predictions models are present in the reference panel?
     all_snps_in_models_multiplier = set(all_gene_snps["varID"])
     n_snps_in_models = len(all_snps_in_models_multiplier)
     n_snps_in_ref_panel = len(all_snps_in_models_multiplier.intersection(variants_ids_with_genotype))
@@ -147,6 +161,7 @@ def cov(
     # Preprocess SNPs data
     variants_ld_block_df = all_gene_snps[["varID"]].drop_duplicates()
     variants_info = variants_ld_block_df["varID"].str.split("_", expand=True)
+    print(f"Variants info (raw) shape: {variants_info.shape}")
     # validate data
     if not variants_ld_block_df.shape[0] == variants_info.shape[0]:
         raise ValueError("Dataframes do not have the same number of rows")
@@ -154,6 +169,7 @@ def cov(
     # validate data again
     if not variants_ld_block_df.shape[0] == variants_info.shape[0]:
         raise ValueError("Dataframes do not have the same number of rows")
+    print(f"First 5 rows of variants info (raw): {variants_info.head()}")
 
     variants_ld_block_df = variants_ld_block_df.rename(
         columns={
@@ -164,7 +180,9 @@ def cov(
         }
     )
     variants_ld_block_df["chr"] = variants_ld_block_df["chr"].apply(lambda x: int(x[3:]))
+    print(f"Variants info (processed) shape: {variants_info.shape}")
     variants_ld_block_df["position"] = variants_ld_block_df["position"].astype(int)
+    print(f"First 5 rows of variants info (processed): {variants_ld_block_df.head()}")
 
     # Compute covariance for each chromosome block
     # ad-hoc tests
