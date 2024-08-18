@@ -99,9 +99,23 @@ def compare_dataframes_equal(df1: pd.DataFrame, df2: pd.DataFrame) -> bool:
     return df1.equals(df2)
 
 
+def are_close_arrays(arr1: np.ndarray, arr2: np.ndarray) -> bool:
+    """
+    Compare two dataframes and return True if they are identical.
+
+    :param arr1: First ndarray.
+    :param arr2: Second ndarray.
+    """
+    return np.allclose(arr1, arr2)
+
+
 def load_pickle(filepath):
     with open(filepath, 'rb') as file:
         return pickle.load(file)
+
+
+def load_pickle_to_ndarray(filepath: Path) -> np.ndarray:
+    return np.load(filepath, allow_pickle=True)
 
 
 def compare_metadata_npz_files(dir1, dir2):
