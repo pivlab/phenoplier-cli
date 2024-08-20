@@ -237,6 +237,7 @@ def compare_npz_files_in_dirs(dir1: Path, dir2: Path,
     :param Tuple[str, ...] ignore_files: Tuple of file names (not path) to ignore.
     :param Tuple[str, ...] include_files: Tuple of file names (not path) to include.
     """
+
     def get_npz_files(directory, ignores):
         # Get list of .npz files in the directory, excluding ignored files, and return absolute paths
         return sorted([Path(directory) / f for f in os.listdir(directory) if f.endswith('.npz') and f not in ignores])
@@ -272,3 +273,66 @@ def skip_test_on_ci():
     if os.getenv("GITHUB_ACTIONS") == "true":
         return True
     return False
+
+
+def compare_dataframes(df1: pd.DataFrame, df2: pd.DataFrame, numeric_tolerance: float = 1e-6) -> tuple[bool, str]:
+    """
+    Compare two pandas DataFrames for equality, with special handling for numeric and object columns.
+
+    This function compares two DataFrames and checks for equality in shape, columns, and values.
+    It handles numeric columns with a tolerance, and object columns (including lists, tuples, sets,
+    frozensets, and dicts) by sorting before comparison.
+
+    Parameters:
+    df1 (pd.DataFrame): The first DataFrame to compare.
+    df2 (pd.DataFrame): The second DataFrame to compare.
+    numeric_tolerance (float): The tolerance for comparing numeric values. Default is 1e-6.
+
+    Returns:
+    tuple: A tuple containing a boolean indicating whether the DataFrames are equal,
+           and a string message describing the result or the reason for inequality.
+    """
+
+    # Check if the DataFrames have the same shape
+    if df1.shape != df2.shape:
+        return False, "DataFrames have different shapes"
+
+    # Check if the DataFrames have the same columns
+    if not df1.columns.equals(df2.columns):
+        return False, "DataFrames have different columns"
+
+    # Iterate through each column for detailed comparison
+    for column in df1.columns:
+        # Check if the data types of the columns match
+        if df1[column].dtype != df2[column].dtype:
+            return False, f"Column '{column}' has different data types"
+
+        # Handle numeric columns
+        if pd.api.types.is_numeric_dtype(df1[column]):
+            # Use numpy's allclose for comparing numeric values within the specified tolerance
+            if not np.allclose(df1[column], df2[column], atol=numeric_tolerance, equal_nan=True):
+                return False, f"Numeric column '{column}' values are not close enough"
+
+        # Handle object columns (lists, tuples, sets, frozensets, dicts)
+        elif df1[column].dtype == 'object':
+            # Sort the values before comparing to handle unordered collections
+            sorted_df1 = df1[column].apply(
+                lambda x: sorted(x) if isinstance(x, (list, tuple, set, frozenset))
+                else x if isinstance(x, dict)
+                else sorted(str(x)))
+            sorted_df2 = df2[column].apply(
+                lambda x: sorted(x) if isinstance(x, (list, tuple, set, frozenset))
+                else x if isinstance(x, dict)
+                else sorted(str(x)))
+
+            # Compare the sorted values
+            if not (sorted_df1 == sorted_df2).all():
+                return False, f"Object column '{column}' values are not equal after sorting"
+
+        # For other types, use standard equality
+        else:
+            if not (df1[column] == df2[column]).all():
+                return False, f"Column '{column}' values are not equal"
+
+    # If all checks pass, the DataFrames are considered equal
+    return True, "DataFrames are equal"
