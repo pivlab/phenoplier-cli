@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from typing import Annotated
 
@@ -15,6 +16,7 @@ from phenoplier.commands.util.utils import load_settings_files
 from phenoplier.correlations import (
     check_pos_def,
     adjust_non_pos_def,
+    compare_matrices,
 )
 
 
@@ -88,55 +90,92 @@ def postprocess(
     if not input_dir_.exists():
         raise ValueError(f"Gene correlations input dir does not exist: {input_dir_}")
     print(f"Gene correlations input dir: {input_dir_}")
-    # Check if all gene correlation files are present
+    # sort by chromosome
     all_gene_corr_files = sorted(
         input_dir_.glob("gene_corrs-chr*.pkl"), key=lambda x: int(x.name.split("-chr")[1].split(".pkl")[0])
     )
+    # Check if all gene correlation files are present
     if not len(all_gene_corr_files) == 22:
         raise ValueError(f"Expected 22 gene correlation files, found {len(all_gene_corr_files)}")
+    print("All gene correlation files being used:")
+    print(all_gene_corr_files)
 
+    # Get common genes
     gene_ids = set()
     for f in all_gene_corr_files:
         chr_genes = pd.read_pickle(f).index.tolist()
         gene_ids.update(chr_genes)
+    print(f"Lenght of common genes: {len(gene_ids)}")
+    print(f"Fist 5 common genes: {os.linesep} {list(gene_ids)[:5]}")
 
-    genes_info_path = output_dir_base / "genes_info.pkl" if genes_info is None else genes_info
+    # Gene info
+    genes_info_path = input_dir_.parent / "genes_info.pkl" if genes_info is None else genes_info
     if not genes_info_path.exists():
         raise ValueError(f"Genes info file does not exist: {genes_info_path}")
     genes_info = pd.read_pickle(genes_info_path)
     print(f"Using genes info file: {genes_info_path}")
+    print(f"Shape of genes info: {genes_info.shape}")
+    print(f"First 5 genes info: {os.linesep} {genes_info.head()}")
+    # keep genes in correlation matrices only
     genes_info = genes_info[genes_info["id"].isin(gene_ids)]
     genes_info = genes_info.sort_values(["chr", "start_position"])
+    if genes_info.isna().any().any():
+        raise ValueError("There are missing values in the genes info")
+    print("Processed genes info (keep genes in correlation matrices only):")
+    print(f"Shape of the processed genes info: {genes_info.shape}")
+    print(f"Fist 5 processed genes info: {os.linesep} {genes_info.head()}")
 
+    # Create full correlation matrix
     full_corr_matrix = pd.DataFrame(
         np.zeros((genes_info.shape[0], genes_info.shape[0])),
         index=genes_info["id"].tolist(),
         columns=genes_info["id"].tolist(),
     )
+    if not full_corr_matrix.index.is_unique and full_corr_matrix.columns.is_unique:
+        raise ValueError("Gene IDs are not unique")
 
     for chr_corr_file in all_gene_corr_files:
         print(f"Processing {chr_corr_file.name}...")
+        # get correlation matrix for this chromosome
         corr_data = pd.read_pickle(chr_corr_file)
+        # save gene correlation matrix
         full_corr_matrix.loc[corr_data.index, corr_data.columns] = corr_data
 
+        # save inverse of Cholesky decomposition of gene correlation matrix
+        # first, adjust correlation matrix if it is not positive definite
         is_pos_def = check_pos_def(corr_data)
-        if not is_pos_def:
+        if is_pos_def:
+            print("All good.")
+            print()
+        else:
             print("Fixing non-positive definite matrix...")
             corr_data = adjust_non_pos_def(corr_data)
             if not check_pos_def(corr_data):
                 raise ValueError("Could not adjust gene correlation matrix")
+            # save
             full_corr_matrix.loc[corr_data.index, corr_data.columns] = corr_data
+    print()
 
+    # Checks
     print("Checking if diagonal elements are zero...")
     if not np.all(np.isclose(full_corr_matrix.to_numpy().diagonal(), 1.0)):
         raise ValueError("Diagonal elements are not 1.0")
-
+    # In some cases, even if the submatrices are adjusted, the whole one is not.
+    # So here check that again.
     is_pos_def = check_pos_def(full_corr_matrix)
-    if not is_pos_def:
-        print("Fixing non-positive definite full correlation matrix...")
-        full_corr_matrix = adjust_non_pos_def(full_corr_matrix)
-        if not check_pos_def(full_corr_matrix):
-            raise ValueError("Could not adjust full gene correlation matrix")
+    if is_pos_def:
+        print("All good.", flush=True, end="\n")
+    else:
+        print("Not positive definite, fixing... ", flush=True, end="")
+        corr_data_adjusted = adjust_non_pos_def(full_corr_matrix)
+
+        is_pos_def = check_pos_def(corr_data_adjusted)
+        assert is_pos_def, "Could not adjust gene correlation matrix"
+
+        print("Fixed! comparing...", flush=True, end="\n")
+        compare_matrices(full_corr_matrix, corr_data_adjusted)
+
+        full_corr_matrix = corr_data_adjusted
 
     # TODO: Add output name to template, sharing across commands
     output_file = output_dir_base / "gene_corrs-symbols.pkl"
