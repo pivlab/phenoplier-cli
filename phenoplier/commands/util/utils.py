@@ -1,8 +1,9 @@
 """
 This module contains utility functions used by the CLI commands.
 """
-
+import gzip
 import os
+import pickle
 import shutil
 from enum import Enum
 from typing import Tuple, List, Callable
@@ -129,3 +130,12 @@ def get_model_tissue_names(eqtl_model: str) -> List[str]:
         tissue_name = tissue_file.name.replace(prefix, "").replace(".db", "")
         prediction_model_tissues.append(tissue_name)
     return prediction_model_tissues
+
+
+def load_pickle_or_gz_pickle(file_path):
+    if file_path.suffix == '.gz':
+        with gzip.open(file_path, 'rb') as f:
+            return pickle.load(f)
+    else:
+        with open(file_path, 'rb') as f:
+            return pickle.load(f)
