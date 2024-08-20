@@ -1,13 +1,17 @@
 import os
 from pathlib import Path
 import logging
+import gzip
+import pickle
+import numpy as np
+import pandas as pd
 
 from typer.testing import CliRunner
 from pytest import mark
 
 from phenoplier import cli
 from phenoplier.config import settings as conf
-from test.utils import get_test_output_dir, compare_dataframes_equal, load_pickle
+from test.utils import get_test_output_dir, compare_dataframes_equal, compare_dataframes
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +34,7 @@ _BASE_COMMAND = (
 # Define the test output directory
 # Todo: organize test data dir the same way as test output dir
 output_dir_base = get_test_output_dir(Path(__file__))
-test_data_dir = Path(conf.TEST_DIR) / "data/gene-corr/99_all_results/mashr/"
+test_data_dir = Path(conf.TEST_DIR) / "data/gene-corr/2-preprocess/cohorts/phenomexcan_rapid_gwas/gtex_v8/mashr/"
 
 
 @mark.skipif(IN_GITHUB_ACTIONS, reason="Data has not been setup in Github Actions yet. Local test only.")
@@ -72,13 +76,42 @@ def test_cli_command(cohort, gwas_file, spredixcan_dir, output_file_name, smulti
     # Assert the command ran successfully
     assert result.exit_code == 0, f"Command failed with exit code {result.exit_code}\nOutput: {result.stdout}"
 
-    gene_tissues_filename = "gene_tissues.pkl"
-    test_gene_tissues = output_dir / gene_tissues_filename
-    ref_gene_tissues = test_data_dir / gene_tissues_filename
-    # Assert the output files exist
-    assert test_gene_tissues.exists(), f"gene-tissues.pkl not found in {output_dir}"
-    # Load the pickled dataframes
-    df1 = load_pickle(test_gene_tissues)
-    df2 = load_pickle(ref_gene_tissues)
-    # Assert the output matches the expected output
-    assert compare_dataframes_equal(df1, df2), f"Output file {gene_tissues_filename} does not match expected output"
+    def load_pickle_or_gz_pickle(file_path):
+        if file_path.suffix == '.gz':
+            with gzip.open(file_path, 'rb') as f:
+                return pickle.load(f)
+        else:
+            with open(file_path, 'rb') as f:
+                return pickle.load(f)
+
+    output_files = ("genes_info.pkl", "gene_tissues.pkl", "gwas_variant_ids.pkl.gz", "gene_tissues_models.pkl.gz")
+    # output_files = ("gene_tissues_models.pkl.gz",)
+    for file in output_files:
+        out = output_dir / file
+        ref = test_data_dir / file
+
+        # Assert the output files exist
+        assert out.exists(), f"{file} not found in {output_dir}"
+        assert ref.exists(), f"{file} not found in {test_data_dir}"
+
+        # Load the pickled data
+        df1 = load_pickle_or_gz_pickle(out)
+        df2 = load_pickle_or_gz_pickle(ref)
+
+        # Compare the data
+        if isinstance(df1, pd.DataFrame) and isinstance(df2, pd.DataFrame):
+            assert compare_dataframes(df1, df2)[0], f"Output file {file} does not match expected output"
+        elif isinstance(df1, dict) and isinstance(df2, dict):
+            df1_keys = list(df1.keys())
+            df2_keys = list(df2.keys())
+            assert df1_keys == df2_keys, f"Output file {file} does not match expected output"
+            df1_values = list(df1.values())
+            df2_values = list(df2.values())
+            for i in range(len(df1_keys)):
+                df1_vi = df1_values[i].sort_index(axis=0).sort_index(axis=1)
+                df2_vi = df2_values[i].sort_index(axis=0).sort_index(axis=1)
+                assert compare_dataframes(df1_vi, df2_vi)[0], f"{df1_vi} does not match {df2_vi} at {i}"
+        else:
+            assert np.array_equal(df1, df2), f"Output file {file} does not match expected output"
+
+        print(f"File {file} matches expected output")
