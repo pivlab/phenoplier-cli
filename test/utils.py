@@ -301,6 +301,9 @@ def compare_dataframes(df1: pd.DataFrame, df2: pd.DataFrame, numeric_tolerance: 
     if not df1.columns.equals(df2.columns):
         return False, "DataFrames have different columns"
 
+    # Sort the dfs using the first column
+    df1 = df1.sort_values(by=df1.columns[0]).reset_index(drop=True)
+    df2 = df2.sort_values(by=df2.columns[0]).reset_index(drop=True)
     # Iterate through each column for detailed comparison
     for column in df1.columns:
         # Check if the data types of the columns match

@@ -7,6 +7,7 @@ from typer.testing import CliRunner
 from pytest import mark
 from phenoplier import cli
 from phenoplier.config import settings as conf
+from phenoplier.commands.invoker import invoke_corr_correlate
 from test.utils import get_test_output_dir, load_pickle, compare_dataframes_close
 
 logger = logging.getLogger(__name__)
@@ -28,7 +29,8 @@ _BASE_COMMAND = (
 # Define the test output directory
 # Todo: organize test data dir the same way as test output dir
 output_dir_base = get_test_output_dir(Path(__file__))
-test_data_dir = Path(conf.TEST_DIR) / "data/gene-corr/99_all_results/mashr/"
+prev_output_dir = Path(conf.TEST_DIR) / "data/gene-corr/2-preprocess/cohorts/phenomexcan_rapid_gwas/gtex_v8/mashr"
+test_data_dir = Path(conf.TEST_DIR) / "data/gene-corr/3-correlate/cohorts/phenomexcan_rapid_gwas/gtex_v8/mashr"
 # To reduce test runtime, only test one random chromosome (1 -22)
 chromosome_to_test = random.randint(1, 22)
 
@@ -45,15 +47,15 @@ chromosome_to_test = random.randint(1, 22)
                 "GTEX_V8",
                 "MASHR",
                 chromosome_to_test,
-                test_data_dir,
+                prev_output_dir,
                 output_dir_base
         ),
         # Add more test cases here as needed
     ]
 )
 def test_cli_command(cohort, reference_panel, eqtl_model, chromosome, input_dir, output_dir):
-    # Build the command
-    command = _BASE_COMMAND.format(
+    # Execute the command using runner.invoke
+    suc, msg = invoke_corr_correlate(
         cohort=cohort,
         reference_panel=reference_panel,
         eqtl_model=eqtl_model,
@@ -62,12 +64,8 @@ def test_cli_command(cohort, reference_panel, eqtl_model, chromosome, input_dir,
         output_dir=output_dir,
     )
 
-    # Execute the command using runner.invoke
-    result = runner.invoke(cli.app, command)
-    logger.info(f"Running command: {command}")
-
     # Assert the command ran successfully
-    assert result.exit_code == 0, f"Command failed with exit code {result.exit_code}\nOutput: {result.stdout}"
+    assert suc, msg
 
     filename = f"by_chr/gene_corrs-chr{chromosome}.pkl"
     test_output = output_dir / filename
