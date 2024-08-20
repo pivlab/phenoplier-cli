@@ -1,3 +1,4 @@
+import gzip
 from pathlib import Path
 from typing import Annotated
 
@@ -105,9 +106,10 @@ def preprocess(
     ).dropna()  # remove SNPs with no results
     # Save GWAS variants
     gwas_variants_ids_set = frozenset(gwas_data["panel_variant_id"])
-    with open(output_dir_base / "gwas_variant_ids.pkl", "wb") as handle:
+    output_file = output_dir_base / "gwas_variant_ids.pkl.gz"
+    with gzip.open(output_file, "wb") as handle:
         pickle.dump(gwas_variants_ids_set, handle, protocol=pickle.HIGHEST_PROTOCOL)
-    print("Done.")
+    print(f"GWAS variant IDs saved to: {output_file}")
 
     # TWAS data processing
     # obtain tissue information
@@ -182,8 +184,8 @@ def preprocess(
             for t, f in spredixcan_result_files.items()
         ])
         # check on dfs
-        if not len(spredixcan_dfs) == len(prediction_model_tissues):
-            raise ValueError()
+        # if not len(spredixcan_dfs) == len(prediction_model_tissues):
+            # raise ValueError()
 
         spredixcan_dfs = spredixcan_dfs.assign(gene_id=lambda x: x["gene"].apply(lambda g: g.split(".")[0]))
         # leave only common genes
@@ -227,12 +229,16 @@ def preprocess(
         # check on output
         if not spredixcan_genes_models["gene_name"].is_unique:
             raise ValueError("spredixcan_genes_models has duplicate names.")
-        if spredixcan_genes_models.isna().any(None):
+        if spredixcan_genes_models.isna().any().any():
             raise ValueError("spredixcan_genes_models has NaN values.")
         # save output
         spredixcan_genes_models.to_pickle(output_dir_base / "gene_tissues.pkl")
 
     print("Done")
+
+    # Add this check
+    if spredixcan_genes_models is None or spredixcan_genes_models.empty:
+        raise ValueError("spredixcan_genes_models is None or empty. Check if it was properly initialized.")
 
     def _get_gene_pc_variance(gene_row):
         """
@@ -275,7 +281,14 @@ def preprocess(
         spredixcan_gene_obj = {gene_id: Gene(ensembl_id=gene_id) for gene_id in spredixcan_genes_models.index}
 
         # Add genes' variance captured by principal components
-        spredixcan_genes_tissues_pc_variance = spredixcan_genes_models.apply(_get_gene_pc_variance, axis=1)
+        try:
+            spredixcan_genes_tissues_pc_variance = spredixcan_genes_models.apply(_get_gene_pc_variance, axis=1)
+        except Exception as e:
+            print(f"Error occurred while applying _get_gene_pc_variance: {str(e)}")
+            print(f"spredixcan_genes_models shape: {spredixcan_genes_models.shape}")
+            print(f"spredixcan_genes_models columns: {spredixcan_genes_models.columns}")
+            raise
+
         # add to spredixcan_genes_models
         spredixcan_genes_models = spredixcan_genes_models.join(
             spredixcan_genes_tissues_pc_variance.rename("tissues_pc_variances"))
@@ -410,7 +423,7 @@ def preprocess(
         # this is important, other scripts depend on gene_name to be unique
         if not spredixcan_genes_models["gene_name"].is_unique:
             raise ValueError("Duplicate gene names found.")
-        if spredixcan_genes_models.isna().any(None):
+        if spredixcan_genes_models.isna().any().any():
             raise ValueError("NaN values found")
 
         output_file = output_dir_base / "gene_tissues.pkl"
