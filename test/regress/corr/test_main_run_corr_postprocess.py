@@ -6,6 +6,7 @@ from typer.testing import CliRunner
 from pytest import mark
 from phenoplier import cli
 from phenoplier.config import settings as conf
+from phenoplier.commands.invoker import invoke_corr_postprocess
 from test.utils import get_test_output_dir, load_pickle, compare_dataframes_close
 
 runner = CliRunner()
@@ -26,7 +27,7 @@ _BASE_COMMAND = (
 # Define the test output directory
 # Todo: organize test data dir the same way as test output dir
 output_dir_base = get_test_output_dir(Path(__file__))
-test_data_dir = Path(conf.TEST_DIR) / "data/gene-corr/99_all_results/mashr/"
+test_data_dir = Path(conf.TEST_DIR) / "data/gene-corr/4-postprocess/cohorts/phenomexcan_rapid_gwas/gtex_v8/mashr"
 
 
 @mark.skipif(IN_GITHUB_ACTIONS, reason="Slow and computationally expensive test, skip in GitHub Actions")
@@ -49,7 +50,7 @@ test_data_dir = Path(conf.TEST_DIR) / "data/gene-corr/99_all_results/mashr/"
 )
 def test_cli_command(cohort, reference_panel, eqtl_model, input_dir, genes_info, output_dir):
     # Build the command
-    command = _BASE_COMMAND.format(
+    suc, msg = invoke_corr_postprocess(
         cohort=cohort,
         reference_panel=reference_panel,
         eqtl_model=eqtl_model,
@@ -57,12 +58,7 @@ def test_cli_command(cohort, reference_panel, eqtl_model, input_dir, genes_info,
         genes_info=genes_info,
         output_dir=output_dir,
     )
-
-    # Execute the command using runner.invoke
-    result = runner.invoke(cli.app, command)
-
-    # Assert the command ran successfully
-    assert result.exit_code == 0, f"Command failed with exit code {result.exit_code}\nOutput: {result.stdout}"
+    assert suc, msg
 
     filename = f"gene_corrs-symbols.pkl"
     test_output = output_dir / filename

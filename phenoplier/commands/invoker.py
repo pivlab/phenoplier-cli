@@ -137,6 +137,7 @@ def invoke_corr_postprocess(
         "-i {input_dir} "
         "-g {genes_info} "
         "-o {output_dir} "
+        "-p {project_dir} "
     )
 
     # Build the command

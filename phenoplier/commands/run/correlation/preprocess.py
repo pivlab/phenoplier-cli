@@ -1,4 +1,3 @@
-import gzip
 from pathlib import Path
 from typing import Annotated
 
@@ -107,6 +106,8 @@ def preprocess(
     # Save GWAS variants
     gwas_variants_ids_set = frozenset(gwas_data["panel_variant_id"])
     output_file = output_dir_base / "gwas_variant_ids.pkl.gz"
+
+    import gzip
     with gzip.open(output_file, "wb") as handle:
         pickle.dump(gwas_variants_ids_set, handle, protocol=pickle.HIGHEST_PROTOCOL)
     print(f"GWAS variant IDs saved to: {output_file}")
