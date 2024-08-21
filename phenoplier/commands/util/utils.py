@@ -11,6 +11,8 @@ from functools import wraps
 from pathlib import Path
 
 import typer
+import tomlkit
+from rich import print
 
 from phenoplier.config import SETTINGS_FILES
 from phenoplier.config import settings as conf
@@ -57,14 +59,28 @@ def check_settings_files(directory: Path) -> None:
 
 
 def create_settings_files(directory: Path) -> None:
-    Path(directory).mkdir(parents=True, exist_ok=True)
+    directory = directory.resolve()
+    directory.mkdir(parents=True, exist_ok=True)
+
     for file_name in SETTINGS_FILES:
         settings_file = Path(directory) / file_name
         if settings_file.exists():
-            typer.echo(f"Config file {str(file_name)} already exists at {directory}")
+            print(f"[yellow]Config file {str(file_name)} already exists at {directory}. No actions taken.")
         else:
-            template_file = Path(conf.TEMPLATE_DIR) / file_name
-            shutil.copy2(template_file, settings_file)
+            template_file_path = Path(conf.TEMPLATE_DIR) / file_name
+            shutil.copy2(template_file_path, settings_file)
+            
+            # Read the existing content
+            with open(settings_file, "r") as f:
+                config = tomlkit.load(f)
+            
+            # Update config.ROOT_DIR to "directory"
+            config["ROOT_DIR"] = str(directory)
+            
+            # Write the updated content back to the file
+            with open(settings_file, "w") as f:
+                tomlkit.dump(config, f)
+            
             print(f"Config file {str(file_name)} created at {directory}")
 
 
