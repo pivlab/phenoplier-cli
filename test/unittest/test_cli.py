@@ -45,7 +45,7 @@ def test_load_settings_files():
     # Now create the default settings
     create_settings_files(directory)
     # Now add additional testing configs
-    more_settings_files = [Path("./test_load_settings0.toml"), Path("./test_load_settings1.toml")]
+    more_settings_files = (Path("./test_load_settings0.toml"), Path("./test_load_settings1.toml"))
     for s in more_settings_files:
         src = Path(__file__).resolve().parent / s
         dst = directory / s

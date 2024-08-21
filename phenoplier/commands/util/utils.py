@@ -58,7 +58,13 @@ def check_settings_files(directory: Path) -> None:
                 f"Config file {str(file_name)} does not exist at {directory}. Please run 'phenoplier init' first.")
 
 
-def create_settings_files(directory: Path) -> None:
+def create_settings_files(directory: Path, init: bool = False) -> None:
+    """
+    Create internal settings files in the specified directory
+    :param directory: The directory where the settings files will be created.
+    :param init: Whether this function is used by the "init" command so that certain fields need to be updated
+    """
+
     directory = directory.resolve()
     directory.mkdir(parents=True, exist_ok=True)
 
@@ -69,18 +75,16 @@ def create_settings_files(directory: Path) -> None:
         else:
             template_file_path = Path(conf.TEMPLATE_DIR) / file_name
             shutil.copy2(template_file_path, settings_file)
-            
-            # Read the existing content
-            with open(settings_file, "r") as f:
-                config = tomlkit.load(f)
-            
-            # Update config.ROOT_DIR to "directory"
-            config["ROOT_DIR"] = str(directory)
-            
-            # Write the updated content back to the file
-            with open(settings_file, "w") as f:
-                tomlkit.dump(config, f)
-            
+            # when called by the "init" command, update fields
+            if init:
+                # Read the existing content
+                with open(settings_file, "r") as f:
+                    config = tomlkit.load(f)
+                # Update config.ROOT_DIR to "directory"
+                config["ROOT_DIR"] = str(directory)
+                # Write the updated content back to the file
+                with open(settings_file, "w") as f:
+                    tomlkit.dump(config, f)
             print(f"Config file {str(file_name)} created at {directory}")
 
 
