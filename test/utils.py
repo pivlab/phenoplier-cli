@@ -1,5 +1,6 @@
 """This module contains utility functions that are used in the test suite."""
 import os
+import gzip
 import subprocess
 import hashlib
 import pickle
@@ -339,3 +340,12 @@ def compare_dataframes(df1: pd.DataFrame, df2: pd.DataFrame, numeric_tolerance: 
 
     # If all checks pass, the DataFrames are considered equal
     return True, "DataFrames are equal"
+
+
+def load_pickle_or_gz_pickle(file_path):
+    if file_path.suffix == '.gz':
+        with gzip.open(file_path, 'rb') as f:
+            return pickle.load(f)
+    else:
+        with open(file_path, 'rb') as f:
+            return pickle.load(f)
