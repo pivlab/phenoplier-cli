@@ -14,6 +14,8 @@ from phenoplier.config import settings as conf
 
 class DownloadAction(str, Enum):
     test_data = "test_data"
+    ci_test_data = "ci_test_data"  # minimal set of data to be used in GitHub Action
+    unit_test_data = "unit_test_data"
     full_data = "full_data"
     demo_data = "demo_data"
     smul_data = "smul_data"
@@ -35,6 +37,20 @@ test_actions = [
     "download_snps_covariance_1000g_mashr",
     "download_predixcan_mashr_prediction_models",
     "download_reference_panel_gtex_v8"
+]
+
+ci_test_actions = [
+    "download_phenomexcan_rapid_gwas_pheno_info",
+    "download_phenomexcan_rapid_gwas_data_dict_file",
+    "download_uk_biobank_coding_3",
+    "download_uk_biobank_coding_6",
+    "download_phenomexcan_gtex_gwas_pheno_info",
+    "download_gene_map_id_to_name",
+    "download_gene_map_name_to_id",
+    "download_biomart_genes_hg38",
+    "download_multiplier_model_z_pkl",
+    "download_snps_covariance_1000g_mashr",
+    "download_predixcan_mashr_prediction_models",
 ]
 
 full_actions = test_actions + [
@@ -68,6 +84,7 @@ ActionMap = {
     DownloadAction.full_data: full_actions,
     DownloadAction.smul_data: smul_data,
     DownloadAction.t21_data: t21_actions,
+    DownloadAction.ci_test_data: ci_test_actions
 }
 
 
