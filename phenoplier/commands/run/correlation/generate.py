@@ -1,3 +1,4 @@
+import os
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from typing import Annotated
 from pathlib import Path
@@ -11,7 +12,7 @@ from phenoplier.config import settings as conf
 from phenoplier.gls import GLSPhenoplier
 from phenoplier.commands.util.enums import Cohort, RefPanel, EqtlModel
 from phenoplier.constants.cli import Corr_Generate_Args as Args
-from phenoplier.commands.util.utils import load_settings_files
+from phenoplier.commands.util.utils import load_settings_files, load_pickle_or_gz_pickle
 
 
 def exists_df(output_dir, base_filename):
@@ -91,7 +92,7 @@ def generate(
 
     # Load the gene_corrs_symbols
     gene_corrs_dir = output_dir_base if genes_symbols_dir is None else genes_symbols_dir
-    gene_corrs_dict = {f.name: pd.read_pickle(f) for f in gene_corrs_dir.glob("gene_corrs-symbols*.pkl")}
+    gene_corrs_dict = {f.name: load_pickle_or_gz_pickle(f) for f in gene_corrs_dir.glob("gene_corrs-symbols*.pkl.gz")}
     # Make sure the gene_corrs_dict is not empty
     if not gene_corrs_dict:
         raise FileNotFoundError(f"No gene_corrs files found in {gene_corrs_dir}")
@@ -103,8 +104,8 @@ def generate(
     print(f"Using multiplier_z matrix from {conf.GENE_MODULE_MODEL['MODEL_Z_MATRIX_FILE']}")
 
     lvs_chunks = [[lv_code]]
-
-    with ProcessPoolExecutor(max_workers=1) as executor, tqdm(total=len(lvs_chunks), ncols=100) as pbar:
+    max_workers = os.cpu_count() // 2
+    with ProcessPoolExecutor(max_workers=max_workers) as executor, tqdm(total=len(lvs_chunks), ncols=100) as pbar:
         tasks = [
             executor.submit(compute_chol_inv, chunk[0], gene_corrs_dict, multiplier_z, output_dir_base, reference_panel,
                             eqtl_model, lv_percentile)

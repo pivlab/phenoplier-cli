@@ -57,7 +57,7 @@ def invoke_corr_preprocess(
     )
     result = runner.invoke(cli.app, command)
     success = result.exit_code == 0
-    message = result.stdout
+    message = result.stdout if success else result.exc_info
 
     gene_tissues_filename = "gene_tissues.pkl"
     test_gene_tissues = output_dir / gene_tissues_filename
@@ -111,7 +111,7 @@ def invoke_corr_correlate(
     # Execute the command using runner.invoke
     result = runner.invoke(cli.app, command)
     success = result.exit_code == 0
-    message = result.stdout
+    message = result.stdout if success else result.exc_info
     return success, message
 
 
@@ -154,7 +154,7 @@ def invoke_corr_postprocess(
     # Execute the command using runner.invoke
     result = runner.invoke(cli.app, command)
     success = result.exit_code == 0
-    message = result.stdout
+    message = result.stdout if success else result.exc_info
     return success, message
 
 
@@ -196,7 +196,7 @@ def invoke_corr_filter(
     # Execute the command using runner.invoke
     result = runner.invoke(cli.app, command)
     success = result.exit_code == 0
-    message = result.stdout
+    message = result.stdout if success else result.exc_info
     return success, message
 
 
@@ -241,5 +241,5 @@ def invoke_corr_generate(
     # Execute the command using runner.invoke
     result = runner.invoke(cli.app, command)
     success = result.exit_code == 0
-    message = result.stdout
+    message = result.stdout if success else result.exc_info
     return success, message
