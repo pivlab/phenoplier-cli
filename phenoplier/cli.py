@@ -61,6 +61,7 @@ cmd_group_run.command()(regression)
 app.add_typer(cmd_group_run, name="run")
 app.command()(get)
 
+
 # Callbacks in Typer allows us to create "--" options for the main program/command
 def version_callback(value: bool) -> None:
     """Callback for the --version option."""
@@ -116,7 +117,8 @@ def init(
     """
     Initialize settings file and necessary data in the specified directory.
     """
-    create_settings_files(Path(project_dir))
+    create_settings_files(project_dir.resolve())
+    return
 
 
 if __name__ == "__main__":
