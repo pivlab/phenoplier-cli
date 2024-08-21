@@ -46,6 +46,7 @@ def compute_snps_cov(snps_df, reference_panel_dir, variants_ids_with_genotype, c
 def cov(
         reference_panel:            Annotated[RefPanel, Args.REFERENCE_PANEL.value],
         eqtl_model:                 Annotated[EqtlModel, Args.EQTL_MODEL.value],
+        multiplier_z_path:          Annotated[Path, Args.MULTIPLIER_Z.value] = None,
         covariance_matrix_dtype:    Annotated[MatrixDtype, Args.COVARIANCE_MATRIX_DTYPE.value] = MatrixDtype.f64,
         project_dir:                Annotated[Path, Args.PROJECT_DIR.value] = conf.CURRENT_DIR,
         output_dir:                 Annotated[Path, Args.OUTPUT_DIR.value] = None,
@@ -116,7 +117,7 @@ def cov(
     all_snps_in_models = set(all_gene_snps["varID"].unique())
 
     # MultiPLIER Z
-    multiplier_z = pd.read_pickle(conf.GENE_MODULE_MODEL["MODEL_Z_MATRIX_FILE"])
+    multiplier_z = pd.read_pickle(multiplier_z_path or conf.GENE_MODULE_MODEL["MODEL_Z_MATRIX_FILE"])
     print(f"Using multiplier z:{os.linesep}{conf.GENE_MODULE_MODEL["MODEL_Z_MATRIX_FILE"]}")
     print(f"Model Z shape:{os.linesep}{multiplier_z.shape}")
     print(f"First 5 rows of model Z:{os.linesep}{multiplier_z.head()}")

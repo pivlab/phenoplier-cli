@@ -18,15 +18,16 @@ from phenoplier.constants.cli import Corr_Preprocess_Args as Args
 
 # Todo: Validate reference_panel, check if folder exists. Or change it to a path argument?
 def preprocess(
-        cohort: Annotated[Cohort, Args.COHORT_NAME.value],
-        reference_panel: Annotated[RefPanel, Args.REFERENCE_PANEL.value],
-        eqtl_model: Annotated[EqtlModel, Args.EQTL_MODEL.value],
-        gwas_file: Annotated[Path, Args.GWAS_FILE.value],
-        spredixcan_folder: Annotated[Path, Args.SPREDIXCAN_FOLDER.value],
-        spredixcan_file_pattern: Annotated[str, Args.SPREDIXCAN_FILE_PATTERN.value],
-        smultixcan_file: Annotated[Path, Args.SMULTIXCAN_FILE.value],
-        project_dir: Annotated[Path, Args.PROJECT_DIR.value] = conf.CURRENT_DIR,
-        output_dir: Annotated[Path, Args.OUTPUT_DIR.value] = None,
+        cohort:                     Annotated[Cohort, Args.COHORT_NAME.value],
+        reference_panel:            Annotated[RefPanel, Args.REFERENCE_PANEL.value],
+        eqtl_model:                 Annotated[EqtlModel, Args.EQTL_MODEL.value],
+        gwas_file:                  Annotated[Path, Args.GWAS_FILE.value],
+        spredixcan_folder:          Annotated[Path, Args.SPREDIXCAN_FOLDER.value],
+        spredixcan_file_pattern:    Annotated[str, Args.SPREDIXCAN_FILE_PATTERN.value],
+        smultixcan_file:            Annotated[Path, Args.SMULTIXCAN_FILE.value],
+        multiplier_z_path:          Annotated[Path, Args.MULTIPLIER_Z.value] = None,
+        project_dir:                Annotated[Path, Args.PROJECT_DIR.value] = conf.CURRENT_DIR,
+        output_dir:                 Annotated[Path, Args.OUTPUT_DIR.value] = None,
 ):
     """
     Compiles information about the GWAS and TWAS for a particular cohort. For example, the set of GWAS variants, variance of predicted expression of genes, etc.
@@ -88,7 +89,7 @@ def preprocess(
     # Data Loading
     print(Text("[--- Data Loading ---]", style="blue"))
     # Load MultiPLIER Z genes
-    multiplier_z = pd.read_pickle(conf.GENE_MODULE_MODEL["MODEL_Z_MATRIX_FILE"])
+    multiplier_z = pd.read_pickle(multiplier_z_path or conf.GENE_MODULE_MODEL["MODEL_Z_MATRIX_FILE"])
     # multiplier_z = pd.DataFrame.from_dict(multiplier_z['data'])
     print(f"Loading MultiPLIER Z genes from: {conf.GENE_MODULE_MODEL['MODEL_Z_MATRIX_FILE']}")
     multiplier_z_genes = multiplier_z.index.tolist()
