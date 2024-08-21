@@ -1,11 +1,13 @@
 import os
 import logging
 import random
+import zipfile
 from pathlib import Path
 
 from typer.testing import CliRunner
 from pytest import mark
 from phenoplier import cli
+from phenoplier.commands.invoker import invoke_corr_generate
 from phenoplier.config import settings as conf
 from test.utils import get_test_output_dir, compare_npz_files_in_dirs
 
@@ -29,7 +31,17 @@ _BASE_COMMAND = (
 # Define the test output directory
 # Todo: organize test data dir the same way as test output dir
 output_dir_base = get_test_output_dir(Path(__file__))
-test_data_dir = Path(conf.TEST_DIR) / "data/gene-corr/99_all_results/mashr/"
+prev_data_dir = Path(conf.TEST_DIR) / "data/gene-corr/5-filter/cohorts/phenomexcan_rapid_gwas/gtex_v8/mashr"
+ref_data_dir = Path(conf.TEST_DIR) / "data/gene-corr/6-generate/cohorts/phenomexcan_rapid_gwas/gtex_v8/mashr"
+ref_zip_file = ref_data_dir / "gene_corrs-symbols-within_distance_5mb.per_lv.zip"
+
+# Create a directory for extraction
+temp_extract_dir = output_dir_base / "ref"
+if not temp_extract_dir.exists():
+    temp_extract_dir.mkdir(exist_ok=True)
+    # Unzip the file
+    with zipfile.ZipFile(ref_zip_file, 'r') as zip_ref:
+        zip_ref.extractall(temp_extract_dir)
 
 
 @mark.skipif(IN_GITHUB_ACTIONS, reason="Slow and computationally expensive test, skip in GitHub Actions")
@@ -45,7 +57,7 @@ test_data_dir = Path(conf.TEST_DIR) / "data/gene-corr/99_all_results/mashr/"
                 "MASHR",
                 lv_code,
                 0.01,
-                test_data_dir,
+                prev_data_dir,
                 output_dir_base
         )
         # Use sampling test to reduce runtime
@@ -54,7 +66,7 @@ test_data_dir = Path(conf.TEST_DIR) / "data/gene-corr/99_all_results/mashr/"
 )
 def test_cli_command(cohort, reference_panel, eqtl_model, lv_code, lv_percentile, genes_symbols_dir, output_dir):
     # Build the command
-    command = _BASE_COMMAND.format(
+    suc, msg = invoke_corr_generate(
         cohort=cohort,
         reference_panel=reference_panel,
         eqtl_model=eqtl_model,
@@ -64,17 +76,13 @@ def test_cli_command(cohort, reference_panel, eqtl_model, lv_code, lv_percentile
         output_dir=output_dir,
     )
 
-    # Execute the command using runner.invoke
-    result = runner.invoke(cli.app, command)
-    logger.info(f"Running command: {command}")
-    # Assert the command ran successfully
-    assert result.exit_code == 0, f"Command failed with exit code {result.exit_code}\nOutput: {result.stdout}"
+    assert suc, msg
 
     filenames = genes_symbols_dir.glob("gene_corrs-symbols*.pkl")
     for filename in filenames:
         filename = filename.stem
         test_output = (output_dir / filename).with_suffix(".per_lv")
-        ref_output = (test_data_dir / filename).with_suffix(".per_lv")
+        ref_output = (temp_extract_dir / filename).with_suffix(".per_lv")
         # Assert the output file exists
         assert test_output.exists(), f"Output directory {test_output} does not exist"
         files = ("gene_names.npz", f"LV{lv_code}_corr_mat.npz", f"LV{lv_code}.npz")
