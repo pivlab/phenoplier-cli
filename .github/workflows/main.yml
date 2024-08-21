@@ -73,7 +73,7 @@ jobs:
         run: |
           export ENV_FOR_DYNACONF=test
           source .venv/bin/activate
-          phenoplier get test_data
+          phenoplier get ci_test_data
       #----------------------------------------------
       #              run test suite
       #----------------------------------------------
