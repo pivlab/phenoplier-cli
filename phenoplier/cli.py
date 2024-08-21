@@ -117,7 +117,7 @@ def init(
     """
     Initialize settings file and necessary data in the specified directory.
     """
-    create_settings_files(project_dir.resolve())
+    create_settings_files(project_dir.resolve(), True)
     return
 
 
