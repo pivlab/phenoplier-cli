@@ -10,17 +10,7 @@ from phenoplier.data import Downloader
 from phenoplier.commands.util.utils import load_settings_files
 from phenoplier.constants.cli import Common_Args
 from phenoplier.config import settings as conf
-
-
-class DownloadAction(str, Enum):
-    test_data = "test_data"
-    ci_test_data = "ci_test_data"  # minimal set of data to be used in GitHub Action
-    unit_test_data = "unit_test_data"
-    full_data = "full_data"
-    demo_data = "demo_data"
-    smul_data = "smul_data"
-    t21_data = "t21_data"
-
+from phenoplier.commands.util.enums import DownloadAction
 
 # Todo: add demo mode, differentiate between test and full data
 test_actions = [
