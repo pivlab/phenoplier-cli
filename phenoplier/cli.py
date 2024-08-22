@@ -13,7 +13,7 @@ from phenoplier.commands.util.utils import create_settings_files
 from phenoplier.commands.get import get
 from phenoplier.commands.run.regression import regression
 from phenoplier.config import settings
-from phenoplier.constants.cli import Common_Args, Cli
+from phenoplier.constants.cli import Common_Args, Cli, Init_Args
 from phenoplier.commands.run.correlation.pipeline import pipeline
 from phenoplier.commands.run.correlation.cov import cov
 from phenoplier.commands.run.correlation.preprocess import preprocess
@@ -21,7 +21,9 @@ from phenoplier.commands.run.correlation.correlate import correlate
 from phenoplier.commands.run.correlation.postprocess import postprocess
 from phenoplier.commands.run.correlation.filter import filter
 from phenoplier.commands.run.correlation.generate import generate
-
+from phenoplier.commands.util.enums import DownloadAction
+from phenoplier.commands.get import ActionMap
+from phenoplier.data import Downloader
 
 # This class is used to group the commands in the order they appear in the code
 class OrderCommands(TyperGroup):
@@ -112,12 +114,19 @@ def main(
 # TODO: Add a prompt to ask the user if they want to overwrite the existing settings file
 @app.command()
 def init(
-        project_dir: Annotated[Path, Common_Args.PROJECT_DIR.value] = settings.CURRENT_DIR
+        project_dir: Annotated[Path, Common_Args.PROJECT_DIR.value] = settings.CURRENT_DIR,
+        download_action: Annotated[DownloadAction, Init_Args.DOWNLOAD_ACTION.value] = None,
+        # navigate_to_project_dir: bool = typer.Option(False, "--navigate", "-n", help=Init_Args.NAVIGATE.value)
 ):
     """
     Initialize settings file and necessary data in the specified directory.
     """
     create_settings_files(project_dir.resolve(), True)
+    print()
+    if download_action:
+        actions = ActionMap[download_action]
+        downloader = Downloader()
+        downloader.setup_data(actions=actions)
     return
 
 

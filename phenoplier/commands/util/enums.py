@@ -38,3 +38,13 @@ class CovarOptions(Enum):
     GENE_N_SNPS_USED_LOG = "gene_n_snps_used_log"
     GENE_N_SNPS_USED_DENSITY = "gene_n_snps_used_density"
     GENE_N_SNPS_USED_DENSITY_LOG = "gene_n_snps_used_density_log"
+
+
+class DownloadAction(str, Enum):
+    test_data = "test_data"
+    ci_test_data = "ci_test_data"  # minimal set of data to be used in GitHub Action
+    unit_test_data = "unit_test_data"
+    full_data = "full_data"
+    demo_data = "demo_data"
+    smul_data = "smul_data"
+    t21_data = "t21_data"

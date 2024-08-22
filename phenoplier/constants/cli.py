@@ -17,6 +17,10 @@ class Cli(Enum):
     VERSION = "Print out the app's version."
 
 
+class Init_Args(Enum):
+    DOWNLOAD_ACTION = typer.Option("--download-action", "-d", help="Choose the dataset you want to download after "
+                                                                   "initialization")
+
 # Command Group: run gene-corr
 
 # Const help messages for common arguments

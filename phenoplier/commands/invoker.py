@@ -10,6 +10,7 @@ from typer.testing import CliRunner
 from phenoplier import cli
 from phenoplier.config import settings as conf
 from phenoplier.commands.util.enums import Cohort, RefPanel, EqtlModel
+from phenoplier.commands.util.enums import DownloadAction
 
 runner = CliRunner()
 
@@ -180,6 +181,7 @@ def invoke_corr_filter(
         "-d {distances} "
         "-g {genes_symbols} "
         "-o {output_dir} "
+        "-p {project_dir} "
     )
 
     # Build the command
@@ -224,6 +226,7 @@ def invoke_corr_generate(
         "-e {lv_percentile} "
         "-g {genes_symbols_dir} "
         "-o {output_dir} "
+        "-p {project_dir} "
     )
 
     # Build the command
@@ -239,6 +242,27 @@ def invoke_corr_generate(
     )
 
     # Execute the command using runner.invoke
+    result = runner.invoke(cli.app, command)
+    success = result.exit_code == 0
+    message = result.stdout if success else result.exc_info
+    return success, message
+
+
+def invoke_get(
+        mode:           DownloadAction,
+        project_dir:    Path = conf.CURRENT_DIR,
+) -> Tuple[int, str]:
+    _BASE_COMMAND = (
+        "get "
+        "{mode} "
+        "-p {project_dir} "
+    )
+
+    command = _BASE_COMMAND.format(
+        mode=mode,
+        project_dir=project_dir,
+    )
+
     result = runner.invoke(cli.app, command)
     success = result.exit_code == 0
     message = result.stdout if success else result.exc_info
