@@ -11,7 +11,14 @@ from pytest import mark
 
 from phenoplier import cli
 from phenoplier.config import settings as conf
-from test.utils import get_test_output_dir, compare_dataframes_equal, compare_dataframes
+from test.utils import (
+    get_test_output_dir,
+    compare_gene_tissues,
+    compare_genes_info,
+    compare_gwas_variant_ids,
+    compare_gene_tissues_models,
+    compare_dataframes
+)
 
 logger = logging.getLogger(__name__)
 
@@ -84,9 +91,13 @@ def test_cli_command(cohort, gwas_file, spredixcan_dir, output_file_name, smulti
             with open(file_path, 'rb') as f:
                 return pickle.load(f)
 
-    output_files = ("genes_info.pkl", "gene_tissues.pkl", "gwas_variant_ids.pkl.gz", "gene_tissues_models.pkl.gz")
-    # output_files = ("gene_tissues_models.pkl.gz",)
-    for file in output_files:
+    files_and_handlers = (
+                            ("genes_info.pkl", compare_genes_info),
+                            ("gene_tissues.pkl", compare_gene_tissues),
+                            ("gwas_variant_ids.pkl.gz", compare_gwas_variant_ids),
+                            ("gene_tissues_models.pkl.gz", compare_gene_tissues_models),
+    )
+    for file, compare in files_and_handlers:
         out = output_dir / file
         ref = test_data_dir / file
 
@@ -98,20 +109,7 @@ def test_cli_command(cohort, gwas_file, spredixcan_dir, output_file_name, smulti
         df1 = load_pickle_or_gz_pickle(out)
         df2 = load_pickle_or_gz_pickle(ref)
 
-        # Compare the data
-        if isinstance(df1, pd.DataFrame) and isinstance(df2, pd.DataFrame):
-            assert compare_dataframes(df1, df2)[0], f"Output file {file} does not match expected output"
-        elif isinstance(df1, dict) and isinstance(df2, dict):
-            df1_keys = list(df1.keys())
-            df2_keys = list(df2.keys())
-            assert df1_keys == df2_keys, f"Output file {file} does not match expected output"
-            df1_values = list(df1.values())
-            df2_values = list(df2.values())
-            for i in range(len(df1_keys)):
-                df1_vi = df1_values[i].sort_index(axis=0).sort_index(axis=1)
-                df2_vi = df2_values[i].sort_index(axis=0).sort_index(axis=1)
-                assert compare_dataframes(df1_vi, df2_vi)[0], f"{df1_vi} does not match {df2_vi} at {i}"
-        else:
-            assert np.array_equal(df1, df2), f"Output file {file} does not match expected output"
+        equal, msg = compare(df1, df2)
+        assert equal, msg
 
         print(f"File {file} matches expected output")
