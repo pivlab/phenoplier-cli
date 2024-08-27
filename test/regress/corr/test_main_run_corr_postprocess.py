@@ -27,6 +27,7 @@ _BASE_COMMAND = (
 # Define the test output directory
 # Todo: organize test data dir the same way as test output dir
 output_dir_base = get_test_output_dir(Path(__file__))
+prev_data_dir = Path(conf.TEST_DIR) / "data/gene-corr/3-correlate/cohorts/phenomexcan_rapid_gwas/gtex_v8/mashr"
 test_data_dir = Path(conf.TEST_DIR) / "data/gene-corr/4-postprocess/cohorts/phenomexcan_rapid_gwas/gtex_v8/mashr"
 
 
@@ -41,8 +42,8 @@ test_data_dir = Path(conf.TEST_DIR) / "data/gene-corr/4-postprocess/cohorts/phen
                 "phenomexcan_rapid_gwas",
                 "GTEX_V8",
                 "MASHR",
-                test_data_dir / "by_chr",
-                test_data_dir / "genes_info.pkl",
+                prev_data_dir / "by_chr",
+                prev_data_dir / "genes_info.pkl",
                 output_dir_base
         ),
         # Add more test cases here as needed
