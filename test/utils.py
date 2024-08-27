@@ -276,13 +276,12 @@ def skip_test_on_ci():
     return False
 
 
-def compare_dataframes(df1: pd.DataFrame, df2: pd.DataFrame, numeric_tolerance: float = 1e-6) -> tuple[bool, str]:
+def compare_gene_tissues(df1: pd.DataFrame, df2: pd.DataFrame, numeric_tolerance: float = 1e-6) -> Tuple[bool, str]:
     """
-    Compare two pandas DataFrames for equality, with special handling for numeric and object columns.
+    Compare two pandas DataFrames where all columns are pandas Series.
 
     This function compares two DataFrames and checks for equality in shape, columns, and values.
-    It handles numeric columns with a tolerance, and object columns (including lists, tuples, sets,
-    frozensets, and dicts) by sorting before comparison.
+    It handles numeric Series with a tolerance and performs element-wise comparison for non-numeric Series.
 
     Parameters:
     df1 (pd.DataFrame): The first DataFrame to compare.
@@ -290,57 +289,172 @@ def compare_dataframes(df1: pd.DataFrame, df2: pd.DataFrame, numeric_tolerance: 
     numeric_tolerance (float): The tolerance for comparing numeric values. Default is 1e-6.
 
     Returns:
-    tuple: A tuple containing a boolean indicating whether the DataFrames are equal,
-           and a string message describing the result or the reason for inequality.
+    Tuple[bool, str]: A tuple containing a boolean indicating whether the DataFrames are equal,
+                      and a string message describing the result or the reason for inequality.
     """
-
     # Check if the DataFrames have the same shape
     if df1.shape != df2.shape:
-        return False, "DataFrames have different shapes"
+        return False, f"DataFrames have different shapes: {df1.shape} vs {df2.shape}"
 
     # Check if the DataFrames have the same columns
     if not df1.columns.equals(df2.columns):
-        return False, "DataFrames have different columns"
+        diff_columns = set(df1.columns).symmetric_difference(set(df2.columns))
+        return False, f"DataFrames have different columns. Differing columns: {diff_columns}"
 
-    # Sort the dfs using the first column
-    if isinstance(df1.columns[0], dict):
-        df1 = df1.sort_values(by=df1.columns[0]).reset_index(drop=True)
-        df2 = df2.sort_values(by=df2.columns[0]).reset_index(drop=True)
     # Iterate through each column for detailed comparison
-    for column in df1.columns:
-        # Check if the data types of the columns match
-        if df1[column].dtype != df2[column].dtype:
-            return False, f"Column '{column}' has different data types"
+    for column in df1:
+        series1 = df1[column]
+        series2 = df2[column]
 
-        # Handle numeric columns
-        if pd.api.types.is_numeric_dtype(df1[column]):
-            # Use numpy's allclose for comparing numeric values within the specified tolerance
-            if not np.allclose(df1[column], df2[column], atol=numeric_tolerance, equal_nan=True):
-                return False, f"Numeric column '{column}' values are not close enough"
+        # Check if the Series have the same dtype
+        if series1.dtype != series2.dtype:
+            return False, f"Column '{column}' has different dtypes: {series1.dtype} vs {series2.dtype}"
 
-        # Handle object columns (lists, tuples, sets, frozensets, dicts)
-        elif df1[column].dtype == 'object':
-            # Sort the values before comparing to handle unordered collections
-            sorted_df1 = df1[column].apply(
-                lambda x: sorted(x) if isinstance(x, (list, tuple, set, frozenset))
-                else x if isinstance(x, dict)
-                else sorted(str(x)))
-            sorted_df2 = df2[column].apply(
-                lambda x: sorted(x) if isinstance(x, (list, tuple, set, frozenset))
-                else x if isinstance(x, dict)
-                else sorted(str(x)))
-
-            # Compare the sorted values
-            if not (sorted_df1 == sorted_df2).all():
-                return False, f"Object column '{column}' values are not equal after sorting"
-
-        # For other types, use standard equality
-        else:
-            if not (df1[column] == df2[column]).all():
-                return False, f"Column '{column}' values are not equal"
+        if not series1.equals(series2):
+            # Handle numeric Series
+            if isinstance(series1.iloc[0], np.ndarray):
+                if not all(np.allclose(arr1, arr2, atol=numeric_tolerance, equal_nan=True)
+                           for arr1, arr2 in zip(series1, series2)):
+                    diff_indices = [i for i, (arr1, arr2) in enumerate(zip(series1, series2))
+                                    if not np.allclose(arr1, arr2, atol=numeric_tolerance, equal_nan=True)]
+                    return False, f"Column '{column}' contains numpy arrays that are not close enough. Differences at indices: {diff_indices}"
+            elif isinstance(series1.iloc[0], dict): # tissues_variances
+                for d1, d2 in zip(series1, series2):
+                    for key, val1 in d1.items():
+                        if key not in d2:
+                            return False, f"Column '{column}' contains dictionaries with different keys"
+                        val2 = d2[key]
+                        if not np.isclose(val1, val2, atol=numeric_tolerance, equal_nan=True):
+                            return False, f"Column '{column}' contains dictionaries with different values"
+            else:
+                # Handle non-numeric Series
+                if not series1.apply(str).equals(series2.apply(str)):
+                    return False, f"Column '{column}' values are not equal"
+            # return False, f"Column '{column}' are not equal or close. col1: {series1}, col2: {series2}"
+        # print(f"Column '{column}' are equal.")
 
     # If all checks pass, the DataFrames are considered equal
     return True, "DataFrames are equal"
+
+
+def compare_genes_info(df1: pd.DataFrame, df2: pd.DataFrame, numeric_tolerance: float = 1e-6) -> Tuple[bool, str]:
+    """
+    Compare two "genes_info" DataFrames. Used specifically for testing the preprocess command
+
+    Parameters:
+    df1 (pd.DataFrame): The first DataFrame to compare.
+    df2 (pd.DataFrame): The second DataFrame to compare.
+    numeric_tolerance (float): The tolerance for comparing numeric values. Default is 1e-6.
+
+    Returns:
+    Tuple[bool, str]: A tuple containing a boolean indicating whether the DataFrames are equal,
+                      and a string message describing the result or the reason for inequality.
+    """
+    # Check if the DataFrames have the same shape
+    if df1.shape != df2.shape:
+        return False, f"DataFrames have different shapes: {df1.shape} vs {df2.shape}"
+
+    # Check if the DataFrames have the same columns
+    if not df1.columns.equals(df2.columns):
+        diff_columns = set(df1.columns).symmetric_difference(set(df2.columns))
+        return False, f"DataFrames have different columns. Differing columns: {diff_columns}"
+
+    # Sort the dfs using the first column (gene_name)
+    df1 = df1.sort_values(by=df1.columns[0]).reset_index(drop=True)
+    df2 = df2.sort_values(by=df2.columns[0]).reset_index(drop=True)
+
+    # Iterate through each column for detailed comparison
+    for column in df1:
+        series1 = df1[column]
+        series2 = df2[column]
+        if not series1.equals(series2):
+            return False, f"Column '{column}' are not equal. col1: {series1}, col2: {series2}"
+
+    # If all checks pass, the DataFrames are considered equal
+    return True, "DataFrames are equal"
+
+
+def compare_gwas_variant_ids(set1: frozenset, set2: frozenset) -> Tuple[bool, str]:
+    """
+    Compare two "gwas_variant_ids" sets. Used specifically for testing the preprocess command
+
+    Returns:
+    Tuple[bool, str]: A tuple containing a boolean indicating whether the DataFrames are equal,
+                      and a string message describing the result or the reason for inequality.
+    """
+    # Check if the DataFrames have the same shape
+    if len(set1) != len(set2):
+        return False, f"Sets have different lengths: {len(set1)} vs {len(set2)}"
+
+    if set1 != set2:
+        return False, f"Sets are not equal"
+
+    # If all checks pass, the DataFrames are considered equal
+    return True, "DataFrames are equal"
+
+
+def compare_dataframes(df1, df2):
+    """
+    Compare two dataframes that may have different row and column orders.
+
+    Args:
+    df1 (pd.DataFrame): First dataframe
+    df2 (pd.DataFrame): Second dataframe
+
+    Returns:
+    bool: True if dataframes are equivalent, False otherwise
+    """
+    # Check if dataframes have the same shape
+    if df1.shape != df2.shape:
+        return False
+
+    # Check if dataframes have the same column names (ignoring order)
+    if set(df1.columns) != set(df2.columns):
+        return False
+
+    # Sort both dataframes by all columns and rows
+    df1_sorted = df1.sort_index(axis=0).sort_index(axis=1)
+    df2_sorted = df2.sort_index(axis=0).sort_index(axis=1)
+
+    # Compare the sorted dataframes
+    return df1_sorted.equals(df2_sorted)
+
+
+def compare_gene_tissues_models(dict1: dict, dict2: dict) -> Tuple[bool, str]:
+    """
+    Compare two "genes_info" DataFrames. Used specifically for testing the preprocess command
+
+    Parameters:
+    df1 (pd.DataFrame): The first DataFrame to compare.
+    df2 (pd.DataFrame): The second DataFrame to compare.
+    numeric_tolerance (float): The tolerance for comparing numeric values. Default is 1e-6.
+
+    Returns:
+    Tuple[bool, str]: A tuple containing a boolean indicating whether the DataFrames are equal,
+                      and a string message describing the result or the reason for inequality.
+    """
+    # Check if the DataFrames have the same shape
+    if len(dict1) != len(dict2):
+        return False, f"gene_tissues_models dicts have different shapes"
+
+    # Sort by keys
+    dict1 = dict(sorted(dict1.items()))
+    dict2 = dict(sorted(dict2.items()))
+    if dict1.keys() != dict2.keys():
+        return False, f"gene_tissues_models dicts have different keys"
+
+    # Iterate through each key for detailed comparison
+    for key in dict1:
+        df1 = dict1[key]
+        df2 = dict2[key]
+        # sort the dfs using the first column and firs row
+        # df1 = sort_dataframe(df1, sort_columns=True, sort_rows=True)
+        # df2 = sort_dataframe(df2, sort_columns=True, sort_rows=True)
+        if not compare_dataframes(df1, df2):
+            return False, f"gene_tissues_models dicts are not equal. key: {key}"
+
+    # If all checks pass, the DataFrames are considered equal
+    return True, "gene_tissues_models dicts are equal"
 
 
 def load_pickle_or_gz_pickle(file_path):
