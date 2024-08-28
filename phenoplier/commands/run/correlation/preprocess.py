@@ -13,7 +13,7 @@ from phenoplier.config import settings as conf
 from phenoplier.entity import Gene
 from phenoplier.commands.util.utils import load_settings_files, get_model_tissue_names
 from phenoplier.commands.util.enums import Cohort, RefPanel, EqtlModel
-from phenoplier.constants.cli import Corr_Preprocess_Args as Args
+from phenoplier.constants.arg import Corr_Preprocess_Args as Args
 
 
 # Todo: Validate reference_panel, check if folder exists. Or change it to a path argument?

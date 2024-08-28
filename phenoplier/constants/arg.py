@@ -32,7 +32,7 @@ class Common_Args(Enum):
     REFERENCE_PANEL = typer.Option("--reference-panel", "-r",
                                    help="Name of the reference panel to use, such as MASHR or ELASTIC_NET.")
     EQTL_MODEL = typer.Option("--eqtl-model", "-m", help="Prediction models such as MASHR or ELASTIC_NET.")
-    MULTIPLIER_Z = typer.Option("--multiplier-matrix-z", "-z",
+    MULTIPLIER_Z = typer.Option("--multiplier-matrix-z", "-mz",
                                 help="Path to the user-defined multiplier matrix Z file.")
 
 

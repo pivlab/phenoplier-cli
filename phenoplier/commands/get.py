@@ -8,7 +8,7 @@ from typing import Annotated
 import typer
 from phenoplier.data import Downloader
 from phenoplier.commands.util.utils import load_settings_files
-from phenoplier.constants.cli import Common_Args
+from phenoplier.constants.arg import Common_Args
 from phenoplier.config import settings as conf
 from phenoplier.commands.util.enums import DownloadAction
 

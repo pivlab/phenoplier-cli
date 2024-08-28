@@ -15,7 +15,7 @@ from rich import print
 
 from phenoplier.gls import GLSPhenoplier
 from phenoplier.config import settings, SETTINGS_FILES
-from phenoplier.constants.cli import Regression_Args as Args, Regression_Defaults
+from phenoplier.constants.arg import Regression_Args as Args, Regression_Defaults
 from phenoplier.commands.util.utils import load_settings_files
 from phenoplier.constants.message import RegressionError as err
 from phenoplier.constants.message import RegressionInfo as info

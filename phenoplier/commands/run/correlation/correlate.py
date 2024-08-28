@@ -14,7 +14,7 @@ from phenoplier.config import settings as conf
 from phenoplier.entity import Gene
 from phenoplier.commands.util.utils import load_settings_files, load_pickle_or_gz_pickle
 from phenoplier.commands.util.enums import Cohort, RefPanel, EqtlModel
-from phenoplier.constants.cli import Corr_Correlate_Args as Args
+from phenoplier.constants.arg import Corr_Correlate_Args as Args
 
 logger = logging.getLogger(__name__)
 
