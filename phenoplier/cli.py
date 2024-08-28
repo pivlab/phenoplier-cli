@@ -13,7 +13,7 @@ from phenoplier.commands.util.utils import create_settings_files
 from phenoplier.commands.get import get
 from phenoplier.commands.run.regression import regression
 from phenoplier.config import settings
-from phenoplier.constants.cli import Common_Args, Cli, Init_Args
+from phenoplier.constants.arg import Common_Args, Cli, Init_Args
 from phenoplier.commands.run.correlation.pipeline import pipeline
 from phenoplier.commands.run.correlation.cov import cov
 from phenoplier.commands.run.correlation.preprocess import preprocess

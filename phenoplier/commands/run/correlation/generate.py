@@ -11,7 +11,7 @@ from tqdm import tqdm
 from phenoplier.config import settings as conf
 from phenoplier.gls import GLSPhenoplier
 from phenoplier.commands.util.enums import Cohort, RefPanel, EqtlModel
-from phenoplier.constants.cli import Corr_Generate_Args as Args
+from phenoplier.constants.arg import Corr_Generate_Args as Args
 from phenoplier.commands.util.utils import load_settings_files, load_pickle_or_gz_pickle
 
 

@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from phenoplier.config import settings as conf
 from phenoplier.entity import Gene
 from phenoplier.commands.util.enums import Cohort, RefPanel, EqtlModel
-from phenoplier.constants.cli import Corr_Postprocess_Args as Args
+from phenoplier.constants.arg import Corr_Postprocess_Args as Args
 from phenoplier.commands.util.utils import load_settings_files
 from phenoplier.correlations import (
     check_pos_def,
