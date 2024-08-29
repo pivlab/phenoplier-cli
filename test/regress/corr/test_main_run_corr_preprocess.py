@@ -46,7 +46,7 @@ test_data_dir = Path(conf.TEST_DIR) / "data/gene-corr/2-preprocess/cohorts/pheno
 
 @mark.skipif(IN_GITHUB_ACTIONS, reason="Data has not been setup in Github Actions yet. Local test only.")
 @mark.corr
-@mark.order(2)
+@mark.order(-5)
 @mark.parametrize(
     "cohort, gwas_file, spredixcan_dir, output_file_name, smultixcan_file, reference_panel, eqtl_model, output_dir",
     [
