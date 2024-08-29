@@ -457,13 +457,13 @@ def regression(
                 "beta": res.params.loc["lv"],
                 "beta_se": res.bse.loc["lv"],
                 "t": res.tvalues.loc["lv"],
-                "pvalue_twosided": res.pvalues.loc["lv"],
-                "pvalue_onesided": res.pvalues_onesided.loc["lv"],
+                # "pvalue_twosided": res.pvalues.loc["lv"],
+                "pvalue": res.pvalues_onesided.loc["lv"],
             }
         )
 
     # create final dataframe and save
-    results = pd.DataFrame(results).set_index("lv").sort_values("pvalue_onesided")
+    results = pd.DataFrame(results).set_index("lv").sort_values("pvalue")
     print(f"Writing results to {str(output_file)}")
     # logger.info(f"Writing results to {str(output_file)}")
     results.to_csv(output_file, sep="\t", na_rep="NA")

@@ -327,8 +327,8 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_keep_last
         keep_last_results["beta"].to_numpy(),
     )
     assert not np.allclose(
-        keep_first_results["pvalue_onesided"].to_numpy(),
-        keep_last_results["pvalue_onesided"].to_numpy(),
+        keep_first_results["pvalue"].to_numpy(),
+        keep_last_results["pvalue"].to_numpy(),
     )
 
 
@@ -414,8 +414,8 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_remove_al
         remove_all_results["beta"].to_numpy(),
     )
     assert not np.allclose(
-        keep_last_results["pvalue_onesided"].to_numpy(),
-        remove_all_results["pvalue_onesided"].to_numpy(),
+        keep_last_results["pvalue"].to_numpy(),
+        remove_all_results["pvalue"].to_numpy(),
     )
 
 
@@ -456,7 +456,7 @@ def test_gls_cli_single_smultixcan_input_full_subset_of_lvs(output_file):
     assert output_data.shape[0] == 3  # 3 lvs tested
     assert "lv" in output_data.columns
     assert "beta" in output_data.columns
-    assert "pvalue_onesided" in output_data.columns
+    assert "pvalue" in output_data.columns
     _lvs = set(output_data["lv"].tolist())
     assert "LV1" in _lvs
     assert "LV2" in _lvs
@@ -530,7 +530,7 @@ def test_gls_cli_single_smultixcan_input_full_all_lvs_in_model_file(output_file)
     assert output_data.shape[0] == 5  # 5 lvs tested (all in the model file)
     assert "lv" in output_data.columns
     assert "beta" in output_data.columns
-    assert "pvalue_onesided" in output_data.columns
+    assert "pvalue" in output_data.columns
     _lvs = set(output_data["lv"].tolist())
     assert "LV1" in _lvs
     assert "LV2" in _lvs
@@ -613,8 +613,8 @@ def test_gls_cli_single_smultixcan_input_full_specify_gene_corrs(output_file):
         a1000g_en_results["beta"].to_numpy(),
     )
     assert not np.allclose(
-        gtex_mashr_results["pvalue_onesided"].to_numpy(),
-        a1000g_en_results["pvalue_onesided"].to_numpy(),
+        gtex_mashr_results["pvalue"].to_numpy(),
+        a1000g_en_results["pvalue"].to_numpy(),
     )
 
 
@@ -692,8 +692,8 @@ def test_gls_cli_single_smultixcan_input_debug_use_ols(output_file):
         ols_results["beta"].to_numpy(),
     )
     assert not np.allclose(
-        gls_results["pvalue_onesided"].to_numpy(),
-        ols_results["pvalue_onesided"].to_numpy(),
+        gls_results["pvalue"].to_numpy(),
+        ols_results["pvalue"].to_numpy(),
     )
 
 
@@ -1088,7 +1088,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits(output_f
     assert output_data.shape[0] == 2  # 5 lvs tested (all in the model file)
     assert "lv" in output_data.columns
     assert "beta" in output_data.columns
-    assert "pvalue_onesided" in output_data.columns
+    assert "pvalue" in output_data.columns
     _lvs = set(output_data["lv"].tolist())
     assert "LV1" in _lvs
     assert "LV2" in _lvs
@@ -1131,7 +1131,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits(output_f
     assert output_data.shape[0] == 2  # 5 lvs tested (all in the model file)
     assert "lv" in output_data.columns
     assert "beta" in output_data.columns
-    assert "pvalue_onesided" in output_data.columns
+    assert "pvalue" in output_data.columns
     _lvs = set(output_data["lv"].tolist())
     assert "LV3" in _lvs
     assert "LV4" in _lvs
@@ -1174,7 +1174,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits(output_f
     assert output_data.shape[0] == 1  # 5 lvs tested (all in the model file)
     assert "lv" in output_data.columns
     assert "beta" in output_data.columns
-    assert "pvalue_onesided" in output_data.columns
+    assert "pvalue" in output_data.columns
     _lvs = set(output_data["lv"].tolist())
     assert "LV5" in _lvs
     assert not output_data.isna().any().any()
@@ -1186,8 +1186,8 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits(output_f
         batch2_values["beta"].to_numpy(),
     )
     assert not np.allclose(
-        batch1_values["pvalue_onesided"].to_numpy(),
-        batch2_values["pvalue_onesided"].to_numpy(),
+        batch1_values["pvalue"].to_numpy(),
+        batch2_values["pvalue"].to_numpy(),
     )
 
     assert not np.allclose(
@@ -1195,8 +1195,8 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits(output_f
         batch3_values["beta"].to_numpy(),
     )
     assert not np.allclose(
-        batch1_values["pvalue_onesided"].to_numpy(),
-        batch3_values["pvalue_onesided"].to_numpy(),
+        batch1_values["pvalue"].to_numpy(),
+        batch3_values["pvalue"].to_numpy(),
     )
 
     assert not np.allclose(
@@ -1204,8 +1204,8 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits(output_f
         batch3_values["beta"].to_numpy(),
     )
     assert not np.allclose(
-        batch2_values["pvalue_onesided"].to_numpy(),
-        batch3_values["pvalue_onesided"].to_numpy(),
+        batch2_values["pvalue"].to_numpy(),
+        batch3_values["pvalue"].to_numpy(),
     )
 
 
@@ -1247,7 +1247,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
     assert output_data.shape[0] == 1  # 1 lvs tested
     assert "lv" in output_data.columns
     assert "beta" in output_data.columns
-    assert "pvalue_onesided" in output_data.columns
+    assert "pvalue" in output_data.columns
     _lvs = set(output_data["lv"].tolist())
     assert "LV1" in _lvs
     assert not output_data.isna().any().any()
@@ -1288,7 +1288,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
     assert output_data.shape[0] == 1  # 1 lvs tested
     assert "lv" in output_data.columns
     assert "beta" in output_data.columns
-    assert "pvalue_onesided" in output_data.columns
+    assert "pvalue" in output_data.columns
     _lvs = set(output_data["lv"].tolist())
     assert "LV2" in _lvs
     assert not output_data.isna().any().any()
@@ -1329,7 +1329,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
     assert output_data.shape[0] == 1  # 1 lvs tested
     assert "lv" in output_data.columns
     assert "beta" in output_data.columns
-    assert "pvalue_onesided" in output_data.columns
+    assert "pvalue" in output_data.columns
     _lvs = set(output_data["lv"].tolist())
     assert "LV3" in _lvs
     assert not output_data.isna().any().any()
@@ -1370,7 +1370,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
     assert output_data.shape[0] == 1  # 1 lvs tested
     assert "lv" in output_data.columns
     assert "beta" in output_data.columns
-    assert "pvalue_onesided" in output_data.columns
+    assert "pvalue" in output_data.columns
     _lvs = set(output_data["lv"].tolist())
     assert "LV4" in _lvs
     assert not output_data.isna().any().any()
@@ -1411,7 +1411,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
     assert output_data.shape[0] == 1  # 1 lvs tested
     assert "lv" in output_data.columns
     assert "beta" in output_data.columns
-    assert "pvalue_onesided" in output_data.columns
+    assert "pvalue" in output_data.columns
     _lvs = set(output_data["lv"].tolist())
     assert "LV5" in _lvs
     assert not output_data.isna().any().any()
@@ -1455,7 +1455,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_is_1(
     assert output_data.shape[0] == 5  # 1 lvs tested
     assert "lv" in output_data.columns
     assert "beta" in output_data.columns
-    assert "pvalue_onesided" in output_data.columns
+    assert "pvalue" in output_data.columns
     _lvs = set(output_data["lv"].tolist())
     assert "LV1" in _lvs
     assert "LV2" in _lvs
@@ -1506,7 +1506,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_problema
     assert output_data.shape[0] == 3
     assert "lv" in output_data.columns
     assert "beta" in output_data.columns
-    assert "pvalue_onesided" in output_data.columns
+    assert "pvalue" in output_data.columns
     _lvs = set(output_data["lv"].tolist())
     assert "LV1" in _lvs
     assert "LV2" in _lvs
@@ -1549,7 +1549,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_problema
     assert output_data.shape[0] == 2  # 1 lvs tested
     assert "lv" in output_data.columns
     assert "beta" in output_data.columns
-    assert "pvalue_onesided" in output_data.columns
+    assert "pvalue" in output_data.columns
     _lvs = set(output_data["lv"].tolist())
     assert "LV4" in _lvs
     assert "LV5" in _lvs
@@ -1591,7 +1591,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_problema
     assert output_data.shape[0] == 2  # 1 lvs tested
     assert "lv" in output_data.columns
     assert "beta" in output_data.columns
-    assert "pvalue_onesided" in output_data.columns
+    assert "pvalue" in output_data.columns
     _lvs = set(output_data["lv"].tolist())
     assert "LV6" in _lvs
     assert "LV7" in _lvs
@@ -1633,7 +1633,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_problema
     assert output_data.shape[0] == 2  # 1 lvs tested
     assert "lv" in output_data.columns
     assert "beta" in output_data.columns
-    assert "pvalue_onesided" in output_data.columns
+    assert "pvalue" in output_data.columns
     _lvs = set(output_data["lv"].tolist())
     assert "LV8" in _lvs
     assert "LV9" in _lvs
@@ -1672,8 +1672,8 @@ def test_gls_cli_use_covar_gene_size(output_file):
     assert output_data.shape[0] == 3  # 3 lvs tested
     assert "lv" in output_data.columns
     assert "beta" in output_data.columns
-    assert "pvalue_onesided" in output_data.columns
-    assert output_data["pvalue_onesided"].between(0.0, 1.0, inclusive="neither").all()
+    assert "pvalue" in output_data.columns
+    assert output_data["pvalue"].between(0.0, 1.0, inclusive="neither").all()
     _lvs = set(output_data["lv"].tolist())
     assert "LV1" in _lvs
     assert "LV2" in _lvs
@@ -1715,8 +1715,8 @@ def test_gls_cli_use_covar_gene_size(output_file):
     assert output_data2.shape[0] == 3  # 3 lvs tested
     assert "lv" in output_data2.columns
     assert "beta" in output_data2.columns
-    assert "pvalue_onesided" in output_data2.columns
-    assert output_data2["pvalue_onesided"].between(0.0, 1.0, inclusive="neither").all()
+    assert "pvalue" in output_data2.columns
+    assert output_data2["pvalue"].between(0.0, 1.0, inclusive="neither").all()
     _lvs = set(output_data2["lv"].tolist())
     assert "LV1" in _lvs
     assert "LV2" in _lvs
@@ -1735,8 +1735,8 @@ def test_gls_cli_use_covar_gene_size(output_file):
     )
 
     assert not np.allclose(
-        output_data["pvalue_onesided"].to_numpy(),
-        output_data2["pvalue_onesided"].to_numpy(),
+        output_data["pvalue"].to_numpy(),
+        output_data2["pvalue"].to_numpy(),
     )
 
 
@@ -1771,8 +1771,8 @@ def test_gls_cli_use_covar_gene_density(output_file):
     assert output_data.shape[0] == 3  # 3 lvs tested
     assert "lv" in output_data.columns
     assert "beta" in output_data.columns
-    assert "pvalue_onesided" in output_data.columns
-    assert output_data["pvalue_onesided"].between(0.0, 1.0, inclusive="neither").all()
+    assert "pvalue" in output_data.columns
+    assert output_data["pvalue"].between(0.0, 1.0, inclusive="neither").all()
     _lvs = set(output_data["lv"].tolist())
     assert "LV1" in _lvs
     assert "LV2" in _lvs
@@ -1814,8 +1814,8 @@ def test_gls_cli_use_covar_gene_density(output_file):
     assert output_data2.shape[0] == 3  # 3 lvs tested
     assert "lv" in output_data2.columns
     assert "beta" in output_data2.columns
-    assert "pvalue_onesided" in output_data2.columns
-    assert output_data2["pvalue_onesided"].between(0.0, 1.0, inclusive="neither").all()
+    assert "pvalue" in output_data2.columns
+    assert output_data2["pvalue"].between(0.0, 1.0, inclusive="neither").all()
     _lvs = set(output_data2["lv"].tolist())
     assert "LV1" in _lvs
     assert "LV2" in _lvs
@@ -1834,8 +1834,8 @@ def test_gls_cli_use_covar_gene_density(output_file):
     )
 
     assert not np.allclose(
-        output_data["pvalue_onesided"].to_numpy(),
-        output_data2["pvalue_onesided"].to_numpy(),
+        output_data["pvalue"].to_numpy(),
+        output_data2["pvalue"].to_numpy(),
     )
 
 
@@ -1901,8 +1901,8 @@ def test_gls_cli_use_covar_gene_n_snps_used(output_file):
     assert output_data.shape[0] == 3  # 3 lvs tested
     assert "lv" in output_data.columns
     assert "beta" in output_data.columns
-    assert "pvalue_onesided" in output_data.columns
-    assert output_data["pvalue_onesided"].between(0.0, 1.0, inclusive="neither").all()
+    assert "pvalue" in output_data.columns
+    assert output_data["pvalue"].between(0.0, 1.0, inclusive="neither").all()
     _lvs = set(output_data["lv"].tolist())
     assert "LV1" in _lvs
     assert "LV2" in _lvs
@@ -1948,8 +1948,8 @@ def test_gls_cli_use_covar_gene_n_snps_used(output_file):
     assert output_data2.shape[0] == 3  # 3 lvs tested
     assert "lv" in output_data2.columns
     assert "beta" in output_data2.columns
-    assert "pvalue_onesided" in output_data2.columns
-    assert output_data2["pvalue_onesided"].between(0.0, 1.0, inclusive="neither").all()
+    assert "pvalue" in output_data2.columns
+    assert output_data2["pvalue"].between(0.0, 1.0, inclusive="neither").all()
     _lvs = set(output_data2["lv"].tolist())
     assert "LV1" in _lvs
     assert "LV2" in _lvs
@@ -1968,8 +1968,8 @@ def test_gls_cli_use_covar_gene_n_snps_used(output_file):
     )
 
     assert not np.allclose(
-        output_data["pvalue_onesided"].to_numpy(),
-        output_data2["pvalue_onesided"].to_numpy(),
+        output_data["pvalue"].to_numpy(),
+        output_data2["pvalue"].to_numpy(),
     )
 
 
@@ -2004,8 +2004,8 @@ def test_gls_cli_use_covar_gene_n_snps_used_density(output_file):
     assert output_data.shape[0] == 3  # 3 lvs tested
     assert "lv" in output_data.columns
     assert "beta" in output_data.columns
-    assert "pvalue_onesided" in output_data.columns
-    assert output_data["pvalue_onesided"].between(0.0, 1.0, inclusive="neither").all()
+    assert "pvalue" in output_data.columns
+    assert output_data["pvalue"].between(0.0, 1.0, inclusive="neither").all()
     _lvs = set(output_data["lv"].tolist())
     assert "LV1" in _lvs
     assert "LV2" in _lvs
@@ -2051,8 +2051,8 @@ def test_gls_cli_use_covar_gene_n_snps_used_density(output_file):
     assert output_data2.shape[0] == 3  # 3 lvs tested
     assert "lv" in output_data2.columns
     assert "beta" in output_data2.columns
-    assert "pvalue_onesided" in output_data2.columns
-    assert output_data2["pvalue_onesided"].between(0.0, 1.0, inclusive="neither").all()
+    assert "pvalue" in output_data2.columns
+    assert output_data2["pvalue"].between(0.0, 1.0, inclusive="neither").all()
     _lvs = set(output_data2["lv"].tolist())
     assert "LV1" in _lvs
     assert "LV2" in _lvs
@@ -2071,8 +2071,8 @@ def test_gls_cli_use_covar_gene_n_snps_used_density(output_file):
     )
 
     assert not np.allclose(
-        output_data["pvalue_onesided"].to_numpy(),
-        output_data2["pvalue_onesided"].to_numpy(),
+        output_data["pvalue"].to_numpy(),
+        output_data2["pvalue"].to_numpy(),
     )
 
 
@@ -2107,9 +2107,9 @@ def test_gls_cli_use_covar_gene_size_and_its_log(output_file):
     assert results_without_covars.shape[0] == 3  # 3 lvs tested
     assert "lv" in results_without_covars.columns
     assert "beta" in results_without_covars.columns
-    assert "pvalue_onesided" in results_without_covars.columns
+    assert "pvalue" in results_without_covars.columns
     assert (
-        results_without_covars["pvalue_onesided"]
+        results_without_covars["pvalue"]
         .between(0.0, 1.0, inclusive="neither")
         .all()
     )
@@ -2154,9 +2154,9 @@ def test_gls_cli_use_covar_gene_size_and_its_log(output_file):
     assert results_covar_gene_size.shape[0] == 3  # 3 lvs tested
     assert "lv" in results_covar_gene_size.columns
     assert "beta" in results_covar_gene_size.columns
-    assert "pvalue_onesided" in results_covar_gene_size.columns
+    assert "pvalue" in results_covar_gene_size.columns
     assert (
-        results_covar_gene_size["pvalue_onesided"]
+        results_covar_gene_size["pvalue"]
         .between(0.0, 1.0, inclusive="neither")
         .all()
     )
@@ -2202,9 +2202,9 @@ def test_gls_cli_use_covar_gene_size_and_its_log(output_file):
     assert results_covar_gene_size_and_log.shape[0] == 3  # 3 lvs tested
     assert "lv" in results_covar_gene_size_and_log.columns
     assert "beta" in results_covar_gene_size_and_log.columns
-    assert "pvalue_onesided" in results_covar_gene_size_and_log.columns
+    assert "pvalue" in results_covar_gene_size_and_log.columns
     assert (
-        results_covar_gene_size_and_log["pvalue_onesided"]
+        results_covar_gene_size_and_log["pvalue"]
         .between(0.0, 1.0, inclusive="neither")
         .all()
     )
@@ -2222,8 +2222,8 @@ def test_gls_cli_use_covar_gene_size_and_its_log(output_file):
     )
 
     assert not np.allclose(
-        results_without_covars["pvalue_onesided"].to_numpy(),
-        results_covar_gene_size_and_log["pvalue_onesided"].to_numpy(),
+        results_without_covars["pvalue"].to_numpy(),
+        results_covar_gene_size_and_log["pvalue"].to_numpy(),
     )
 
     # gene size covar vs gene size + log
@@ -2233,8 +2233,8 @@ def test_gls_cli_use_covar_gene_size_and_its_log(output_file):
     )
 
     assert not np.allclose(
-        results_covar_gene_size["pvalue_onesided"].to_numpy(),
-        results_covar_gene_size_and_log["pvalue_onesided"].to_numpy(),
+        results_covar_gene_size["pvalue"].to_numpy(),
+        results_covar_gene_size_and_log["pvalue"].to_numpy(),
     )
 
 
@@ -2269,9 +2269,9 @@ def test_gls_cli_use_covar_gene_density_and_its_log(output_file):
     assert results_without_covars.shape[0] == 3  # 3 lvs tested
     assert "lv" in results_without_covars.columns
     assert "beta" in results_without_covars.columns
-    assert "pvalue_onesided" in results_without_covars.columns
+    assert "pvalue" in results_without_covars.columns
     assert (
-        results_without_covars["pvalue_onesided"]
+        results_without_covars["pvalue"]
         .between(0.0, 1.0, inclusive="neither")
         .all()
     )
@@ -2316,9 +2316,9 @@ def test_gls_cli_use_covar_gene_density_and_its_log(output_file):
     assert results_covar_gene_density.shape[0] == 3  # 3 lvs tested
     assert "lv" in results_covar_gene_density.columns
     assert "beta" in results_covar_gene_density.columns
-    assert "pvalue_onesided" in results_covar_gene_density.columns
+    assert "pvalue" in results_covar_gene_density.columns
     assert (
-        results_covar_gene_density["pvalue_onesided"]
+        results_covar_gene_density["pvalue"]
         .between(0.0, 1.0, inclusive="neither")
         .all()
     )
@@ -2364,9 +2364,9 @@ def test_gls_cli_use_covar_gene_density_and_its_log(output_file):
     assert results_covar_gene_density_and_log.shape[0] == 3  # 3 lvs tested
     assert "lv" in results_covar_gene_density_and_log.columns
     assert "beta" in results_covar_gene_density_and_log.columns
-    assert "pvalue_onesided" in results_covar_gene_density_and_log.columns
+    assert "pvalue" in results_covar_gene_density_and_log.columns
     assert (
-        results_covar_gene_density_and_log["pvalue_onesided"]
+        results_covar_gene_density_and_log["pvalue"]
         .between(0.0, 1.0, inclusive="neither")
         .all()
     )
@@ -2384,8 +2384,8 @@ def test_gls_cli_use_covar_gene_density_and_its_log(output_file):
     )
 
     assert not np.allclose(
-        results_without_covars["pvalue_onesided"].to_numpy(),
-        results_covar_gene_density_and_log["pvalue_onesided"].to_numpy(),
+        results_without_covars["pvalue"].to_numpy(),
+        results_covar_gene_density_and_log["pvalue"].to_numpy(),
     )
 
     # gene density covar vs gene density + log
@@ -2395,8 +2395,8 @@ def test_gls_cli_use_covar_gene_density_and_its_log(output_file):
     )
 
     assert not np.allclose(
-        results_covar_gene_density["pvalue_onesided"].to_numpy(),
-        results_covar_gene_density_and_log["pvalue_onesided"].to_numpy(),
+        results_covar_gene_density["pvalue"].to_numpy(),
+        results_covar_gene_density_and_log["pvalue"].to_numpy(),
     )
 
 
@@ -2431,9 +2431,9 @@ def test_gls_cli_use_covar_gene_n_snps_used_and_its_log(output_file):
     assert results_without_covars.shape[0] == 3  # 3 lvs tested
     assert "lv" in results_without_covars.columns
     assert "beta" in results_without_covars.columns
-    assert "pvalue_onesided" in results_without_covars.columns
+    assert "pvalue" in results_without_covars.columns
     assert (
-        results_without_covars["pvalue_onesided"]
+        results_without_covars["pvalue"]
         .between(0.0, 1.0, inclusive="neither")
         .all()
     )
@@ -2482,9 +2482,9 @@ def test_gls_cli_use_covar_gene_n_snps_used_and_its_log(output_file):
     assert results_covar_gene_n_snps_used.shape[0] == 3  # 3 lvs tested
     assert "lv" in results_covar_gene_n_snps_used.columns
     assert "beta" in results_covar_gene_n_snps_used.columns
-    assert "pvalue_onesided" in results_covar_gene_n_snps_used.columns
+    assert "pvalue" in results_covar_gene_n_snps_used.columns
     assert (
-        results_covar_gene_n_snps_used["pvalue_onesided"]
+        results_covar_gene_n_snps_used["pvalue"]
         .between(0.0, 1.0, inclusive="neither")
         .all()
     )
@@ -2534,9 +2534,9 @@ def test_gls_cli_use_covar_gene_n_snps_used_and_its_log(output_file):
     assert results_covar_gene_n_snps_used_and_log.shape[0] == 3  # 3 lvs tested
     assert "lv" in results_covar_gene_n_snps_used_and_log.columns
     assert "beta" in results_covar_gene_n_snps_used_and_log.columns
-    assert "pvalue_onesided" in results_covar_gene_n_snps_used_and_log.columns
+    assert "pvalue" in results_covar_gene_n_snps_used_and_log.columns
     assert (
-        results_covar_gene_n_snps_used_and_log["pvalue_onesided"]
+        results_covar_gene_n_snps_used_and_log["pvalue"]
         .between(0.0, 1.0, inclusive="neither")
         .all()
     )
@@ -2554,8 +2554,8 @@ def test_gls_cli_use_covar_gene_n_snps_used_and_its_log(output_file):
     )
 
     assert not np.allclose(
-        results_without_covars["pvalue_onesided"].to_numpy(),
-        results_covar_gene_n_snps_used_and_log["pvalue_onesided"].to_numpy(),
+        results_without_covars["pvalue"].to_numpy(),
+        results_covar_gene_n_snps_used_and_log["pvalue"].to_numpy(),
     )
 
     # gene size covar vs gene size + log
@@ -2565,8 +2565,8 @@ def test_gls_cli_use_covar_gene_n_snps_used_and_its_log(output_file):
     )
 
     assert not np.allclose(
-        results_covar_gene_n_snps_used["pvalue_onesided"].to_numpy(),
-        results_covar_gene_n_snps_used_and_log["pvalue_onesided"].to_numpy(),
+        results_covar_gene_n_snps_used["pvalue"].to_numpy(),
+        results_covar_gene_n_snps_used_and_log["pvalue"].to_numpy(),
     )
 
 
@@ -2601,9 +2601,9 @@ def test_gls_cli_use_covar_gene_n_snps_used_density_and_its_log(output_file):
     assert results_without_covars.shape[0] == 3  # 3 lvs tested
     assert "lv" in results_without_covars.columns
     assert "beta" in results_without_covars.columns
-    assert "pvalue_onesided" in results_without_covars.columns
+    assert "pvalue" in results_without_covars.columns
     assert (
-        results_without_covars["pvalue_onesided"]
+        results_without_covars["pvalue"]
         .between(0.0, 1.0, inclusive="neither")
         .all()
     )
@@ -2652,9 +2652,9 @@ def test_gls_cli_use_covar_gene_n_snps_used_density_and_its_log(output_file):
     assert results_covar_gene_n_snps_used_density.shape[0] == 3  # 3 lvs tested
     assert "lv" in results_covar_gene_n_snps_used_density.columns
     assert "beta" in results_covar_gene_n_snps_used_density.columns
-    assert "pvalue_onesided" in results_covar_gene_n_snps_used_density.columns
+    assert "pvalue" in results_covar_gene_n_snps_used_density.columns
     assert (
-        results_covar_gene_n_snps_used_density["pvalue_onesided"]
+        results_covar_gene_n_snps_used_density["pvalue"]
         .between(0.0, 1.0, inclusive="neither")
         .all()
     )
@@ -2704,9 +2704,9 @@ def test_gls_cli_use_covar_gene_n_snps_used_density_and_its_log(output_file):
     assert results_covar_gene_n_snps_used_density_and_log.shape[0] == 3  # 3 lvs tested
     assert "lv" in results_covar_gene_n_snps_used_density_and_log.columns
     assert "beta" in results_covar_gene_n_snps_used_density_and_log.columns
-    assert "pvalue_onesided" in results_covar_gene_n_snps_used_density_and_log.columns
+    assert "pvalue" in results_covar_gene_n_snps_used_density_and_log.columns
     assert (
-        results_covar_gene_n_snps_used_density_and_log["pvalue_onesided"]
+        results_covar_gene_n_snps_used_density_and_log["pvalue"]
         .between(0.0, 1.0, inclusive="neither")
         .all()
     )
@@ -2724,8 +2724,8 @@ def test_gls_cli_use_covar_gene_n_snps_used_density_and_its_log(output_file):
     )
 
     assert not np.allclose(
-        results_without_covars["pvalue_onesided"].to_numpy(),
-        results_covar_gene_n_snps_used_density_and_log["pvalue_onesided"].to_numpy(),
+        results_without_covars["pvalue"].to_numpy(),
+        results_covar_gene_n_snps_used_density_and_log["pvalue"].to_numpy(),
     )
 
     # gene size covar vs gene size + log
@@ -2735,8 +2735,8 @@ def test_gls_cli_use_covar_gene_n_snps_used_density_and_its_log(output_file):
     )
 
     assert not np.allclose(
-        results_covar_gene_n_snps_used_density["pvalue_onesided"].to_numpy(),
-        results_covar_gene_n_snps_used_density_and_log["pvalue_onesided"].to_numpy(),
+        results_covar_gene_n_snps_used_density["pvalue"].to_numpy(),
+        results_covar_gene_n_snps_used_density_and_log["pvalue"].to_numpy(),
     )
 
 
@@ -2802,9 +2802,9 @@ def test_gls_cli_use_covar_all(output_file):
     assert results_without_covars.shape[0] == 3  # 3 lvs tested
     assert "lv" in results_without_covars.columns
     assert "beta" in results_without_covars.columns
-    assert "pvalue_onesided" in results_without_covars.columns
+    assert "pvalue" in results_without_covars.columns
     assert (
-        results_without_covars["pvalue_onesided"]
+        results_without_covars["pvalue"]
         .between(0.0, 1.0, inclusive="neither")
         .all()
     )
@@ -2849,9 +2849,9 @@ def test_gls_cli_use_covar_all(output_file):
     assert results_covar_gene_density.shape[0] == 3  # 3 lvs tested
     assert "lv" in results_covar_gene_density.columns
     assert "beta" in results_covar_gene_density.columns
-    assert "pvalue_onesided" in results_covar_gene_density.columns
+    assert "pvalue" in results_covar_gene_density.columns
     assert (
-        results_covar_gene_density["pvalue_onesided"]
+        results_covar_gene_density["pvalue"]
         .between(0.0, 1.0, inclusive="neither")
         .all()
     )
@@ -2896,9 +2896,9 @@ def test_gls_cli_use_covar_all(output_file):
     assert results_covar_gene_size.shape[0] == 3  # 3 lvs tested
     assert "lv" in results_covar_gene_size.columns
     assert "beta" in results_covar_gene_size.columns
-    assert "pvalue_onesided" in results_covar_gene_size.columns
+    assert "pvalue" in results_covar_gene_size.columns
     assert (
-        results_covar_gene_size["pvalue_onesided"]
+        results_covar_gene_size["pvalue"]
         .between(0.0, 1.0, inclusive="neither")
         .all()
     )
@@ -2948,9 +2948,9 @@ def test_gls_cli_use_covar_all(output_file):
     assert results_covar_all.shape[0] == 3  # 3 lvs tested
     assert "lv" in results_covar_all.columns
     assert "beta" in results_covar_all.columns
-    assert "pvalue_onesided" in results_covar_all.columns
+    assert "pvalue" in results_covar_all.columns
     assert (
-        results_covar_all["pvalue_onesided"]
+        results_covar_all["pvalue"]
         .between(0.0, 1.0, inclusive="neither")
         .all()
     )
@@ -2968,8 +2968,8 @@ def test_gls_cli_use_covar_all(output_file):
     )
 
     assert not np.allclose(
-        results_without_covars["pvalue_onesided"].to_numpy(),
-        results_covar_all["pvalue_onesided"].to_numpy(),
+        results_without_covars["pvalue"].to_numpy(),
+        results_covar_all["pvalue"].to_numpy(),
     )
 
     # gene size covar vs all covars
@@ -2979,8 +2979,8 @@ def test_gls_cli_use_covar_all(output_file):
     )
 
     assert not np.allclose(
-        results_covar_gene_size["pvalue_onesided"].to_numpy(),
-        results_covar_all["pvalue_onesided"].to_numpy(),
+        results_covar_gene_size["pvalue"].to_numpy(),
+        results_covar_all["pvalue"].to_numpy(),
     )
 
     # gene density covar vs all covars
@@ -2990,8 +2990,8 @@ def test_gls_cli_use_covar_all(output_file):
     )
 
     assert not np.allclose(
-        results_covar_gene_density["pvalue_onesided"].to_numpy(),
-        results_covar_all["pvalue_onesided"].to_numpy(),
+        results_covar_gene_density["pvalue"].to_numpy(),
+        results_covar_all["pvalue"].to_numpy(),
     )
 
 
@@ -3026,9 +3026,9 @@ def test_gls_cli_use_covar_all_vs_all_specified_separately(output_file):
     assert results_without_covars.shape[0] == 3  # 3 lvs tested
     assert "lv" in results_without_covars.columns
     assert "beta" in results_without_covars.columns
-    assert "pvalue_onesided" in results_without_covars.columns
+    assert "pvalue" in results_without_covars.columns
     assert (
-        results_without_covars["pvalue_onesided"]
+        results_without_covars["pvalue"]
         .between(0.0, 1.0, inclusive="neither")
         .all()
     )
@@ -3076,9 +3076,9 @@ def test_gls_cli_use_covar_all_vs_all_specified_separately(output_file):
     assert results_covar_all_separately.shape[0] == 3  # 3 lvs tested
     assert "lv" in results_covar_all_separately.columns
     assert "beta" in results_covar_all_separately.columns
-    assert "pvalue_onesided" in results_covar_all_separately.columns
+    assert "pvalue" in results_covar_all_separately.columns
     assert (
-        results_covar_all_separately["pvalue_onesided"]
+        results_covar_all_separately["pvalue"]
         .between(0.0, 1.0, inclusive="neither")
         .all()
     )
@@ -3130,9 +3130,9 @@ def test_gls_cli_use_covar_all_vs_all_specified_separately(output_file):
     assert results_covar_all.shape[0] == 3  # 3 lvs tested
     assert "lv" in results_covar_all.columns
     assert "beta" in results_covar_all.columns
-    assert "pvalue_onesided" in results_covar_all.columns
+    assert "pvalue" in results_covar_all.columns
     assert (
-        results_covar_all["pvalue_onesided"]
+        results_covar_all["pvalue"]
         .between(0.0, 1.0, inclusive="neither")
         .all()
     )
@@ -3150,8 +3150,8 @@ def test_gls_cli_use_covar_all_vs_all_specified_separately(output_file):
     )
 
     assert not np.allclose(
-        results_without_covars["pvalue_onesided"].to_numpy(),
-        results_covar_all["pvalue_onesided"].to_numpy(),
+        results_without_covars["pvalue"].to_numpy(),
+        results_covar_all["pvalue"].to_numpy(),
     )
 
     # all separately vs "all" should be equal
@@ -3161,8 +3161,8 @@ def test_gls_cli_use_covar_all_vs_all_specified_separately(output_file):
     )
 
     assert np.array_equal(
-        results_covar_all_separately["pvalue_onesided"].to_numpy(),
-        results_covar_all["pvalue_onesided"].to_numpy(),
+        results_covar_all_separately["pvalue"].to_numpy(),
+        results_covar_all["pvalue"].to_numpy(),
     )
 
 
@@ -3212,11 +3212,11 @@ def test_gls_cli_use_covar_gene_size_and_gene_density_lv45_random_phenotype_6(
     assert "beta" in results.columns
     assert "beta_se" in results.columns
     assert "t" in results.columns
-    assert "pvalue_twosided" in results.columns
-    assert "pvalue_onesided" in results.columns
+    # assert "pvalue_twosided" in results.columns
+    assert "pvalue" in results.columns
 
-    assert results["pvalue_twosided"].between(0.0, 1.0, inclusive="neither").all()
-    assert results["pvalue_onesided"].between(0.0, 1.0, inclusive="neither").all()
+    # assert results["pvalue_twosided"].between(0.0, 1.0, inclusive="neither").all()
+    assert results["pvalue"].between(0.0, 1.0, inclusive="neither").all()
 
     _lvs = set(results["lv"].tolist())
     assert "LV45" in _lvs
@@ -3232,10 +3232,10 @@ def test_gls_cli_use_covar_gene_size_and_gene_density_lv45_random_phenotype_6(
     assert results.iloc[0].loc["beta"] == pytest.approx(exp_coef, rel=1e-2)
     assert results.iloc[0].loc["beta_se"] == pytest.approx(exp_coef_se, rel=1e-2)
     assert results.iloc[0].loc["t"] == pytest.approx(exp_tvalue, rel=1e-2)
-    assert results.iloc[0].loc["pvalue_twosided"] == pytest.approx(
-        exp_pval_twosided, rel=1e-2
-    )
-    assert results.iloc[0].loc["pvalue_onesided"] == pytest.approx(
+    # assert results.iloc[0].loc["pvalue_twosided"] == pytest.approx(
+    #     exp_pval_twosided, rel=1e-2
+    # )
+    assert results.iloc[0].loc["pvalue"] == pytest.approx(
         exp_pval_onesided, rel=1e-2
     )
 
@@ -3286,11 +3286,11 @@ def test_gls_cli_use_covar_gene_size_and_gene_density_lv455_random_phenotype_6(
     assert "beta" in results.columns
     assert "beta_se" in results.columns
     assert "t" in results.columns
-    assert "pvalue_twosided" in results.columns
-    assert "pvalue_onesided" in results.columns
+    # assert "pvalue_twosided" in results.columns
+    assert "pvalue" in results.columns
 
-    assert results["pvalue_twosided"].between(0.0, 1.0, inclusive="neither").all()
-    assert results["pvalue_onesided"].between(0.0, 1.0, inclusive="neither").all()
+    # assert results["pvalue_twosided"].between(0.0, 1.0, inclusive="neither").all()
+    assert results["pvalue"].between(0.0, 1.0, inclusive="neither").all()
 
     _lvs = set(results["lv"].tolist())
     assert "LV455" in _lvs
@@ -3306,10 +3306,10 @@ def test_gls_cli_use_covar_gene_size_and_gene_density_lv455_random_phenotype_6(
     assert results.iloc[0].loc["beta"] == pytest.approx(exp_coef, rel=1e-2)
     assert results.iloc[0].loc["beta_se"] == pytest.approx(exp_coef_se, rel=1e-2)
     assert results.iloc[0].loc["t"] == pytest.approx(exp_tvalue, rel=1e-2)
-    assert results.iloc[0].loc["pvalue_twosided"] == pytest.approx(
-        exp_pval_twosided, rel=1e-2
-    )
-    assert results.iloc[0].loc["pvalue_onesided"] == pytest.approx(
+    # assert results.iloc[0].loc["pvalue_twosided"] == pytest.approx(
+    #     exp_pval_twosided, rel=1e-2
+    # )
+    assert results.iloc[0].loc["pvalue"] == pytest.approx(
         exp_pval_onesided, rel=1e-2
     )
 
@@ -3361,11 +3361,11 @@ def test_gls_cli_use_covar_gene_size_and_gene_density_lv45_and_lv455_random_phen
     assert "beta" in results.columns
     assert "beta_se" in results.columns
     assert "t" in results.columns
-    assert "pvalue_twosided" in results.columns
-    assert "pvalue_onesided" in results.columns
+    # assert "pvalue_twosided" in results.columns
+    assert "pvalue" in results.columns
 
-    assert results["pvalue_twosided"].between(0.0, 1.0, inclusive="neither").all()
-    assert results["pvalue_onesided"].between(0.0, 1.0, inclusive="neither").all()
+    # assert results["pvalue_twosided"].between(0.0, 1.0, inclusive="neither").all()
+    assert results["pvalue"].between(0.0, 1.0, inclusive="neither").all()
 
     _lvs = set(results["lv"].tolist())
     assert "LV45" in _lvs
@@ -3386,10 +3386,10 @@ def test_gls_cli_use_covar_gene_size_and_gene_density_lv45_and_lv455_random_phen
     assert results.loc[_lv_code, "beta"] == pytest.approx(exp_coef, rel=1e-2)
     assert results.loc[_lv_code, "beta_se"] == pytest.approx(exp_coef_se, rel=1e-2)
     assert results.loc[_lv_code, "t"] == pytest.approx(exp_tvalue, rel=1e-2)
-    assert results.loc[_lv_code, "pvalue_twosided"] == pytest.approx(
-        exp_pval_twosided, rel=1e-2
-    )
-    assert results.loc[_lv_code, "pvalue_onesided"] == pytest.approx(
+    # assert results.loc[_lv_code, "pvalue_twosided"] == pytest.approx(
+    #     exp_pval_twosided, rel=1e-2
+    # )
+    assert results.loc[_lv_code, "pvalue"] == pytest.approx(
         exp_pval_onesided, rel=1e-2
     )
 
@@ -3479,8 +3479,8 @@ def test_gls_cli_use_covar_debug_use_ols_vs_ols_without_covars(output_file):
         results_ols["beta"].to_numpy(),
     )
     assert not np.allclose(
-        results_ols_no_covars["pvalue_onesided"].to_numpy(),
-        results_ols["pvalue_onesided"].to_numpy(),
+        results_ols_no_covars["pvalue"].to_numpy(),
+        results_ols["pvalue"].to_numpy(),
     )
 
 
@@ -3581,6 +3581,6 @@ def test_gls_cli_use_covar_debug_use_ols_vs_gls(output_file):
         results_ols["beta"].to_numpy(),
     )
     assert not np.allclose(
-        results_gls["pvalue_onesided"].to_numpy(),
-        results_ols["pvalue_onesided"].to_numpy(),
+        results_gls["pvalue"].to_numpy(),
+        results_ols["pvalue"].to_numpy(),
     )
