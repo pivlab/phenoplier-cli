@@ -14,7 +14,7 @@ def tsv():
 
     r = pd.concat(files)
 
-    adj_pval = multipletests(r["pvalue_onesided"], alpha=0.05, method="fdr_bh")
+    adj_pval = multipletests(r["pvalue"], alpha=0.05, method="fdr_bh")
 
     r = r.assign(fdr=adj_pval[1])
 
