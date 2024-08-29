@@ -46,7 +46,7 @@ if not temp_extract_dir.exists():
 
 @mark.skipif(IN_GITHUB_ACTIONS, reason="Slow and computationally expensive test, skip in GitHub Actions")
 @mark.corr
-@mark.order(6)
+@mark.order(-1)
 @mark.parametrize(
     "cohort, reference_panel, eqtl_model, lv_code, lv_percentile, genes_symbols_dir, output_dir",
     [

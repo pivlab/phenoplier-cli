@@ -24,7 +24,7 @@ ref_data_dir = Path(conf.TEST_DIR) / "data/gene-corr/5-filter/cohorts/phenomexca
 
 @mark.skipif(IN_GITHUB_ACTIONS, reason="Slow and computationally expensive test, skip in GitHub Actions")
 @mark.corr
-@mark.order(5)
+@mark.order(-2)
 @mark.parametrize(
     "cohort, reference_panel, eqtl_model, distances, genes_symbols, output_dir",
     [

@@ -33,7 +33,7 @@ test_data_dir = Path(conf.TEST_DIR) / "data/gene-corr/4-postprocess/cohorts/phen
 
 @mark.skipif(IN_GITHUB_ACTIONS, reason="Slow and computationally expensive test, skip in GitHub Actions")
 @mark.corr
-@mark.order(4)
+@mark.order(-3)
 # Parameterize the test cases
 @mark.parametrize(
     "cohort, reference_panel, eqtl_model, input_dir, genes_info, output_dir",

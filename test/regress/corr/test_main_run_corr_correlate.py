@@ -37,7 +37,7 @@ chromosome_to_test = random.randint(1, 22)
 
 @mark.skipif(IN_GITHUB_ACTIONS, reason="Slow and computationally expensive test, skip in GitHub Actions")
 @mark.corr
-@mark.order(3)
+@mark.order(-4)
 @mark.parametrize(
     "cohort, reference_panel, eqtl_model, chromosome, input_dir, output_dir",
     [

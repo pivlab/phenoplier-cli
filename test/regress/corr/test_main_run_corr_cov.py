@@ -31,7 +31,7 @@ output_dir_base = get_test_output_dir(Path(__file__))
 
 @mark.skipif(IN_GITHUB_ACTIONS, reason="Slow and computationally expensive test, skip in GitHub Actions")
 @mark.corr
-@mark.order(1)
+@mark.order(-6)
 @mark.parametrize(
     "reference_panel, eqtl_model, output_dir",
     [
