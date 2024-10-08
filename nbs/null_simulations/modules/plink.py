@@ -16,7 +16,7 @@ def build_plink_nullsim_command(
     maf=0.01,
 ):
     command = f"""plink2 \
-        --bgen {bgen_filename} \
+        --bgen {bgen_filename} ref-first \
         --covar {covar} \
         --covar-name {covar_name} \
         --mac {mac} --maf {maf} \

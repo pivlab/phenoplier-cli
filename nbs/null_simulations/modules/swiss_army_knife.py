@@ -1,6 +1,7 @@
 import subprocess
+from plink import build_plink_nullsim_command, generate_pheno_names
 
-def run_swiss_army_knife(data_file_dir, filename, run_plink_qc, *args, **kwargs):
+def run_swiss_army_knife(plink_cmd, *args, **kwargs):
     """
     Python wrapper for the 'dx run swiss-army-knife' command using *args and **kwargs.
     
@@ -14,17 +15,13 @@ def run_swiss_army_knife(data_file_dir, filename, run_plink_qc, *args, **kwargs)
     """
     # Set default keyword argument values
     instance_type = kwargs.get('instance_type', 'mem1_ssd1_v2_x36')
-    tag = kwargs.get('tag', 'Array QC')
-    output_dir = kwargs.get('output_dir', '/default/output/dir')
+    tag = kwargs.get('tag', 'NA')
+    output_dir = kwargs.get('output_dir', '/default/output/')
 
     # Prepare base command with input files
     command = [
         "dx", "run", "swiss-army-knife",
-        f"-iin={data_file_dir}/{filename}.bed",
-        f"-iin={data_file_dir}/{filename}.bim",
-        f"-iin={data_file_dir}/{filename}.fam",
-        f"-iin=/Data/ischemia_df.phe",
-        f"-icmd={run_plink_qc}",
+        f"-icmd={plink_cmd}",
         f"--tag={tag}",
         f"--instance-type={instance_type}",
         f"--destination={output_dir}",
@@ -43,20 +40,17 @@ def run_swiss_army_knife(data_file_dir, filename, run_plink_qc, *args, **kwargs)
         print(f"An error occurred: {e}")
         return e.stdout if e.stdout else e.stderr
 
-# Example usage
-data_file_dir = "/my/data/files"
-filename = "sample"
-run_plink_qc = "plink --bfile sample --qc"
-additional_input_files = ["/my/data/extra1.txt", "/my/data/extra2.txt"]
 
-result = run_swiss_army_knife(
-    data_file_dir=data_file_dir, 
-    filename=filename, 
-    run_plink_qc=run_plink_qc,
-    *additional_input_files,  # Passing additional input files
-    output_dir="/my/output/dir",  # Using **kwargs to specify output_dir
-    instance_type="mem1_ssd1_v2_x36",  # Custom instance type
-    tag="Custom Tag"  # Custom tag
-)
-
-print(result)
+def run_plink_nullsim(bgen_file,
+                      pheno_file,
+                      start_pheno,
+                      end_pheno,
+                      sample_file,
+                      covariate_file,
+                      output_dir,
+                      filename,
+                      *args,
+                      **kwargs):
+    pheno_names = generate_pheno_names(start_pheno, end_pheno)
+    plink_cmd = build_plink_nullsim_command(bgen_file, pheno_file, pheno_names, sample_file, covariate_file, args, output_dir=output_dir)
+    run_swiss_army_knife(plink_cmd)
