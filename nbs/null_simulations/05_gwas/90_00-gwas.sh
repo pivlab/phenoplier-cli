@@ -4,6 +4,7 @@ source ../common/utils.sh
 start_pheno=700
 end_pheno=899
 
+job_name="PhenoPLIER Null Simulation GWAS"
 pheno_file_name="random_phenotypes_df.phe"
 pheno_file="/phenoplier/null_sim/data/${pheno_file_name}"
 pheno_names=$(generate_pheno_names ${start_pheno} ${end_pheno})
@@ -33,6 +34,7 @@ for i in {1..22}; do
 done
 
 command="dx run 
+    --name ${job_name} \
     --instance-type ${instance_type} \
     --tag ${tag} \
     --priority ${priority} \
