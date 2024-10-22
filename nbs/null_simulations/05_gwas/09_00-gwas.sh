@@ -1,25 +1,39 @@
 #!/bin/bash
 source ../common/utils.sh
 
+# Constants
+# Declare an associative array
+declare -A plink_versions
+# Map app_id to version
+plink_versions["plink-v1.0.8"]="app-GZZ4vB008Qyk3644pZfjbxP2"
+plink_versions["plink-v1.1.0"]="app-GqZkQ8j08GBfzF852QG1y3PV"
+
 # Parameters to specify the range and batch size
-start_pheno=0
-end_pheno=199
+# Make sure the length of [start_pheno, end_pheno] is a multiple of batch_size
+start_pheno=200
+end_pheno=399
 batch_size=200
 
-# Other constants
+# RAP settings
+## Job settings
 job_name="\"PhenoPLIER Null Simulation GWAS\""
+priority="low"
+instance_type="mem2_ssd1_v2_x64"
+## Pllink settings
+plink_version="plink-v1.1.0"
 pheno_file_name="random_phenotypes_df.phe"
 pheno_file="/phenoplier/null_sim/00-data/${pheno_file_name}"
-covar_names="sex,age,pc1,pc2,pc3,pc4,pc5,pc6,pc7,pc8,pc9,pc10"
+covar_names="sex,age,pc1,pc2,pc3,pc4,pc5,pc6,pc7,pc8,pc9,pc10" # Todo: experiment with more PCs
 bgen_path="/Bulk/Imputation/Imputation from genotype (GEL)"
 sample_path="/Bulk-DRL/GEL_imputed_sample_files_fixed"
 data_field="ukb21008"
-instance_type="mem2_ssd1_v2_x64"
-priority="low"
 bgen_name="ukb21008_c2_b0_v1.bgen"
-output_dir_base="phenoplier/null_sim/01-output"
-tag_base=""
-plink_app_id="app-GZZ4vB008Qyk3644pZfjbxP2" # Plink v1.0.8
+# Settings end
+
+# Dynamic variables
+plink_app_id=${plink_versions[${plink_version}]}
+output_dir_base="phenoplier/null_sim/01-output/${plink_version}"
+
 
 # Function to split phenotypes into batches and run the GWAS command for each batch
 run_gwas_batch() {
@@ -27,13 +41,14 @@ run_gwas_batch() {
     local batch_end=$2
 
     # Create a tag and output dir based on the batch
-    local output_dir="${output_dir_base}/${batch_start}-${batch_end}/"
+    local output_dir="${output_dir_base}/"
     local tag="${batch_start}-${batch_end}"
 
     # Generate phenotype names for this batch
     pheno_names=$(generate_pheno_names ${batch_start} ${batch_end})
 
     # Declare long options for the command
+    # Carefule with the tailing spaces in the extra_options string
     bgen_arg=""
     sample_arg=""
     extra_options="\""
