@@ -1,10 +1,14 @@
 #!/bin/bash
 
-# Function to process the input file and compress the output
+# Function to process the input file and compress the output to a specified directory
 process_and_compress() {
     local in_fname="$1"
-    local out_fname="$2"
-    local temp_out="${out_fname%.gz}"  # Temporary file before compression
+    local out_dirpath="$2"
+    
+    # Extract the base name of the input file (without directory and extension)
+    local base_name=$(basename "$in_fname" .txt)
+    local out_fname="${out_dirpath}/${base_name}.tsv.gz"
+    local temp_out="${out_dirpath}/${base_name}.tsv"  # Temporary file before compression
 
     # Use awk to match column names and extract the desired columns
     awk 'BEGIN { OFS="\t" }
@@ -39,4 +43,4 @@ process_and_compress() {
 }
 
 # Example usage
-# process_and_compress "/mnt/data/proj_data/phenoplier-cli/ukb-nullsim/random.pheno100.glm.linear.txt" "/mnt/data/proj_data/phenoplier-cli/ukb-nullsim/r_random.pheno100.glm.linear.tsv.gz"
+# process_and_compress "/path/to/input_file.txt" "/path/to/output_directory"
