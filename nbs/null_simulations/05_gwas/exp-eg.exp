@@ -1,9 +1,0 @@
-#!/usr/bin/expect
-# Wait 5 min for the instance to be set up
-set timeout 300
-set send_slow {1 .1}
-spawn ./09_01-gwas-compress.sh
-expect "$ "
-sleep 1
-send -s "ls\r"
-expect eof
