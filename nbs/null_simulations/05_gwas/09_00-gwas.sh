@@ -3,22 +3,23 @@ source ../common/utils.sh
 
 # Parameters to specify the range and batch size
 start_pheno=0
-end_pheno=999
+end_pheno=199
 batch_size=200
 
 # Other constants
 job_name="\"PhenoPLIER Null Simulation GWAS\""
 pheno_file_name="random_phenotypes_df.phe"
-pheno_file="/phenoplier/null_sim/data/${pheno_file_name}"
+pheno_file="/phenoplier/null_sim/00-data/${pheno_file_name}"
 covar_names="sex,age,pc1,pc2,pc3,pc4,pc5,pc6,pc7,pc8,pc9,pc10"
 bgen_path="/Bulk/Imputation/Imputation from genotype (GEL)"
 sample_path="/Bulk-DRL/GEL_imputed_sample_files_fixed"
 data_field="ukb21008"
-instance_type="mem1_ssd1_v2_x36"
+instance_type="mem2_ssd1_v2_x64"
 priority="low"
 bgen_name="ukb21008_c2_b0_v1.bgen"
-output_dir_base="phenoplier/null_sim/output"
+output_dir_base="phenoplier/null_sim/01-output"
 tag_base=""
+plink_app_id="app-GZZ4vB008Qyk3644pZfjbxP2" # Plink v1.0.8
 
 # Function to split phenotypes into batches and run the GWAS command for each batch
 run_gwas_batch() {
@@ -36,8 +37,9 @@ run_gwas_batch() {
     bgen_arg=""
     sample_arg=""
     extra_options="\""
-    extra_options+="hide-covar --maf 0.01 --mac 50 --covar-name ${covar_names} "
-    extra_options+="--pheno-name ${pheno_names}"
+    extra_options+="hide-covar --maf 0.01 --mac 50 "
+    extra_options+="--pheno-name ${pheno_names} "
+    extra_options+="--covar-name ${covar_names}"
     extra_options+="\""
 
     # Run on 22 chromosomes
@@ -47,7 +49,7 @@ run_gwas_batch() {
     done
 
     # Build the command
-    command="dx run plink_gwas \
+    command="dx run ${plink_app_id} \
         --name ${job_name} \
         --instance-type ${instance_type} \
         --tag ${tag} \
