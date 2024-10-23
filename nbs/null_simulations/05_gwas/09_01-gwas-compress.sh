@@ -1,37 +1,45 @@
 #!/bin/bash
-# station_name="null-sim worker"
-# input_dir="~/nullsim/input/"
-# input_out="~/nullsim/compressed/"
-# OUTDIR="project-Gq7G9JQJYYYByQzg1b8XJG8Q:/phenoplier/null_sim/02-compressed"
-OUTDIR="~/output"
-INDIR="/home/dnanexus/nullsim/input/0-199"
-N_JOBS=$(nproc --all)
-instance_type="mem1_ssd1_v2_x36"
-
 source ../common/rap.sh
 
-if ! command -v expect &> /dev/null
-then
-    echo "expect is not installed. Installing now..."
-    sudo apt install expect
-else
-    echo "Starting..."
-fi
 
-output=$(run_cloud_workstation "12h" "null-sim" "compression" ${instance_type})
-job_name=$(echo "${output}" | head -n 1)
-echo ${job_name}
-sleep 5
-dx ssh ${job_name}
+# RAP job settings
+N_JOBS=$(nproc --all)
+instance_type="mem1_ssd1_v2_x36"
+# Todo: set this as envvar and load it
+project_id="project-Gq7G9JQJYYYByQzg1b8XJG8Q"
+vm_name="Null Simulation GWAS Compression"
 
-removecols() {
-   FILE=$1
-   awk -F'\t' 'BEGIN {OFS = FS} {print $1,$2,$3,$4,$6,$9,$10,$12}' ${FILE} | gzip > ${OUTDIR}/${FILE}.tsv.gz
-}
+# Compression node settings
+plink_version="plink-v1.1.0"
+rap_dpath="${project_id}:/phenoplier/null_sim/01-output/${plink_version}"
+data_dpath="/home/dnanexus/plink-gwas"
 
-export -f removecols
-sudo apt install parallel -y
-parallel -j${N_JOBS} removecols {} ::: ${INDIR}/*.glm.linear.assoc.txt
+# # Create the VM
+# dx_output=$(run_cloud_workstation "12h" "${vm_name}" "compression" ${instance_type})
+# job_name=$(echo "${dx_output}" | head -n 1)
+# echo "Creating RAP job: ${job_name}"
+# sleep 30  # Wait for the VM to be ready
 
-plink_gwas.plink2.pheno99.glm.linear.assoc.txt.tsv.gz
 
+job_name="job-GvG5QzjJYYYJ8JPXk4ffXJ9j"
+
+str_install_parallel="
+sleep 5 && \
+if ! command -v parallel &> /dev/null; then
+    sudo apt install parallel -y;
+fi && \
+"
+
+str_download_from_rap="
+data_dpath=${data_dpath} && \
+mkdir -p ${data_dpath} && \
+dx select --level=VIEW ${project_id} && \
+dx download ${rap_dpath} -r -a -o ${data_dpath}
+"
+
+# Combine the two parts
+command_string="${str_install_parallel}${str_download_from_rap}"
+
+# echo "$command_string"
+
+dx ssh ${job_name} -t "${command_string}"
