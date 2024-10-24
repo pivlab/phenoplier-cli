@@ -10,14 +10,14 @@ plink_versions["plink-v1.1.0"]="app-GqZkQ8j08GBfzF852QG1y3PV"
 
 # Parameters to specify the range and batch size
 # Make sure the length of [start_pheno, end_pheno] is a multiple of batch_size
-start_pheno=200
-end_pheno=399
+start_pheno=400
+end_pheno=999
 batch_size=200
 
 # RAP settings
 ## Job settings
 job_name="\"PhenoPLIER Null Simulation GWAS\""
-priority="low"
+priority="normal"
 instance_type="mem2_ssd1_v2_x64"
 ## Pllink settings
 plink_version="plink-v1.1.0"
@@ -41,7 +41,7 @@ run_gwas_batch() {
     local batch_end=$2
 
     # Create a tag and output dir based on the batch
-    local output_dir="${output_dir_base}/"
+    local output_dir="${output_dir_base}/${batch_start}-${batch_end}"
     local tag="${batch_start}-${batch_end}"
 
     # Generate phenotype names for this batch
@@ -70,6 +70,7 @@ run_gwas_batch() {
         --tag ${tag} \
         --priority ${priority} \
         --destination=${output_dir} \
+        --cost-limit=10 \
         ${bgen_arg} ${sample_arg} \
         -iphenotypes_pheno=${pheno_file} \
         -icovariates_cov=${pheno_file} \
