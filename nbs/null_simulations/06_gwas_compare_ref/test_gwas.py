@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 
 # Directories containing the result and reference files
-output_dir = "/mnt/data/proj_data/phenoplier-cli/nullsimi-millton/"
+output_dir = "/mnt/data/proj_data/phenoplier-cli/ukb-nullsim/plink-v1.1.0/"
 ref_dir = "/mnt/data/alpine_data/pivlab/data/phenoplier/results/gls/gwas/null_sims/ukb/"
 file_ext = ".tsv.gz"
 float_columns = ['BETA', 'SE', 'P']
