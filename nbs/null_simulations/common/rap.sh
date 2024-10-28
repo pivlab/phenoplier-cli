@@ -12,5 +12,5 @@ run_cloud_workstation() {
     --name "${session_name}" \
     --tag "${tag}" \
     --instance-type "${instance_type}" \
-    --priority "low"
+    --priority "normal"
 }
