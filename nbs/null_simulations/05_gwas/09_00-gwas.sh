@@ -10,9 +10,9 @@ plink_versions["plink-v1.1.0"]="app-GqZkQ8j08GBfzF852QG1y3PV"
 
 # Parameters to specify the range and batch size
 # Make sure the length of [start_pheno, end_pheno] is a multiple of batch_size
-start_pheno=400
-end_pheno=999
-batch_size=200
+start_pheno=0
+end_pheno=9
+batch_size=10
 
 # RAP settings
 ## Job settings
@@ -21,9 +21,13 @@ priority="normal"
 instance_type="mem2_ssd1_v2_x64"
 ## Pllink settings
 plink_version="plink-v1.1.0"
-pheno_file_name="random_phenotypes_df.phe"
+pheno_file_name="random_phenotypes_df_40_pcs.phe"
 pheno_file="/phenoplier/null_sim/00-data/${pheno_file_name}"
-covar_names="sex,age,pc1,pc2,pc3,pc4,pc5,pc6,pc7,pc8,pc9,pc10" # Todo: experiment with more PCs
+covar_names="sex,age"
+# Add 40 PCs to the covariates
+for i in {1..40}; do
+    covar_names+=",pc$i"
+done
 bgen_path="/Bulk/Imputation/Imputation from genotype (GEL)"
 sample_path="/Bulk-DRL/GEL_imputed_sample_files_fixed"
 data_field="ukb21008"
