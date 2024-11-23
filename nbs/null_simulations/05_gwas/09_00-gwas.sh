@@ -17,11 +17,14 @@ batch_size=10
 # RAP settings
 ## Job settings
 job_name="\"PhenoPLIER Null Simulation GWAS\""
-priority="normal"
-instance_type="mem2_ssd1_v2_x64"
+priority="low"
+# instance_type="mem2_ssd1_v2_x64"
+instance_type="mem1_ssd1_v2_x36"
+# Todo: Add spending limit
+
 ## Pllink settings
 plink_version="plink-v1.1.0"
-pheno_file_name="random_phenotypes_df_40_pcs.phe"
+pheno_file_name="trimmed_random_phenotypes_df_40_pcs.phe"
 pheno_file="/phenoplier/null_sim/00-data/${pheno_file_name}"
 covar_names="sex,age"
 # Add 40 PCs to the covariates
