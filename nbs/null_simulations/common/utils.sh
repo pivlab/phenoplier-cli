@@ -93,3 +93,4 @@ compress_gwas() {
     fi
 }
 
+export -f compress_gwas
