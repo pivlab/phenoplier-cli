@@ -37,7 +37,7 @@ intersphinx_disabled_domains = ['std']
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = 'haiku'
-html_static_path = ['_static']
+html_static_path = ['_static', '_images']
 
 # -- Options for EPUB output
 epub_show_urls = 'footnote'
