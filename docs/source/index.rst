@@ -16,4 +16,4 @@ documentation for details.
    :caption: Contents:
 
    introduction
-   getting_started/index
+   getting-started/index
