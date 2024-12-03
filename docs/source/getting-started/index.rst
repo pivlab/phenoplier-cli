@@ -5,3 +5,6 @@ Getting Started
    :maxdepth: 1
 
    installation
+   data-preparation
+   project-configuration
+   
