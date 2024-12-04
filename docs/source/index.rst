@@ -17,3 +17,5 @@ documentation for details.
 
    introduction
    getting-started/index
+   lv-trait-regression
+   gene-gene-correlation-matrix-computation/index
