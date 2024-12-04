@@ -1,4 +1,4 @@
-5. Create Within-distance Matrices
+5. Create Within-Distance Matrices
 ==================================
 
 To read the correlation matrix generated and create new matrices with different "within distances" across genes, use the ``filter`` sub-command. For example, it generates a new correlation matrix with only genes within a distance of 10mb.
