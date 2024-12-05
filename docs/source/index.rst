@@ -6,10 +6,9 @@
 PhenoPLIER documentation
 ========================
 
-Add your content using ``reStructuredText`` syntax. See the
+For developers, this documentation uses the ``reStructuredText`` syntax. See here
 `reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
 documentation for details.
-
 
 .. toctree::
    :maxdepth: 2
