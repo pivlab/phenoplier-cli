@@ -1,3 +1,5 @@
+.. _gene-gene-correlation-matrix-computation:
+
 Gene Gene Correlation Matrix Computation
 ===============
 
