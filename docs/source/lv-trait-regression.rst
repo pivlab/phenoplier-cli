@@ -1,3 +1,5 @@
+.. _lv-trait-regression:
+
 LV‐Trait Regression
 ====================
 
