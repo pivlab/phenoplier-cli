@@ -9,11 +9,11 @@ import typer
 from typer.core import TyperGroup
 from click import Context
 
+from phenoplier.config import settings
+from phenoplier.constants.arg import Common_Args, Cli, Init_Args
 from phenoplier.commands.util.utils import create_settings_files
 from phenoplier.commands.get import get
 from phenoplier.commands.run.regression import regression
-from phenoplier.config import settings
-from phenoplier.constants.arg import Common_Args, Cli, Init_Args
 from phenoplier.commands.run.correlation.pipeline import pipeline
 from phenoplier.commands.run.correlation.cov import cov
 from phenoplier.commands.run.correlation.preprocess import preprocess
@@ -23,7 +23,9 @@ from phenoplier.commands.run.correlation.filter import filter
 from phenoplier.commands.run.correlation.generate import generate
 from phenoplier.commands.util.enums import DownloadAction
 from phenoplier.commands.get import ActionMap
+from phenoplier.commands.project import multiplier
 from phenoplier.data import Downloader
+
 
 # This class is used to group the commands in the order they appear in the code
 class OrderCommands(TyperGroup):
@@ -37,11 +39,15 @@ app = typer.Typer(
     context_settings={"help_option_names": ["-h", "--help"]},
     add_completion=True
 )
+
 # Define the subcommands
+# "run" command group
 cmd_group_run = typer.Typer(
     context_settings={"help_option_names": ["-h", "--help"]},
     help="Run a specific Phenoplier functionality."
 )
+cmd_group_run.command()(regression)
+# "gene-corr" command group
 cmd_group_gene_corr = typer.Typer(
     context_settings={"help_option_names": ["-h", "--help"]},
     help="Execute a specific Phenoplier functionality for the gene-gene correlation matrix generation. Except for the" 
@@ -56,11 +62,19 @@ cmd_group_gene_corr.command()(correlate)
 cmd_group_gene_corr.command()(postprocess)
 cmd_group_gene_corr.command()(filter)
 cmd_group_gene_corr.command()(generate)
-# Grouping
+# Add the "gene-corr" command group to the "run" command group
 cmd_group_run.add_typer(cmd_group_gene_corr, name="gene-corr")
-cmd_group_run.command()(regression)
+# "project" command group
+cmd_group_project = typer.Typer(
+    context_settings={"help_option_names": ["-h", "--help"]},
+    help="projects input data into the specified representation space."
+)
+cmd_group_project.command()(multiplier)
+
+# Register commands and command groups
 # Add the command group "run" to the main program
 app.add_typer(cmd_group_run, name="run")
+app.add_typer(cmd_group_project, name="project")
 app.command()(get)
 
 
