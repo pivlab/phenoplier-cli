@@ -1,9 +1,9 @@
 """
 Classes and code with MultiPLIER related functionality.
 """
-import conf
 import numpy as np
 import pandas as pd
+from phenoplier.config import settings as conf
 
 
 class MultiplierProjection(object):
@@ -100,9 +100,9 @@ class MultiplierProjection(object):
     @staticmethod
     def _read_model_z():
         """Returns the MultiPLIER Z matrix (gene loadings)."""
-        return pd.read_pickle(conf.MULTIPLIER["MODEL_Z_MATRIX_FILE"])
+        return pd.read_pickle(conf.GENE_MODULE_MODEL["MODEL_Z_MATRIX_FILE"])
 
     @staticmethod
     def _read_model_metadata():
         """Returns metadata of the MultiPLIER model."""
-        return pd.read_pickle(conf.MULTIPLIER["MODEL_METADATA_FILE"])
+        return pd.read_pickle(conf.GENE_MODULE_MODEL["MODEL_METADATA_FILE"])

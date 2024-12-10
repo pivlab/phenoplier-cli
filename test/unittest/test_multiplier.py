@@ -1,14 +1,13 @@
-from pathlib import Path
-
 import pytest
 import numpy as np
 import pandas as pd
 import rpy2.robjects as ro
 
+from pathlib import Path
 from rpy2.robjects.conversion import localconverter
 from rpy2.robjects import pandas2ri
 from phenoplier.multiplier import MultiplierProjection
-
+from phenoplier.config import settings as conf
 
 def read_rds(test_case_number: int, kind: str):
     """Reads a test case data from an RDS file.
@@ -19,7 +18,7 @@ def read_rds(test_case_number: int, kind: str):
     """
     readRDS = ro.r["readRDS"]
     rds_file = (
-        Path(__file__).resolve().parent
+        Path(conf.TEST_DIR)
         / "data"
         / "multiplier"
         / f"test_case{test_case_number}/{kind}.rds"
