@@ -79,13 +79,14 @@ class MultiplierProjection(object):
 
         # select from input data only genes in common with model, and add missing ones
         # as zeros (mean).
-        y_std = y_std.loc[common_genes].append(
+        y_std = pd.concat([
+            y_std.loc[common_genes],
             pd.DataFrame(
                 0,
                 index=model_genes.difference(data_genes),
                 columns=y_std.columns.copy(),
             )
-        )
+        ])
 
         # get the precision matrix of gene loadings (z matrix)
         z_cov_inv = pd.DataFrame(
