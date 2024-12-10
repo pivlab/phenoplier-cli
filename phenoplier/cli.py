@@ -2,10 +2,10 @@
 This module provides the command line interface for Phenoplier.
 """
 
+import typer
+
 from typing import Annotated
 from pathlib import Path
-
-import typer
 from typer.core import TyperGroup
 from click import Context
 
