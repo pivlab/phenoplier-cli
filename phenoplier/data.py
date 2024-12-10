@@ -421,7 +421,7 @@ class Downloader:
     def download_multiplier_model_metadata_pkl(**kwargs):
         output_file = conf.GENE_MODULE_MODEL["MODEL_METADATA_FILE"]
         curl(
-            "https://upenn.box.com/shared/static/efeulwvivjtucunvrx2nwq06pyzs3pkq.pkl",
+            "https://zenodo.org/records/14369324/files/multiplier_model_metadata.pkl?download=1",
             output_file,
             "21cfd84270d04ad30ac2bca7049c7dab",
             logger=logger,
