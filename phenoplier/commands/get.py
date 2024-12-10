@@ -12,8 +12,8 @@ from phenoplier.constants.arg import Common_Args
 from phenoplier.config import settings as conf
 from phenoplier.commands.util.enums import DownloadAction
 
-# Todo: add demo mode, differentiate between test and full data
-test_actions = [
+# Common actions shared between test_actions and ci_test_actions
+common_actions = [
     "download_phenomexcan_rapid_gwas_pheno_info",
     "download_phenomexcan_rapid_gwas_data_dict_file",
     "download_uk_biobank_coding_3",
@@ -26,23 +26,18 @@ test_actions = [
     "download_snps_covariance_gtex_mashr",
     "download_snps_covariance_1000g_mashr",
     "download_predixcan_mashr_prediction_models",
-    "download_reference_panel_gtex_v8"
+    "download_multiplier_model_metadata_pkl",
 ]
 
-ci_test_actions = [
-    "download_phenomexcan_rapid_gwas_pheno_info",
-    "download_phenomexcan_rapid_gwas_data_dict_file",
-    "download_uk_biobank_coding_3",
-    "download_uk_biobank_coding_6",
-    "download_phenomexcan_gtex_gwas_pheno_info",
-    "download_gene_map_id_to_name",
-    "download_gene_map_name_to_id",
-    "download_biomart_genes_hg38",
-    "download_multiplier_model_z_pkl",
-    "download_snps_covariance_gtex_mashr",
-    "download_snps_covariance_1000g_mashr",
-    "download_predixcan_mashr_prediction_models",
+# Unique actions for test_actions
+test_unique_actions = [
+    "download_reference_panel_gtex_v8",
 ]
+
+# Construct lists using common actions and unique actions
+test_actions = common_actions + test_unique_actions
+ci_test_actions = common_actions
+
 
 full_actions = test_actions + [
     "download_smultixcan_results",
