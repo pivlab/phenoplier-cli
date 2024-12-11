@@ -1,14 +1,18 @@
 """
 General utility functions.
 """
-
 import re
 import hashlib
 import subprocess
 import logging
+import pandas as pd
+import rpy2.robjects as ro
+
 from pathlib import Path
 from subprocess import run
 from typing import Dict
+from rpy2.robjects.conversion import localconverter
+from rpy2.robjects import pandas2ri
 
 
 logger = logging.getLogger(__name__)
@@ -219,3 +223,19 @@ def run_command(command, raise_on_error=True):
     return r
 
 
+def read_rds(rds_path: Path) -> pd.DataFrame:
+    """Reads an RDS file and converts it to a pandas DataFrame.
+
+    Args:
+        rds_path (Path): Path to the RDS file.
+
+    Returns:
+        pd.DataFrame: DataFrame containing the data from the RDS file.
+    """
+    readRDS = ro.r["readRDS"]
+    df = readRDS(str(rds_path))
+
+    with localconverter(ro.default_converter + pandas2ri.converter):
+        conversion = ro.conversion.get_conversion()
+        d = conversion.rpy2py(df)
+        return pd.DataFrame(data=d, index=df.rownames, columns=df.colnames)
