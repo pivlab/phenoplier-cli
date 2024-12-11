@@ -27,7 +27,8 @@ def read_rds(test_case_number: int, kind: str):
     df = readRDS(str(rds_file))
 
     with localconverter(ro.default_converter + pandas2ri.converter):
-        d = ro.conversion.rpy2py(df)
+        conversion = ro.conversion.get_conversion()
+        d = conversion.rpy2py(df)
         return pd.DataFrame(data=d, index=df.rownames, columns=df.colnames)
 
 
@@ -61,6 +62,7 @@ def test_project_simple_data(test_case_number):
 
 
 @pytest.mark.parametrize("test_case_number", [4])
+@pytest.mark.filterwarnings("ignore:Input data contains NaN values")
 def test_project_data_with_nan(test_case_number):
     run_saved_test_case_simple_check(
         test_case_number, lambda x, y: np.allclose(x, y, equal_nan=True)
