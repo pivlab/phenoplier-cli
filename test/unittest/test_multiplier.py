@@ -2,11 +2,11 @@ import pytest
 import numpy as np
 import pandas as pd
 import rpy2.robjects as ro
+import phenoplier.multiplier as multiplier
 
 from pathlib import Path
 from rpy2.robjects.conversion import localconverter
 from rpy2.robjects import pandas2ri
-from phenoplier.multiplier import MultiplierProjection
 from phenoplier.config import settings as conf
 
 def read_rds(test_case_number: int, kind: str):
@@ -38,8 +38,7 @@ def run_saved_test_case_simple_check(test_case_number, test_function=np.allclose
     input_data = read_rds(test_case_number, "input_data")
 
     # run
-    mproj = MultiplierProjection()
-    proj_data = mproj.transform(input_data)
+    proj_data = multiplier.transform(input_data)
 
     # evaluate
     assert proj_data is not None
