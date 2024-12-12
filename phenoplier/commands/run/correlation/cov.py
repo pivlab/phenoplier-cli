@@ -240,4 +240,3 @@ def cov(
             raise ValueError("Unexpected shape")
         if df.isna().any().any():
             raise ValueError("Unexpected NA values")
- 
