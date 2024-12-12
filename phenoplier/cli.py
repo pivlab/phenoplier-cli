@@ -23,7 +23,7 @@ from phenoplier.commands.run.correlation.filter import filter
 from phenoplier.commands.run.correlation.generate import generate
 from phenoplier.commands.util.enums import DownloadAction
 from phenoplier.commands.get import ActionMap
-from phenoplier.commands.project import multiplier
+from phenoplier.commands.project import to_multiplier
 from phenoplier.data import Downloader
 
 
@@ -47,6 +47,7 @@ cmd_group_run = typer.Typer(
     help="Run a specific Phenoplier functionality."
 )
 cmd_group_run.command()(regression)
+
 # "gene-corr" command group
 cmd_group_gene_corr = typer.Typer(
     context_settings={"help_option_names": ["-h", "--help"]},
@@ -64,12 +65,13 @@ cmd_group_gene_corr.command()(filter)
 cmd_group_gene_corr.command()(generate)
 # Add the "gene-corr" command group to the "run" command group
 cmd_group_run.add_typer(cmd_group_gene_corr, name="gene-corr")
+
 # "project" command group
 cmd_group_project = typer.Typer(
     context_settings={"help_option_names": ["-h", "--help"]},
     help="projects input data into the specified representation space."
 )
-cmd_group_project.command()(multiplier)
+cmd_group_project.command()(to_multiplier)
 
 # Register commands and command groups
 # Add the command group "run" to the main program

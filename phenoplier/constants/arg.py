@@ -195,3 +195,17 @@ class Regression_Args(Enum):
 # Const help messages for the "run" command
 class Run_Args(Enum):
     REGRESSION = Regression_Args
+
+# Const help messages for command "project"
+class Project_Args(Enum):
+    INPUT_FILE = typer.Option("--input-file", "-i",
+                              help="Input data in .rds format to be projected into the MultiPLIER model. "
+                                   "Gene symbols are expected in rows. The columns could be conditions/samples",
+                              exists=True,
+                              resolve_path=True,
+                              )
+    OUTPUT_FILE = typer.Option("--output-file", "-o",
+                               help="File path where the projected data (pandas.DataFrame) will be written to. "
+                               "Default to the current directory with the same name as the input file, but in .pkl format.",
+                               )
+    PROJECT_DIR = Common_Args.PROJECT_DIR.value
