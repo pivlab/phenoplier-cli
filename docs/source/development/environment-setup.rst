@@ -39,3 +39,26 @@ Notes
 
 - Ensure that Conda and Poetry are installed on your system before running the setup script.
 - If you encounter any errors during setup, refer to the project's documentation or troubleshooting guide for assistance.
+
+
+.. code-block:: bash
+
+   # Create a bootstrap env
+   conda create -p /tmp/bootstrap -c conda-forge mamba conda-lock poetry='1.8.*' python='3.11.*' 
+   conda activate /tmp/bootstrap
+
+   # Create Conda lock file(s) from environment.yml
+   conda-lock -k explicit --conda mamba
+
+   # Add conda-lock (and other packages, as needed) to pyproject.toml and poetry.lock
+   poetry add --lock conda-lock
+
+   # Remove the bootstrap env
+   conda deactivate
+   rm -rf /tmp/bootstrap
+
+   # Add Conda spec and lock files
+   git add environment.yml virtual-packages.yml conda-linux-64.lock
+   # Add Poetry spec and lock files
+   git add pyproject.toml poetry.lock
+   git commit
