@@ -206,6 +206,6 @@ class Project_Args(Enum):
                               )
     OUTPUT_FILE = typer.Option("--output-file", "-o",
                                help="File path where the projected data (pandas.DataFrame) will be written to. "
-                               "Default to the current directory with the same name as the input file, but in .pkl format.",
+                               "Default to the same directory with the same name as the input file, but in .pkl format.",
                                )
     PROJECT_DIR = Common_Args.PROJECT_DIR.value
