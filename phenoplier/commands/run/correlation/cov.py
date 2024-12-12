@@ -201,7 +201,7 @@ def cov(
         raise ValueError("Unexpected NA values")
     del _tmp, _tmp_snps
 
-    output_file_name_template = f"{conf.TWAS["LD_BLOCKS"]["OUTPUT_FILE_NAME"]}"
+    output_file_name_template = f"{conf.TWAS['LD_BLOCKS']['OUTPUT_FILE_NAME']}"
     output_file = output_dir_base / output_file_name_template.format(prefix="", suffix="")
     print(f"Output file: {output_file}")
 
