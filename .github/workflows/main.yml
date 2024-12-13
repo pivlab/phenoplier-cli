@@ -28,14 +28,26 @@ jobs:
         with:
           python-version: '3.11'
       #----------------------------------------------
-      #  -----  install & configure poetry  -----
+      #       install Conda
       #----------------------------------------------
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-        with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-          installer-parallel: true
+      - name: Setup Miniconda
+        uses: conda-incubator/setup-miniconda@v3.0.4
+      #----------------------------------------------
+      #       install dependencies
+      #----------------------------------------------
+      - name: Install dependencies
+        run: |
+          conda create --name phenoplier-cli --file conda-linux-64.lock
+          conda activate phenoplier-cli
+      # #----------------------------------------------
+      # #  -----  install & configure poetry  -----
+      # #----------------------------------------------
+      # - name: Install Poetry
+      #   uses: snok/install-poetry@v1
+      #   with:
+      #     virtualenvs-create: true
+      #     virtualenvs-in-project: true
+      #     installer-parallel: true
 
       #----------------------------------------------
       #       load cached venv if cache exists
