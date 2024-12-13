@@ -37,6 +37,8 @@ jobs:
       #----------------------------------------------
       - name: Install dependencies
         run: |
+          conda init bash
+          source ~/.bashrc
           conda create --name phenoplier-cli --file conda-linux-64.lock
           conda activate phenoplier-cli
       # #----------------------------------------------
