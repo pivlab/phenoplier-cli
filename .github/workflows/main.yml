@@ -35,12 +35,11 @@ jobs:
       #----------------------------------------------
       #       install dependencies
       #----------------------------------------------
-      - name: Install dependencies
+      - name: Install dependencies using Conda
         run: |
           conda init bash
           source ~/.bashrc
           conda create --name phenoplier-cli --file conda-linux-64.lock
-          conda activate phenoplier-cli
       # #----------------------------------------------
       # #  -----  install & configure poetry  -----
       # #----------------------------------------------
@@ -63,9 +62,13 @@ jobs:
       #----------------------------------------------
       # install dependencies if cache does not exist
       #----------------------------------------------
-      - name: Install dependencies
+      - name: Install dependencies using Poetry
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --no-root
+        run: |
+          conda activate phenoplier-cli
+          echo "Using conda environment: ${CONDA_DEFAULT_ENV}"
+          poetry -V
+          poetry install --no-interaction --no-root
       #----------------------------------------------
       # install your root project, if required
       #----------------------------------------------
