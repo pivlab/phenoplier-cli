@@ -15,7 +15,13 @@ on:
 
 jobs:
   test:
+    name: phenoplier-cli-ci
     runs-on: ubuntu-latest
+    env:
+      ENV_FOR_DYNACONF: test
+    defaults:
+      run:
+        shell: bash -el {0}
     steps:
       #----------------------------------------------
       #       check-out repo and set-up python
@@ -31,23 +37,17 @@ jobs:
       #       install Conda
       #----------------------------------------------
       - name: Setup Miniconda
-        uses: conda-incubator/setup-miniconda@v3.0.4
-      #----------------------------------------------
-      #       install dependencies
-      #----------------------------------------------
-      - name: Install dependencies using Conda
-        run: |
-          conda create --name phenoplier-cli --file conda-linux-64.lock
-      # #----------------------------------------------
-      # #  -----  install & configure poetry  -----
-      # #----------------------------------------------
-      # - name: Install Poetry
-      #   uses: snok/install-poetry@v1
-      #   with:
-      #     virtualenvs-create: true
-      #     virtualenvs-in-project: true
-      #     installer-parallel: true
-
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-update-conda: false
+          activate-environment: phenoplier-cli
+          environment-file: conda-linux-64.lock
+      - run: |
+          conda info
+          conda list
+          conda config --show-sources
+          conda config --show
+          printenv | sort
       #----------------------------------------------
       #       load cached venv if cache exists
       #----------------------------------------------
@@ -63,8 +63,6 @@ jobs:
       - name: Install dependencies using Poetry
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: |
-          conda info
-          $CONDA/bin/activate phenoplier-cli
           echo "Using conda environment: ${CONDA_DEFAULT_ENV}"
           poetry -V
           poetry install --no-interaction --no-root
@@ -87,15 +85,11 @@ jobs:
       #----------------------------------------------
       - name: Setup data
         run: |
-          export ENV_FOR_DYNACONF=test
-          source .venv/bin/activate
           phenoplier get ci_test_data
       #----------------------------------------------
       #              run test suite
       #----------------------------------------------
       - name: Run tests
         run: |
-          export ENV_FOR_DYNACONF=test
-          source .venv/bin/activate
           PYTHONPATH=. coverage run -m pytest -rs --color=yes test/
           coverage report -m
