@@ -21,3 +21,4 @@ documentation for details.
    data-projection
    testing/index
    development/index
+   qa/index
