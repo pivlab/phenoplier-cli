@@ -57,7 +57,7 @@ def test_cli_command(reference_panel, eqtl_model, output_dir):
     # Assert the command ran successfully
     assert result.exit_code == 0, f"Command failed with exit code {result.exit_code}\nOutput: {result.stdout}"
 
-    output_filename = f"{conf.TWAS["LD_BLOCKS"]["OUTPUT_FILE_NAME"]}"
+    output_filename = f"{conf.TWAS['LD_BLOCKS']['OUTPUT_FILE_NAME']}"
     out_file = output_dir_base / output_filename
 
     assert out_file.exists(), f"Output file {out_file} does not exist"
