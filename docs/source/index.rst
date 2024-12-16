@@ -18,5 +18,6 @@ documentation for details.
    getting-started/index
    lv-trait-regression
    gene-gene-correlation-matrix-computation/index
+   data-projection
    testing/index
    development/index
