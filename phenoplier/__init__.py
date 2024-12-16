@@ -1,2 +1,2 @@
 __name__ = "phenoplier"
-__version__ = "0.2.4a6"
+__version__ = "0.2.5" # Remember to update this version number in project.toml as well
