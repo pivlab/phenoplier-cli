@@ -1,13 +1,13 @@
 [tool.poetry]
 name = "phenoplier"
-version = "0.2.5" # Remember to update this version number in __init__.py as well
+version = "0.2.6" # Remember to update this version number in __init__.py as well
 description = ""
 authors = ["Milton Pividori", "Haoyu Zhang"]
 license = "BSD-2-Clause Plus Patent License"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-conda-lock = "^2.5.7"
+# conda-lock = "^2.5.7"
 coverage = "7.5.*"
 dynaconf = "^3.2.5"
 dxpy = "^0.383"
