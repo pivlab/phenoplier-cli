@@ -1,0 +1,1 @@
+This step compares the new GWAS results with the previous GWAS results.
