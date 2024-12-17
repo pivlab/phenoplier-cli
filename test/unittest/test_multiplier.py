@@ -1,12 +1,9 @@
 import pytest
 import numpy as np
 import pandas as pd
-import rpy2.robjects as ro
 import phenoplier.multiplier as multiplier
 
 from pathlib import Path
-from rpy2.robjects.conversion import localconverter
-from rpy2.robjects import pandas2ri
 from phenoplier.config import settings as conf
 from phenoplier.utils import read_rds
 
