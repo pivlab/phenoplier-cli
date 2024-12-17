@@ -5,14 +5,12 @@ import re
 import hashlib
 import subprocess
 import logging
+import pyreadr
 import pandas as pd
-import rpy2.robjects as ro
 
 from pathlib import Path
 from subprocess import run
 from typing import Dict
-from rpy2.robjects.conversion import localconverter
-from rpy2.robjects import pandas2ri
 
 
 logger = logging.getLogger(__name__)
@@ -232,10 +230,5 @@ def read_rds(rds_path: Path) -> pd.DataFrame:
     Returns:
         pd.DataFrame: DataFrame containing the data from the RDS file.
     """
-    readRDS = ro.r["readRDS"]
-    df = readRDS(str(rds_path))
-
-    with localconverter(ro.default_converter + pandas2ri.converter):
-        conversion = ro.conversion.get_conversion()
-        d = conversion.rpy2py(df)
-        return pd.DataFrame(data=d, index=df.rownames, columns=df.colnames)
+    result = pyreadr.read_r(str(rds_path))
+    return result[None]
