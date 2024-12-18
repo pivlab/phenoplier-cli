@@ -3,7 +3,7 @@ Installation
 
 This document describes how to install the package.
 
-Using pip
+Install from Test PyPI
 ---------
 
 Currently, the package is undergoing internal testing. The package is hosted on PyPI Test and can be installed using the following command:
@@ -11,7 +11,8 @@ Currently, the package is undergoing internal testing. The package is hosted on 
 .. code-block:: bash
 
    # Creating a new conda environment is recommended for dependency isolation.
-   # Run this to create it: conda create -y -n phenoplier python=3.12
+   conda create -y -n phenoplier-cli python=3.12
+   conda activate phenoplier-cli
    pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple phenoplier
 
 You should be able to verify the installation by running the following command:
@@ -21,3 +22,21 @@ You should be able to verify the installation by running the following command:
    phenoplier -v
 
 The current version should be displayed.
+
+Install from source
+---------
+
+In case of any issues, installing the package from source would be an option. Clone the repository and install the package using the following commands:
+
+.. code-block:: bash
+
+   git clone git@github.com:pivlab/phenoplier-cli.git
+   cd phenoplier-cli
+   pip install .
+
+You should be able to verify the installation by running the following command:
+
+.. code-block:: bash
+   phenoplier -v
+
+For this approach, creating a conda environment is also recommended.
