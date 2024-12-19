@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "phenoplier"
-version = "0.2.6" # Remember to update this version number in __init__.py as well
+version = "0.2.7" # Remember to update this version number in __init__.py as well
 description = ""
 authors = ["Milton Pividori", "Haoyu Zhang"]
 license = "BSD-2-Clause Plus Patent License"
