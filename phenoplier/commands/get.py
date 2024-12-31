@@ -65,12 +65,20 @@ t21_actions = [
     "download_reference_panel_gtex_v8",
 ]
 
+nullsim_twas = [
+    "download_1000g_genotype_data",
+    "download_liftover_hg19tohg38_chain",
+    "download_eur_ld_regions",
+    "download_setup_summary_gwas_imputation"
+]
+
 ActionMap = {
     DownloadAction.test_data: test_actions,
     DownloadAction.full_data: full_actions,
     DownloadAction.smul_data: smul_data,
     DownloadAction.t21_data: t21_actions,
-    DownloadAction.ci_test_data: ci_test_actions
+    DownloadAction.ci_test_data: ci_test_actions,
+    DownloadAction.nullsim_twas: nullsim_twas
 }
 
 

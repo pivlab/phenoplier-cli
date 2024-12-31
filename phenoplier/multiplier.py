@@ -5,6 +5,8 @@ import numpy as np
 import pandas as pd
 from phenoplier.config import settings as conf
 
+
+# TODO: check genes are in the rows
 def _read_model_z():
     """Returns the MultiPLIER Z matrix (gene loadings)."""
     return pd.read_pickle(conf.GENE_MODULE_MODEL["MODEL_Z_MATRIX_FILE"])

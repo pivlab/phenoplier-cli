@@ -708,7 +708,7 @@ class Downloader:
             f.extractall(output_folder.parent)
 
     def download_1000g_genotype_data(**kwargs):
-        output_folder = conf.TWAS["LD_BLOCKS"]["1000G_GENOTYPE_DIR"]
+        output_folder = Path(conf.TWAS["LD_BLOCKS"]["1000G_GENOTYPE_DIR"])
         if output_folder.exists():
             logger.warning(f"Output directory already exists ({output_folder}). Skipping.")
             return
@@ -1078,7 +1078,7 @@ class Downloader:
     def download_eur_ld_regions(**kwargs):
         output_file = conf.GENERAL["EUR_LD_REGIONS_FILE"]
         curl(
-            "https://upenn.box.com/shared/static/yo25wpoct6vl8fk2s1rgxrs2wym7k1yb.gz",
+            "https://zenodo.org/records/14504756/files/eur_ld.bed.gz?download=1",
             output_file,
             "900e4a7d3a14ae87de25ee48f7083dba",
             logger=logger,
