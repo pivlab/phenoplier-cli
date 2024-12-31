@@ -818,8 +818,8 @@ class Downloader:
 
             # rename file
             Path(parent_dir, zip_internal_filename).rename(output_file)
-            if Path(zip_internal_filename).parent != Path("../scripts"):
-                Path(parent_dir, zip_internal_filename.parent).rmdir()
+            # if Path(zip_internal_filename).parent != Path("../scripts"):
+            #     Path(parent_dir, Path(zip_internal_filename).parent).rmdir()
 
         # TODO: add optional parameter to delete the downloaded zip file?
         # delete zip file
@@ -1046,7 +1046,7 @@ class Downloader:
         """
         Downloader._get_file_from_zip(
             zip_file_url="https://github.com/hakyimlab/summary-gwas-imputation/archive/206dac587824a6f207e137ce8c2d7b15d81d5869.zip",
-            zip_file_path=Path(conf.SOFTWARE_DIR, "summary_gwas_imputation").resolve(),
+            zip_file_path=Path(conf.SOFTWARE_DIR, "summary_gwas_imputation.zip").resolve(),
             zip_file_md5="b2e9ea5587c7cf35d42e7e16411efeb5",
             zip_internal_filename="summary-gwas-imputation-206dac587824a6f207e137ce8c2d7b15d81d5869/",
             output_file=Path(conf.DEPENDENCIES.GWAS_IMPUTATION["BASE_DIR"]),
