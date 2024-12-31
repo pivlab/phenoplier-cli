@@ -15,6 +15,10 @@ BIOMART_GENES_INFO_FILE = "@format {this.DATA_DIR}/biomart_genes_hg38.csv.gz"
 TERM_ID_LABEL_FILE = "@format {this.DATA_DIR}/term_id_labels.tsv.gz"
 TERM_ID_XREFS_FILE = "@format {this.DATA_DIR}/term_id_xrefs.tsv.gz"
 EUR_LD_REGIONS_FILE = "@format {this.DATA_DIR}/eur_ld.bed.gz"
+[GENERAL.LIFTOVER]
+BASE_DIR = "@format {this.DATA_DIR}/liftover"
+CHAINS_DIR = "@format {this.GENERAL.LIFTOVER.BASE_DIR}/chains"
+HG19_TO_HG38 = "@format {this.GENERAL.LIFTOVER.CHAINS_DIR}/hg19ToHg38.over.chain.gz"
 
 # Gene Module Model settings
 [GENE_MODULE_MODEL]
@@ -80,6 +84,12 @@ CODINGS_DIR = "@format {this.UK_BIOBANK.BASE_DIR}/codings"
 CODING_3_FILE = "@format {this.UK_BIOBANK.CODINGS_DIR}/config3.tsv"
 CODING_6_FILE = "@format {this.UK_BIOBANK.CODINGS_DIR}/config6.tsv"
 UKBCODE_TO_EFO_MAP_FILE = "@format {this.UK_BIOBANK.BASE_DIR}/UK_Biobank_master_file.tsv"
+
+# External Dependency Settings
+[DEPENDENCIES]
+[DEPENDENCIES.GWAS_IMPUTATION]
+BASE_DIR = "@format {this.SOFTWARE_DIR}/summary_gwas_imputation"
+CONDA_ENV = "@format {this.CONDA_ENVS_DIR}/summary_gwas_imputation"
 
 # Result Settings
 [RESULTS]
