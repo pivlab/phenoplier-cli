@@ -48,3 +48,4 @@ class DownloadAction(str, Enum):
     demo_data = "demo_data"
     smul_data = "smul_data"
     t21_data = "t21_data"
+    nullsim_twas = "nullsim_twas"

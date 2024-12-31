@@ -14,6 +14,7 @@ CONDA_ENVS_DIR = "@format {this.SOFTWARE_DIR}/conda_envs"
 BIOMART_GENES_INFO_FILE = "@format {this.DATA_DIR}/biomart_genes_hg38.csv.gz"
 TERM_ID_LABEL_FILE = "@format {this.DATA_DIR}/term_id_labels.tsv.gz"
 TERM_ID_XREFS_FILE = "@format {this.DATA_DIR}/term_id_xrefs.tsv.gz"
+EUR_LD_REGIONS_FILE = "@format {this.DATA_DIR}/eur_ld.bed.gz"
 
 # Gene Module Model settings
 [GENE_MODULE_MODEL]
