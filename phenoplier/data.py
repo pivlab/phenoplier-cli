@@ -767,7 +767,7 @@ class Downloader:
             output_file: this is a path where the zip_internal_filename will be saved to.
             output_file_md5: MD5 hash of the internal zip file (the one being extracted). Ignored if a folder is extracted.
         """
-        from utils import md5_matches
+        from phenoplier.utils import md5_matches
 
         # output_file = conf.GENE_MODULE_MODEL["RECOUNT2_MODEL_FILE"]
         _internal_file = str(zip_internal_filename)
@@ -962,6 +962,7 @@ class Downloader:
             },
         )
 
+    @staticmethod
     def _create_conda_environment(
             environment_folder: Path, environment_spec: Path, channel_priority: str = "flexible"
     ):
@@ -1038,18 +1039,22 @@ class Downloader:
             stderr=subprocess.STDOUT,
         )
 
-    def download_setup_summary_gwas_imputation(self, **kwargs):
-        self._get_file_from_zip(
+    @staticmethod
+    def download_setup_summary_gwas_imputation(**kwargs):
+        """
+        Downloads and sets up summary GWAS imputation tools.
+        """
+        Downloader._get_file_from_zip(
             zip_file_url="https://github.com/hakyimlab/summary-gwas-imputation/archive/206dac587824a6f207e137ce8c2d7b15d81d5869.zip",
-            zip_file_path=Path(conf.SOFTWARE_DIR, "summary-gwas-imputation.zip").resolve(),
+            zip_file_path=Path(conf.SOFTWARE_DIR, "summary_gwas_imputation").resolve(),
             zip_file_md5="b2e9ea5587c7cf35d42e7e16411efeb5",
             zip_internal_filename="summary-gwas-imputation-206dac587824a6f207e137ce8c2d7b15d81d5869/",
-            output_file=conf.GWAS_IMPUTATION["BASE_DIR"],
+            output_file=Path(conf.DEPENDENCIES.GWAS_IMPUTATION["BASE_DIR"]),
         )
 
-        self._create_conda_environment(
-            environment_folder=conf.GWAS_IMPUTATION["CONDA_ENV"],
-            environment_spec=conf.GWAS_IMPUTATION["BASE_DIR"] / "src/conda_env.yaml",
+        Downloader._create_conda_environment(
+            environment_folder=Path(conf.DEPENDENCIES.GWAS_IMPUTATION["CONDA_ENV"]),
+            environment_spec=Path(conf.DEPENDENCIES.GWAS_IMPUTATION["BASE_DIR"]) / "src/conda_env.yaml",
         )
 
     def download_setup_metaxcan(self, **kwargs):
