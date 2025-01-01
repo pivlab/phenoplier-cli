@@ -3,8 +3,9 @@
 This folder has the scripts to run the harmonization and imputation process across all GWAS on randomly generated phenotypes (`../05_gwas`).
 It uses a standard pipeline for this task: https://github.com/hakyimlab/summary-gwas-imputation 
 
+This step is designed to be run on CU's Alpine cluster.
 
-# Load Penn's LPC-specific paths and PhenoPLIER configuration
+# Load Alpine's module and PhenoPLIER configuration
 
 Change paths accordingly.
 
