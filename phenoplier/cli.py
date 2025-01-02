@@ -24,7 +24,7 @@ from phenoplier.commands.run.correlation.generate import generate
 from phenoplier.commands.util.enums import DownloadAction
 from phenoplier.commands.get import ActionMap
 from phenoplier.commands.project import to_multiplier
-from phenoplier.commands.export import env_vars
+from phenoplier.commands.settings import show, export
 from phenoplier.data import Downloader
 
 
@@ -75,17 +75,18 @@ cmd_group_project = typer.Typer(
 cmd_group_project.command()(to_multiplier)
 
 # "export" command group
-cmd_group_export = typer.Typer(
+cmd_group_settings = typer.Typer(
     context_settings={"help_option_names": ["-h", "--help"]},
     help="Export settings or results. Mainly used for development purposes."
 )
-cmd_group_export.command()(env_vars)
+cmd_group_settings.command()(show)
+cmd_group_settings.command()(export)
 
 # Register commands and command groups
 # Add the command group "run" to the main program
 app.add_typer(cmd_group_run, name="run")
 app.add_typer(cmd_group_project, name="project")
-app.add_typer(cmd_group_export, name="export")
+app.add_typer(cmd_group_settings, name="settings")
 app.command()(get)
 
 
