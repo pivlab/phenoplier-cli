@@ -11,7 +11,7 @@ You can use Alpine's "Interactive Jobs" to create a conda environment for phenop
 ```bash
 # Make sure you're in the root folder of phenoplier on your Alpine partition
 # Request an interactive job
-sinteractive --partition=amilan --time=00:10:00 --ntasks=2
+sinteractive --partition=amilan --time=00:20:00 --ntasks=2
 # Load module
 module load anaconda
 # Create a conda environment
@@ -20,35 +20,21 @@ conda create -y -n phenoplier-cli -c conda-forge python=3.12 poetry
 conda activate phenoplier-cli
 # Install the project
 poetry install --no-root
+# Turn on dev mode
+# TODO: Remove this after refactoring the code
+export ENV_FOR_DYNACONF="dev"
 # Verify the installation
 poetry run phenoplier -h
 ```
 
-# Load Alpine's module and PhenoPLIER configuration
-
-```bash
-# load conda environment
-module load miniconda/3
-conda activate ~/software/conda_envs/phenoplier_light/
-
-# load LPC-specific paths
-. ~/projects/phenoplier/scripts/pmacs_penn/env.sh
-
-# load in bash session all PhenoPLIER environmental variables
-eval `python ~/projects/phenoplier/libs/conf.py`
-
-# make sure they were loaded correctly
-# should output something like /project/...
-echo $PHENOPLIER_ROOT_DIR
-```
-
-
 # Download the necessary data
 
 ```bash
+# Use Alpine's scratch directory for all compute jobs
+# Caution: files are automatically removed 90 days after their initial creation in this directory.
+export PHENOPLIER_ROOT_DIR="/scratch/alpine/${USER}/phenoplier"
 poetry run python -m phenoplier get nullsim_twas
 ```
-
 
 # Run cluster jobs
 
