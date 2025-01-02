@@ -3,11 +3,28 @@
 This folder has the scripts to run the harmonization and imputation process across all GWAS on randomly generated phenotypes (`../05_gwas`).
 It uses a standard pipeline for this task: https://github.com/hakyimlab/summary-gwas-imputation 
 
-This step is designed to be run on CU's Alpine cluster.
+This step is designed to be run on CU's Alpine cluster. And it uses the source instead of published package to run through the later procedures. Make sure you've navigated to the root folder of phenoplier on your Alpine partition before start this step.
+
+# Setup Conda Environemnt
+You can use Alpine's "Interactive Jobs" to create a conda environment for phenoplier:
+
+```bash
+# Make sure you're in the root folder of phenoplier on your Alpine partition
+# Request an interactive job
+sinteractive --partition=amilan --time=00:10:00 --ntasks=2
+# Load module
+module load anaconda
+# Create a conda environment
+conda create -y -n phenoplier-cli -c conda-forge python=3.12 poetry
+# Activate the environment
+conda activate phenoplier-cli
+# Install the project
+poetry install --no-root
+# Verify the installation
+poetry run phenoplier -h
+```
 
 # Load Alpine's module and PhenoPLIER configuration
-
-Change paths accordingly.
 
 ```bash
 # load conda environment
@@ -29,12 +46,7 @@ echo $PHENOPLIER_ROOT_DIR
 # Download the necessary data
 
 ```bash
-python ~/projects/phenoplier/environment/scripts/setup_data.py \
-  --actions \
-    download_1000g_genotype_data \
-    download_liftover_hg19tohg38_chain \
-    download_eur_ld_regions \
-    download_setup_summary_gwas_imputation
+poetry run python -m phenoplier get nullsim_twas
 ```
 
 
