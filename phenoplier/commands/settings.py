@@ -2,6 +2,7 @@
 This module is a sub-command of the main CLI. It provides functionality to export Phenoplier's settings.
 """
 
+import os
 from pathlib import Path, PurePath
 from typing import Annotated
 
@@ -16,6 +17,8 @@ def print_conf(conf_dict, export: bool = False):
         if isinstance(var_value, (str, int, PurePath)):
             if export:
                 print(f'export PHENOPLIER_{var_name}="{str(var_value)}"')
+                # Add the variable to the environment
+                os.environ[f'PHENOPLIER_{var_name}'] = str(var_value)
             else:
                 print(f'PHENOPLIER_{var_name}="{str(var_value)}"')
         elif isinstance(var_value, dict):
@@ -32,7 +35,7 @@ def export(
     """
     load_settings_files(project_dir)
     app_settings = conf.as_dict()
-    print_conf(app_settings, true)
+    print_conf(app_settings, True)
 
 
 def show(

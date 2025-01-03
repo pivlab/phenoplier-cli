@@ -95,4 +95,4 @@ CONDA_ENV = "@format {this.CONDA_ENVS_DIR}/summary_gwas_imputation"
 [RESULTS]
 BASE_DIR = "@format {this.RESULT_DIR}"
 GLS = "@format {this.RESULTS.BASE_DIR}/gls"
-GLS_NULL_SIM_UKB = "@format {this.RESULTS.GLS}/null_sim_ukb"
+GLS_NULL_SIMS_UKB_50PCS = "@format {this.RESULTS.GLS}/gwas/null_sims/ukb_50pcs"
