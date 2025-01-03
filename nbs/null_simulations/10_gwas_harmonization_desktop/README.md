@@ -1,41 +1,42 @@
 # Overview
 
+This README is for running the harmonization and imputation process on a local machine.
+
 This folder has the scripts to run the harmonization and imputation process across all GWAS on randomly generated phenotypes (`../05_gwas`).
 It uses a standard pipeline for this task: https://github.com/hakyimlab/summary-gwas-imputation 
 
+This step is designed to be run on CU's Alpine cluster. And it uses the source instead of published package to run through the later procedures. Make sure you've navigated to the root folder of phenoplier on your Alpine partition before start this step.
 
-# Load Penn's LPC-specific paths and PhenoPLIER configuration
-
-Change paths accordingly.
+# Setup Conda Environemnt
+You can use Alpine's "Interactive Jobs" to create a conda environment for phenoplier:
 
 ```bash
-# load conda environment
-module load miniconda/3
-conda activate ~/software/conda_envs/phenoplier_light/
-
-# load LPC-specific paths
-. ~/projects/phenoplier/scripts/pmacs_penn/env.sh
-
-# load in bash session all PhenoPLIER environmental variables
-eval `python ~/projects/phenoplier/libs/conf.py`
-
-# make sure they were loaded correctly
-# should output something like /project/...
-echo $PHENOPLIER_ROOT_DIR
+# Make sure you're in the root folder of phenoplier on your Alpine partition
+# Request an interactive job
+sinteractive --partition=amilan --time=00:20:00 --ntasks=2
+# Load module
+module load anaconda
+# Create a conda environment
+conda create -y -n phenoplier-cli -c conda-forge python=3.12 poetry
+# Activate the environment
+conda activate phenoplier-cli
+# Install the project
+poetry install --no-root
+# Turn on dev mode
+# TODO: Remove this after refactoring the code
+export ENV_FOR_DYNACONF="dev"
+# Verify the installation
+poetry run phenoplier -h
 ```
-
 
 # Download the necessary data
 
 ```bash
-python ~/projects/phenoplier/environment/scripts/setup_data.py \
-  --actions \
-    download_1000g_genotype_data \
-    download_liftover_hg19tohg38_chain \
-    download_eur_ld_regions \
-    download_setup_summary_gwas_imputation
+# Use Alpine's scratch directory for all compute jobs
+# Caution: files are automatically removed 90 days after their initial creation in this directory.
+# export PHENOPLIER_ROOT_DIR="/scratch/alpine/${USER}/phenoplier"
+poetry run python -m phenoplier get nullsim_twas
 ```
-
 
 # Run cluster jobs
 
