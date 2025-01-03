@@ -40,9 +40,12 @@ poetry run python -m phenoplier get nullsim_twas
 
 # Run cluster jobs
 
-The `cluster_jobs/` folder has the job scripts to run on Penn's LPC cluster.
-To run the jobs in order, you need to execute the command below.
-The `_tmp` folder stores logs and needs to be created.
+```bash
+# Turn on dev mode for phenoplier
+export ENV_FOR_DYNACONF="dev"
+# Export phenoplier's settings to the environment
+poetry run python -m phenoplier settings export
+```
 
 
 ## Harmonization
