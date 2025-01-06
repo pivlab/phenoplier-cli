@@ -5,7 +5,7 @@ This README is for running the harmonization and imputation process on a local m
 This folder has the scripts to run the harmonization and imputation process across all GWAS on randomly generated phenotypes (`../05_gwas`).
 It uses a standard pipeline for this task: https://github.com/hakyimlab/summary-gwas-imputation 
 
-This step is designed to be run on CU's Alpine cluster. And it uses the source instead of published package to run through the later procedures. Make sure you've navigated to the root folder of phenoplier on your Alpine partition before start this step.
+This step is designed to be run on CU's Alpine cluster. And it uses the source instead of published package to run through the later procedures. Make sure you've navigated to this folder (nbs/null_simulations/10_gwas_harmonization_desktop) of phenoplier on your Alpine partition before start this step.
 
 # Setup Conda Environemnt
 You can use Alpine's "Interactive Jobs" to create a conda environment for phenoplier:
@@ -45,6 +45,7 @@ poetry run python -m phenoplier get nullsim_twas
 export ENV_FOR_DYNACONF="dev"
 # Export phenoplier's settings to the environment
 poetry run python -m phenoplier settings export
+# Mannually copy and paste the settings to the current shell session
 ```
 
 
@@ -77,13 +78,16 @@ mkdir -p _tmp/imputation
 #   600..799
 #   800..999
 for pheno_id in {0..999}; do
+  # Pad pheno_id to 4 digits
+  padded_pheno_id=$(printf "%04d" "$pheno_id")
   for chromosome in {1..22}; do
     for batch_id in {0..9}; do
-      export pheno_id chromosome batch_id
+      export pheno_id=$padded_pheno_id chromosome batch_id
       cat cluster_jobs/05_imputation_job-template.sh | envsubst '${pheno_id} ${chromosome} ${batch_id}' | bsub
     done
   done
 done
+
 ```
 
 Check logs with:
