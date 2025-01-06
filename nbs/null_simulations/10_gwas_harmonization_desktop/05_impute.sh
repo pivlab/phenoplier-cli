@@ -80,18 +80,18 @@ fi
 #
 
 # make sure we have environment variables with configuration
-if [ -z "${PHENOPLIER_ROOT_DIR}" ] || [ -z "${PHENOPLIER_GWAS_IMPUTATION_BASE_DIR}" ]; then
+if [ -z "${PHENOPLIER_ROOT_DIR}" ] || [ -z "${PHENOPLIER_DEPENDENCIES_GWAS_IMPUTATION_BASE_DIR}" ]; then
     >&2 echo "PhenoPLIER configuration was not loaded"
     exit 1
 fi
 
-PYTHON_EXECUTABLE="${PHENOPLIER_GWAS_IMPUTATION_CONDA_ENV}/bin/python"
+PYTHON_EXECUTABLE="${PHENOPLIER_DEPENDENCIES_GWAS_IMPUTATION_CONDA_ENV}/bin/python"
 if [ ! -f ${PYTHON_EXECUTABLE} ]; then
     >&2 echo "The python executable does not exist: ${PYTHON_EXECUTABLE}"
     exit 1
 fi
 
-A1000G_VARIANTS_METADATA_FILE="${PHENOPLIER_PHENOMEXCAN_LD_BLOCKS_1000G_GENOTYPE_DIR}/variant_metadata.parquet"
+A1000G_VARIANTS_METADATA_FILE="${PHENOPLIER_TWAS_LD_BLOCKS_1000G_GENOTYPE_DIR}/variant_metadata.parquet"
 if [ ! -f ${A1000G_VARIANTS_METADATA_FILE} ]; then
     >&2 echo "The 1000 Genomes variants metadata file does not exist: ${A1000G_VARIANTS_METADATA_FILE}"
     exit 1
@@ -104,10 +104,10 @@ mkdir -p ${OUTPUT_DIR}
 INPUT_GWAS_FILENAME=$(basename ${INPUT_GWAS_FILE})
 OUTPUT_FILENAME_PREFIX=${INPUT_GWAS_FILENAME%.*}-imputed
 
-${PYTHON_EXECUTABLE} ${PHENOPLIER_GWAS_IMPUTATION_BASE_DIR}/src/gwas_summary_imputation.py \
+${PYTHON_EXECUTABLE} ${PHENOPLIER_DEPENDENCIES_GWAS_IMPUTATION_BASE_DIR}/src/gwas_summary_imputation.py \
     -by_region_file ${PHENOPLIER_GENERAL_EUR_LD_REGIONS_FILE} \
     -gwas_file ${INPUT_GWAS_FILE} \
-    -parquet_genotype ${PHENOPLIER_PHENOMEXCAN_LD_BLOCKS_1000G_GENOTYPE_DIR}/chr${CHROMOSOME}.variants.parquet \
+    -parquet_genotype ${PHENOPLIER_TWAS_LD_BLOCKS_1000G_GENOTYPE_DIR}/chr${CHROMOSOME}.variants.parquet \
     -parquet_genotype_metadata ${A1000G_VARIANTS_METADATA_FILE} \
     -window 100000 \
     -parsimony 7 \
