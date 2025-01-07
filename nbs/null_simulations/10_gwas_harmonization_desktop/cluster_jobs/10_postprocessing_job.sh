@@ -25,7 +25,7 @@ IMPUTED_GWAS_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS_UKB_50PCS}/imputed_gwas"
 OUTPUT_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS_UKB_50PCS}/post_imputed_gwas"
 
 # GWAS_JOBINDEX=`expr $LSB_JOBINDEX - 1`
-GWAS_JOBINDEX="0000"
+# GWAS_JOBINDEX="0000"
 
 bash ${CODE_DIR}/10_postprocess.sh \
   --input-gwas-file ${HARMONIZED_GWAS_DIR}/random.pheno${GWAS_JOBINDEX}.glm.linear.tsv-harmonized.txt \
