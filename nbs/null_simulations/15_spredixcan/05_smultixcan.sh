@@ -70,12 +70,12 @@ fi
 #
 
 # make sure we have environment variables with configuration
-if [ -z "${PHENOPLIER_ROOT_DIR}" ] || [ -z "${PHENOPLIER_METAXCAN_BASE_DIR}" ]; then
+if [ -z "${PHENOPLIER_ROOT_DIR}" ] || [ -z "${PHENOPLIER_DEPENDENCIES_METAXCAN_BASE_DIR}" ]; then
     >&2 echo "PhenoPLIER configuration was not loaded"
     exit 1
 fi
 
-PYTHON_EXECUTABLE="${PHENOPLIER_METAXCAN_CONDA_ENV}/bin/python"
+PYTHON_EXECUTABLE="${PHENOPLIER_DEPENDENCIES_METAXCAN_CONDA_ENV}/bin/python"
 if [ ! -f ${PYTHON_EXECUTABLE} ]; then
     >&2 echo "The python executable does not exist: ${PYTHON_EXECUTABLE}"
     exit 1
@@ -85,10 +85,10 @@ fi
 mkdir -p ${OUTPUT_DIR}
 OUTPUT_FILENAME_BASE="${PHENOTYPE_NAME}-gtex_v8-mashr-smultixcan"
 
-${PYTHON_EXECUTABLE} ${PHENOPLIER_METAXCAN_BASE_DIR}/software/SMulTiXcan.py \
-    --models_folder ${PHENOPLIER_PHENOMEXCAN_PREDICTION_MODELS_MASHR} \
-    --models_name_pattern "${PHENOPLIER_PHENOMEXCAN_PREDICTION_MODELS_MASHR_PREFIX}(.*).db" \
-    --snp_covariance ${PHENOPLIER_PHENOMEXCAN_PREDICTION_MODELS_MASHR_SMULTIXCAN_COV_FILE} \
+${PYTHON_EXECUTABLE} ${PHENOPLIER_DEPENDENCIES_METAXCAN_BASE_DIR}/software/SMulTiXcan.py \
+    --models_folder ${PHENOPLIER_TWAS_PREDICTION_MODELS_MASHR} \
+    --models_name_pattern "${PHENOPLIER_TWAS_PREDICTION_MODELS_MASHR_PREFIX}(.*).db" \
+    --snp_covariance ${PHENOPLIER_TWAS_PREDICTION_MODELS_MASHR_SMULTIXCAN_COV_FILE} \
     --metaxcan_folder ${SPREDIXCAN_FOLDER} \
     --metaxcan_filter "${PHENOTYPE_NAME}\-.*csv" \
     --metaxcan_file_name_parse_pattern '(.*)\-gtex_v8\-mashr\-(.*).csv' \
