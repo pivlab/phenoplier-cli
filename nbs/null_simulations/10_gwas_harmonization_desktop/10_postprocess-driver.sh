@@ -70,12 +70,12 @@ fi
 #
 
 # make sure we have environment variables with configuration
-if [ -z "${PHENOPLIER_ROOT_DIR}" ] || [ -z "${PHENOPLIER_DEPENDENCIES_GWAS_IMPUTATION_BASE_DIR}" ]; then
+if [ -z "${PHENOPLIER_ROOT_DIR}" ] || [ -z "${PHENOPLIER_GWAS_IMPUTATION_BASE_DIR}" ]; then
     >&2 echo "PhenoPLIER configuration was not loaded"
     exit 1
 fi
 
-PYTHON_EXECUTABLE="${PHENOPLIER_DEPENDENCIES_GWAS_IMPUTATION_CONDA_ENV}/bin/python"
+PYTHON_EXECUTABLE="${PHENOPLIER_GWAS_IMPUTATION_CONDA_ENV}/bin/python"
 if [ ! -f ${PYTHON_EXECUTABLE} ]; then
     >&2 echo "The python executable does not exist: ${PYTHON_EXECUTABLE}"
     exit 1
@@ -99,7 +99,7 @@ fi
 # Create output directory
 mkdir -p ${OUTPUT_DIR}
 
-${PYTHON_EXECUTABLE} ${PHENOPLIER_DEPENDENCIES_GWAS_IMPUTATION_BASE_DIR}/src/gwas_summary_imputation_postprocess.py \
+${PYTHON_EXECUTABLE} ${PHENOPLIER_GWAS_IMPUTATION_BASE_DIR}/src/gwas_summary_imputation_postprocess.py \
     -gwas_file ${INPUT_GWAS_FILE} \
     -folder ${IMPUTED_GWAS_FOLDER} \
     -pattern ${PHENOTYPE_NAME}.* \
