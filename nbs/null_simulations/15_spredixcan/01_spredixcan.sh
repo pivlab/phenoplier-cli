@@ -70,12 +70,12 @@ fi
 #
 
 # make sure we have environment variables with configuration
-if [ -z "${PHENOPLIER_ROOT_DIR}" ] || [ -z "${PHENOPLIER_METAXCAN_BASE_DIR}" ]; then
+if [ -z "${PHENOPLIER_ROOT_DIR}" ] || [ -z "${PHENOPLIER_DEPENDENCIES_METAXCAN_BASE_DIR}" ]; then
     >&2 echo "PhenoPLIER configuration was not loaded"
     exit 1
 fi
 
-PYTHON_EXECUTABLE="${PHENOPLIER_METAXCAN_CONDA_ENV}/bin/python"
+PYTHON_EXECUTABLE="${PHENOPLIER_DEPENDENCIES_METAXCAN_CONDA_ENV}/bin/python"
 if [ ! -f ${PYTHON_EXECUTABLE} ]; then
     >&2 echo "The python executable does not exist: ${PYTHON_EXECUTABLE}"
     exit 1

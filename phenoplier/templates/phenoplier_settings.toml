@@ -90,6 +90,9 @@ UKBCODE_TO_EFO_MAP_FILE = "@format {this.UK_BIOBANK.BASE_DIR}/UK_Biobank_master_
 [DEPENDENCIES.GWAS_IMPUTATION]
 BASE_DIR = "@format {this.SOFTWARE_DIR}/summary_gwas_imputation"
 CONDA_ENV = "@format {this.CONDA_ENVS_DIR}/summary_gwas_imputation"
+[DEPENDENCIES.METAXCAN]
+BASE_DIR = "@format {this.SOFTWARE_DIR}/metaxcan"
+CONDA_ENV = "@format {this.CONDA_ENVS_DIR}/metaxcan"
 
 # Result Settings
 [RESULTS]
