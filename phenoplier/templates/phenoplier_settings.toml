@@ -76,6 +76,7 @@ BASE_DIR = "@format {this.TWAS.BASE_DIR}/prediction_models"
 ## Mashr models
 MASHR = "@format {this.TWAS.PREDICTION_MODELS.BASE_DIR}/mashr"
 MASHR_PREFIX = "mashr_"
+MASHR_SMULTIXCAN_COV_FILE = "@format {this.TWAS.PREDICTION_MODELS.BASE_DIR}/gtex_v8_expression_mashr_snp_covariance.txt.gz"
 
 # UK Biobank Settings
 [UK_BIOBANK]
