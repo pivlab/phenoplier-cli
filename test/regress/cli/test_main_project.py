@@ -15,7 +15,7 @@ runner = CliRunner()
 
 # Test help message
 @mark.parametrize("options, expected_output", [
-    (["project --help", "project -h"], "projects input data into the specified representation space."),
+    (["project --help", "project -h"], "Projects input data into the specified representation space."),
 ])
 def test_options(options, expected_output):
     for i in range(len(options)):
