@@ -24,13 +24,12 @@ export OMP_NUM_THREADS=${n_jobs}
 
 CODE_DIR=${PHENOPLIER_REPO_DIR}/nbs/null_simulations/10_gwas_harmonization_desktop
 #GWAS_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/gwas"
-HARMONIZED_GWAS_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS_UKB_50PCS}/harmonized_gwas"
-OUTPUT_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS_UKB_50PCS}/imputed_gwas"
+HARMONIZED_GWAS_DIR="${PHENOPLIER_NULLSIM_RESULTS_DIR}/harmonized_gwas"
+OUTPUT_DIR="${PHENOPLIER_NULLSIM_RESULTS_DIR}/imputed_gwas"
 
 bash ${CODE_DIR}/05_impute.sh \
   --input-gwas-file ${HARMONIZED_GWAS_DIR}/random.pheno${pheno_id}.glm.linear.tsv-harmonized.txt \
   --chromosome ${chromosome} \
-  --n-batches 10 \
+  --n-batches 1 \
   --batch-id ${batch_id} \
   --output-dir ${OUTPUT_DIR}
-
