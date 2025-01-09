@@ -20,8 +20,8 @@ export NUMEXPR_NUM_THREADS=${n_jobs}
 export OMP_NUM_THREADS=${n_jobs}
 
 CODE_DIR=${PHENOPLIER_REPO_DIR}/nbs/null_simulations/10_gwas_harmonization_desktop
-POST_GWAS_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS_UKB_50PCS}/post_imputed_gwas"
-OUTPUT_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS_UKB_50PCS}/final_imputed_gwas"
+POST_GWAS_DIR="${PHENOPLIER_NULLSIM_RESULTS_DIR}/post_imputed_gwas"
+OUTPUT_DIR="${PHENOPLIER_NULLSIM_RESULTS_DIR}/final_imputed_gwas"
 mkdir -p ${OUTPUT_DIR}
 
 # GWAS_JOBINDEX=`expr $LSB_JOBINDEX - 1`
