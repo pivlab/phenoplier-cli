@@ -1,4 +1,4 @@
-for pheno_id in {0..9}; do
+for pheno_id in {0..4}; do
   # Pad pheno_id to 4 digits
   padded_pheno_id=$(printf "%04d" "$pheno_id")
   for chromosome in {1..22}; do

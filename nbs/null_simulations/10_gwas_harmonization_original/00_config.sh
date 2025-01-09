@@ -4,6 +4,6 @@
 # Caution: files are automatically removed 90 days after their initial creation in this directory.
 # export PHENOPLIER_ROOT_DIR="/scratch/alpine/${USER}/phenoplier"
 export PHENOPLIER_GWAS_IMPUTATION_BASE_DIR="${PHENOPLIER_ROOT_DIR}/summary_gwas_imputation/"
-export PHENOPLIER_NULLSIM_RESULTS_DIR=$PHENOPLIER_RESULTS_GLS_NULL_SIMS_UKB_50PCS
+export PHENOPLIER_NULLSIM_RESULTS_DIR="/tmp/phenoplier/results/gls/gwas/null_sims/ukb"
 
 

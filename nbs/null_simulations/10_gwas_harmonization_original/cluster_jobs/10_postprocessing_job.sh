@@ -19,7 +19,7 @@ export OPEN_BLAS_NUM_THREADS=${n_jobs}
 export NUMEXPR_NUM_THREADS=${n_jobs}
 export OMP_NUM_THREADS=${n_jobs}
 
-CODE_DIR=${PHENOPLIER_REPO_DIR}/nbs/null_simulations/10_gwas_harmonization_desktop
+CODE_DIR=${PHENOPLIER_REPO_DIR}/nbs/null_simulations/10_gwas_harmonization_original
 HARMONIZED_GWAS_DIR="${PHENOPLIER_NULLSIM_RESULTS_DIR}/harmonized_gwas"
 IMPUTED_GWAS_DIR="${PHENOPLIER_NULLSIM_RESULTS_DIR}/imputed_gwas"
 OUTPUT_DIR="${PHENOPLIER_NULLSIM_RESULTS_DIR}/post_imputed_gwas"
