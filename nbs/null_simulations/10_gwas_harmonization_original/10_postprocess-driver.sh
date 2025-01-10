@@ -17,11 +17,10 @@ pad_number() {
 
 # Loop through the range
 for i in $(seq $start_index $end_index); do
-    padded_i=$(pad_number $i)
-    echo "Processing GWAS index: ${padded_i}"
+    echo "Processing GWAS index: ${i}"
     
     # Export the GWAS_JOBINDEX
-    export GWAS_JOBINDEX="${padded_i}"
+    export GWAS_JOBINDEX="${i}"
     
     # Run the original script
     bash cluster_jobs/10_postprocessing_job.sh

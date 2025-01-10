@@ -10,18 +10,12 @@ fi
 start_index=$1
 end_index=$2
 
-# Function to zero-pad numbers to 4 digits
-pad_number() {
-    printf "%04d" $1
-}
-
 # Loop through the range
 for i in $(seq $start_index $end_index); do
-    padded_i=$(pad_number $i)
-    echo "Processing GWAS index: ${padded_i}"
+    echo "Processing GWAS index: ${i}"
     
     # Export the GWAS_JOBINDEX
-    export GWAS_JOBINDEX="${padded_i}"
+    export GWAS_JOBINDEX="${i}"
     
     # Run the original script
     bash cluster_jobs/01_harmonization_job.sh
