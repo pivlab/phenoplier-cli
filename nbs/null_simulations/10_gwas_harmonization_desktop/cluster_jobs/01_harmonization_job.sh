@@ -28,10 +28,11 @@ CODE_DIR=${PHENOPLIER_REPO_DIR}/nbs/null_simulations/10_gwas_harmonization_deskt
 GWAS_DIR="${PHENOPLIER_NULLSIM_RESULTS_DIR}/gwas"
 OUTPUT_DIR="${PHENOPLIER_NULLSIM_RESULTS_DIR}/harmonized_gwas"
 
-# GWAS_JOBINDEX=`expr $LSB_JOBINDEX - 1`
-# GWAS_JOBINDEX="0000"
+GWAS_JOBINDEX=${pheno_id}
 
 bash ${CODE_DIR}/01_harmonize.sh \
   --input-gwas-file ${GWAS_DIR}/random.pheno${GWAS_JOBINDEX}.glm.linear.tsv.gz \
-  --liftover-chain-file ${PHENOPLIER_GENERAL_LIFTOVER_HG19_TO_HG38} \
   --output-dir ${OUTPUT_DIR}
+
+# this parameter is not necessary for the UK Biobank:
+#--liftover-chain-file ${PHENOPLIER_GENERAL_LIFTOVER_HG19_TO_HG38} \
