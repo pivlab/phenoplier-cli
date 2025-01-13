@@ -91,8 +91,8 @@ fi
 
 # make sure the number of files with imputed variants is 22 * 10 = 220
 N_FILES_IMP_VARIANTS=`ls -dq ${IMPUTED_GWAS_FOLDER}/${PHENOTYPE_NAME}* | wc -l`
-if [ "${N_FILES_IMP_VARIANTS}" -ne "22" ]; then
-  >&2 echo "Number of expected files with imputed variants (22) does not match expected value (${N_FILES_IMP_VARIANTS}). Check your phenotype name."
+if [ "${N_FILES_IMP_VARIANTS}" -ne "220" ]; then
+  >&2 echo "Number of expected files with imputed variants (220) does not match expected value (${N_FILES_IMP_VARIANTS}). Check your phenotype name."
   exit 1
 fi
 

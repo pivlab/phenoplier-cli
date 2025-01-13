@@ -22,6 +22,11 @@ export OPEN_BLAS_NUM_THREADS=${n_jobs}
 export NUMEXPR_NUM_THREADS=${n_jobs}
 export OMP_NUM_THREADS=${n_jobs}
 
+# Determine the directory of the current script
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PARENT_DIR="$(dirname "$SCRIPT_DIR")"
+source ${PARENT_DIR}/00_config.sh
+
 CODE_DIR=${PHENOPLIER_REPO_DIR}/nbs/null_simulations/10_gwas_harmonization_desktop
 #GWAS_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/gwas"
 HARMONIZED_GWAS_DIR="${PHENOPLIER_NULLSIM_RESULTS_DIR}/harmonized_gwas"

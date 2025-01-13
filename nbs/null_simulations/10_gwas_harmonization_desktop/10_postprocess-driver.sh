@@ -10,14 +10,9 @@ fi
 start_index=$1
 end_index=$2
 
-# Function to zero-pad numbers to 4 digits
-pad_number() {
-    printf "%04d" $1
-}
-
 # Loop through the range
 for i in $(seq $start_index $end_index); do
-    padded_i=$(pad_number $i)
+    padded_i=$i
     echo "Processing GWAS index: ${padded_i}"
     
     # Export the GWAS_JOBINDEX
