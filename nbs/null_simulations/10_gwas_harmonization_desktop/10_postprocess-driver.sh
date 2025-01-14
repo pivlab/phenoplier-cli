@@ -16,7 +16,7 @@ for i in $(seq $start_index $end_index); do
     echo "Processing GWAS index: ${padded_i}"
     
     # Export the GWAS_JOBINDEX
-    export GWAS_JOBINDEX="${padded_i}"
+    export pheno_id="${padded_i}"
     
     # Run the original script
     bash cluster_jobs/10_postprocessing_job.sh

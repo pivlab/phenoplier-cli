@@ -35,6 +35,6 @@ OUTPUT_DIR="${PHENOPLIER_NULLSIM_RESULTS_DIR}/imputed_gwas"
 bash ${CODE_DIR}/05_impute.sh \
   --input-gwas-file ${HARMONIZED_GWAS_DIR}/random.pheno${pheno_id}.glm.linear.tsv-harmonized.txt \
   --chromosome ${chromosome} \
-  --n-batches 10 \
+  --n-batches 1 \
   --batch-id ${batch_id} \
   --output-dir ${OUTPUT_DIR}

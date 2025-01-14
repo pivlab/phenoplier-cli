@@ -32,6 +32,8 @@ mkdir -p ${OUTPUT_DIR}
 # GWAS_JOBINDEX=`expr $LSB_JOBINDEX - 1`
 # GWAS_JOBINDEX="0000"
 
+GWAS_JOBINDEX=${pheno_id}
+
 python ${CODE_DIR}/15_common_variant_ids.py \
   --input-gwas-file ${POST_GWAS_DIR}/random.pheno${GWAS_JOBINDEX}.glm-imputed.txt.gz \
   --common-variant-ids-file ${POST_GWAS_DIR}/common_variant_ids.pkl \
