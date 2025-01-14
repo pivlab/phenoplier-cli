@@ -25,6 +25,7 @@ SPREDIXCAN_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS_UKB_50PCS}/twas/spredixcan"
 OUTPUT_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS_UKB_50PCS}/twas/smultixcan"
 
 # GWAS_JOBINDEX=`expr ${LSB_JOBINDEX} - 1`
+GWAS_JOBINDEX=${pheno_id}
 
 # +
 bash ${CODE_DIR}/05_smultixcan.sh \

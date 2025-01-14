@@ -88,9 +88,9 @@ OUTPUT_FILENAME_BASE="${PHENOTYPE_NAME}-gtex_v8-mashr-${TISSUE}"
 # FIXME: in the future:
 #  * use parameter --gwas-file instead of --gwas_folder and --gwas_file_pattern
 #  * add --throw (it's suggested in the documentation, but does not seem necessary)
-${PYTHON_EXECUTABLE} ${PHENOPLIER_METAXCAN_BASE_DIR}/software/SPrediXcan.py \
-    --model_db_path ${PHENOPLIER_PHENOMEXCAN_PREDICTION_MODELS_MASHR}/${PHENOPLIER_PHENOMEXCAN_PREDICTION_MODELS_MASHR_PREFIX}${TISSUE}.db \
-    --covariance ${PHENOPLIER_PHENOMEXCAN_PREDICTION_MODELS_MASHR}/${PHENOPLIER_PHENOMEXCAN_PREDICTION_MODELS_MASHR_PREFIX}${TISSUE}.txt.gz \
+${PYTHON_EXECUTABLE} ${PHENOPLIER_DEPENDENCIES_METAXCAN_BASE_DIR}/software/SPrediXcan.py \
+    --model_db_path ${PHENOPLIER_TWAS_PREDICTION_MODELS_MASHR}/${PHENOPLIER_TWAS_PREDICTION_MODELS_MASHR_PREFIX}${TISSUE}.db \
+    --covariance ${PHENOPLIER_TWAS_PREDICTION_MODELS_MASHR}/${PHENOPLIER_TWAS_PREDICTION_MODELS_MASHR_PREFIX}${TISSUE}.txt.gz \
     --gwas_folder ${INPUT_GWAS_DIR} \
     --gwas_file_pattern "${PHENOTYPE_NAME}.glm.*.txt.gz" \
     --separator $'\t' \

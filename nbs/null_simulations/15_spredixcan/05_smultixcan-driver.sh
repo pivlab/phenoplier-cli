@@ -15,7 +15,7 @@ for i in $(seq $start_index $end_index); do
     echo "Processing phenotype index: ${i}"
     
     # Export the GWAS_JOBINDEX
-    export GWAS_JOBINDEX="${i}"
+    export pheno_id="${i}"
     
     # Run the original script
     bash cluster_jobs/05_smultixcan_job.sh
