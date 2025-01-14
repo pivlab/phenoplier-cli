@@ -10,7 +10,7 @@ N_JOBS = 16
 N_SAMPLES = 5
 # N_SAMPLES = 50
 
-# Get path from env var PHENOPLIER_RESULTS_GLS_NULL_SIMS_UKB_50PCS
+# Get path from env var PHENOPLIER_RESULTS_GLS_NULL_SIMS_UKB_40PCS
 POST_IMPUTED_DIR = Path(os.environ["PHENOPLIER_NULLSIM_RESULTS_DIR"]) / "post_imputed_gwas"
 
 input_files = sorted(list(POST_IMPUTED_DIR.glob("*.txt.gz")))

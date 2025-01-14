@@ -99,4 +99,4 @@ CONDA_ENV = "@format {this.CONDA_ENVS_DIR}/metaxcan"
 [RESULTS]
 BASE_DIR = "@format {this.RESULT_DIR}"
 GLS = "@format {this.RESULTS.BASE_DIR}/gls"
-GLS_NULL_SIMS_UKB_50PCS = "@format {this.RESULTS.GLS}/gwas/null_sims/ukb_50pcs"
+GLS_NULL_SIMS_UKB_40PCS = "@format {this.RESULTS.GLS}/gwas/null_sims/ukb_40pcs"
