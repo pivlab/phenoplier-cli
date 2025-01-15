@@ -88,6 +88,10 @@ UKBCODE_TO_EFO_MAP_FILE = "@format {this.UK_BIOBANK.BASE_DIR}/UK_Biobank_master_
 
 # External Dependency Settings
 [DEPENDENCIES]
+[DEPENDENCIES.PLINK]
+BASE_DIR = "@format {this.SOFTWARE_DIR}/plink"
+EXECUTABLE_VERSION_1_9 = "@format {this.DEPENDENCIES.PLINK.BASE_DIR}/plink"
+EXECUTABLE_VERSION_2 = "@format {this.DEPENDENCIES.PLINK.BASE_DIR}/plink2"
 [DEPENDENCIES.GWAS_IMPUTATION]
 BASE_DIR = "@format {this.SOFTWARE_DIR}/summary_gwas_imputation"
 CONDA_ENV = "@format {this.CONDA_ENVS_DIR}/summary_gwas_imputation"
