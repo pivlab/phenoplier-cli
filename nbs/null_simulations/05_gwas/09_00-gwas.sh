@@ -1,5 +1,76 @@
 #!/bin/bash
+
+# This script is used to run the GWAS analysis for the null simulations.
+# It will split the phenotypes into batches and run the GWAS analysis for each batch.
+# The GWAS analysis will be run using the PLINK tool.
+
+# Example usage:
+# Use default values
+./09_00-gwas.sh
+
+# Specify all parameters
+./09_00-gwas.sh -s 0 -e 999 -b 200
+
+# Specify only some parameters (others will use defaults)
+./09_00-gwas.sh -s 100 -e 299
+
+# Show help
+./09_00-gwas.sh -h
+
 source ../common/utils.sh
+
+# Parse command line arguments
+usage() {
+    echo "Usage: $0 [-s START_PHENO] [-e END_PHENO] [-b BATCH_SIZE]"
+    echo
+    echo "Options:"
+    echo "  -s START_PHENO  Starting phenotype ID (default: 0)"
+    echo "  -e END_PHENO    Ending phenotype ID (default: 9)"
+    echo "  -b BATCH_SIZE   Batch size for processing (default: 10)"
+    echo
+    echo "Example:"
+    echo "  $0 -s 0 -e 999 -b 200    # Process phenotypes 0-999 in batches of 200"
+    echo "  $0 -s 100 -e 299 -b 50   # Process phenotypes 100-299 in batches of 50"
+    exit 1
+}
+
+# Default values
+start_pheno=0
+end_pheno=9
+batch_size=10
+
+# Parse options
+while getopts "s:e:b:h" opt; do
+    case $opt in
+        s) start_pheno=$OPTARG ;;
+        e) end_pheno=$OPTARG ;;
+        b) batch_size=$OPTARG ;;
+        h) usage ;;
+        ?) usage ;;
+    esac
+done
+
+# Validate input parameters
+if ! [[ "$start_pheno" =~ ^[0-9]+$ ]] || ! [[ "$end_pheno" =~ ^[0-9]+$ ]] || ! [[ "$batch_size" =~ ^[0-9]+$ ]]; then
+    echo "Error: All parameters must be non-negative integers"
+    usage
+fi
+
+if [ "$start_pheno" -gt "$end_pheno" ]; then
+    echo "Error: Start phenotype ID must be less than or equal to end phenotype ID"
+    usage
+fi
+
+if [ "$batch_size" -le 0 ]; then
+    echo "Error: Batch size must be greater than 0"
+    usage
+fi
+
+echo "Running GWAS with:"
+echo "  Start phenotype: $start_pheno"
+echo "  End phenotype:   $end_pheno"
+echo "  Batch size:      $batch_size"
+echo
 
 # Constants
 # Declare an associative array
@@ -7,12 +78,6 @@ declare -A plink_versions
 # Map app_id to version
 plink_versions["plink-v1.0.8"]="app-GZZ4vB008Qyk3644pZfjbxP2"
 plink_versions["plink-v1.1.0"]="app-GqZkQ8j08GBfzF852QG1y3PV"
-
-# Parameters to specify the range and batch size
-# Make sure the length of [start_pheno, end_pheno] is a multiple of batch_size
-start_pheno=0
-end_pheno=9
-batch_size=10
 
 # RAP settings
 ## Job settings
